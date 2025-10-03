@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import styles from "./claimclam.module.css";
 
 export default function ClaimClam() {
@@ -6,14 +8,14 @@ export default function ClaimClam() {
       <div className={styles.content}>
         {/* Header */}
         <div className={styles.header}>
-          <a href="/" className={styles.homeLink}>Back</a>
+          <Link href="/" className={styles.homeLink}>Back</Link>
         </div>
 
         {/* Hero Section */}
         <section className={styles.hero}>
           <div className={styles.logoWrapper}>
             <div className={styles.logo}>
-              <img src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" />
+              <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={80} height={80} />
             </div>
           </div>
           <h1 className={styles.title}>ClaimClam</h1>
@@ -27,7 +29,7 @@ export default function ClaimClam() {
         <div className={styles.textWrapper}>
           <section className={styles.textSection}>
             <p>
-              I had been consulting as a designer for ClaimClam pre-seed. I designed prototypes and pitch decks that reflected founder's vision for the company where I learned more about the complexities of class action settlements, and how convoluted it was for users. I joined the team full time as a Founding Product Designer. I was excited to not only expand my design practice in B2B2C but also to use their mission to capture the value that is rightfully owed to claimants.
+              I had been consulting as a designer for ClaimClam pre-seed. I designed prototypes and pitch decks that reflected founder&apos;s vision for the company where I learned more about the complexities of class action settlements, and how convoluted it was for users. I joined the team full time as a Founding Product Designer. I was excited to not only expand my design practice in B2B2C but also to use their mission to capture the value that is rightfully owed to claimants.
             </p>
             <p>
               Class action is a unique niche dominated by law firms and traditional operations. I saw this as an opportunity to bring a fresh and modern perspective as a start-up. We employed vibrant colors and design elements like dialogs and timelines to anticipate questions and clearly communicate the overall process.
@@ -64,10 +66,10 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <img src="/images/1.home_mockup.png" alt="Hi Tina Screen" />
+            <Image src="/images/1.home_mockup.png" alt="Hi Tina Screen" width={600} height={1200} />
           </div>
           <div className={styles.phone}>
-            <img src="/images/2.claims details_mockup.png" alt="Apple iPhone 7 Audio Issues" />
+            <Image src="/images/2.claims details_mockup.png" alt="Apple iPhone 7 Audio Issues" width={600} height={1200} />
           </div>
         </div>
 
@@ -78,7 +80,7 @@ export default function ClaimClam() {
               Throughout the process, I designed with these key questions in mind: how can I make this complicated filing process clear. How can we strike the right balance between approachability while establishing trust and credibility?
             </p>
             <p>
-              Because there's a lot of legalisms and jargonisms online, users are understandably skeptical about any service that claims to help them - especially one that involves requesting validation of identity. It was important to build elements of credibility. We chose to include elements of trust and incentives to create a feeling that we're guiding users throughout the process.
+              Because there&apos;s a lot of legalisms and jargonisms online, users are understandably skeptical about any service that claims to help them - especially one that involves requesting validation of identity. It was important to build elements of credibility. We chose to include elements of trust and incentives to create a feeling that we&apos;re guiding users throughout the process.
             </p>
           </section>
         </div>
@@ -86,20 +88,20 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots 2 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <img src="/images/3.payout-1-hq.png" alt="Payout History Accepted" />
+            <Image src="/images/3.payout-1-hq.png" alt="Payout History Accepted" width={600} height={1200} />
           </div>
           <div className={styles.phone}>
-            <img src="/images/5. claims history_mockup.png" alt="Dole Fruit Lawsuit" />
+            <Image src="/images/5. claims history_mockup.png" alt="Dole Fruit Lawsuit" width={600} height={1200} />
           </div>
         </div>
 
         {/* Two Phone Screenshots 3 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <img src="/images/8.connect account.png" alt="My Claims" />
+            <Image src="/images/8.connect account.png" alt="My Claims" width={600} height={1200} />
           </div>
           <div className={styles.phone}>
-            <img src="/images/4.payout-fail.png" alt="Claim Needs Attention" />
+            <Image src="/images/4.payout-fail.png" alt="Claim Needs Attention" width={600} height={1200} />
           </div>
         </div>
       </div>

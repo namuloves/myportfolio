@@ -1,8 +1,11 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 import styles from '../styles/home.module.css'
 import CaseStudyCard from '../components/CaseStudyCard'
 
 export default function Home() {
+  const [showPreview, setShowPreview] = useState(false);
   return (
     <main className={styles.container}>
       <nav className={styles.nav}>Navigation</nav>
@@ -11,6 +14,28 @@ export default function Home() {
         <h1 className={styles.hero}>
           Namu Park is a product designer based in Brooklyn, New York.
         </h1>
+        <p className={styles.constructionNote}>
+          Website update is in progress. In the meantime, check out my work at{' '}
+          <span className={styles.contraLinkWrapper}>
+            <a
+              href="https://contra.com/namupark/work"
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseEnter={() => setShowPreview(true)}
+              onMouseLeave={() => setShowPreview(false)}
+            >
+              Contra
+            </a>
+            {showPreview && (
+              <div className={styles.contraPreview}>
+                <div className={styles.contraPreviewContent}>
+                  <p>View my portfolio on Contra →</p>
+                </div>
+              </div>
+            )}
+          </span>
+          {' '}and email <button onClick={() => navigator.clipboard.writeText('namu.d.park@gmail.com')} className={styles.emailButton}>namu.d.park@gmail.com</button>
+        </p>
       </div>
       {/* <section className={styles.bio}>
   <p>
@@ -35,7 +60,7 @@ I love making beautiful things that work.
 
       <section className={styles.caseGrid}>
         <CaseStudyCard title="ClaimClam" href="/claimclam" image="/images/namupark_claimclam.png" />
-        <CaseStudyCard title="The Sloth" video="/video/slothvideo2.mp4" />
+        <CaseStudyCard title="The Sloth" video="/video/slothvideo2.mp4" comingSoon={true} />
       </section>
     </div>
     </main>

@@ -6,9 +6,10 @@ interface CardProps {
   href?: string
   image?: string
   video?: string
+  comingSoon?: boolean
 }
 
-export default function CaseStudyCard({ title, href, image, video }: CardProps) {
+export default function CaseStudyCard({ title, href, image, video, comingSoon }: CardProps) {
   const hasMedia = Boolean(image || video);
   const cardClassName = [
     styles.card,
@@ -46,7 +47,10 @@ export default function CaseStudyCard({ title, href, image, video }: CardProps) 
               controls={false}
             />
           </div>
-          <span className={styles.cardTitle}>{title}</span>
+          <div className={styles.cardTitleWrapper}>
+            <span className={styles.cardTitle}>{title}</span>
+            {comingSoon && <span className={styles.comingSoon}>COMING SOON</span>}
+          </div>
         </>
       ) : (
         <span className={styles.cardTitle}>{title}</span>
