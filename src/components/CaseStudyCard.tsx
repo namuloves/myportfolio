@@ -21,11 +21,9 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
     .filter(Boolean)
     .join(" ");
 
-  const WrapperComponent = href ? Link : "div";
-  const wrapperProps = href ? { href } : {};
-
-  return (
-    <WrapperComponent {...wrapperProps} className={cardClassName}>
+  if (href) {
+    return (
+      <Link href={href} className={cardClassName}>
       {image ? (
         <>
           <div className={styles.imageWrapper}>
@@ -59,6 +57,45 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
       ) : (
         <span className={styles.cardTitle}>{title}</span>
       )}
-    </WrapperComponent>
+      </Link>
+    );
+  }
+
+  return (
+    <div className={cardClassName}>
+      {image ? (
+        <>
+          <div className={styles.imageWrapper}>
+            <Image
+              src={image}
+              alt={title}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+          <span className={styles.cardTitle}>{title}</span>
+        </>
+      ) : video ? (
+        <>
+          <div className={styles.videoWrapper}>
+            <video
+              src={video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls={false}
+            />
+          </div>
+          <div className={styles.cardTitleWrapper}>
+            <span className={styles.cardTitle}>{title}</span>
+            {comingSoon && <span className={styles.comingSoon}>COMING SOON</span>}
+          </div>
+        </>
+      ) : (
+        <span className={styles.cardTitle}>{title}</span>
+      )}
+    </div>
   );
 }
