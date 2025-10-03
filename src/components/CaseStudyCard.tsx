@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "@/styles/home.module.css";
 
 interface CardProps {
@@ -20,8 +21,11 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
     .filter(Boolean)
     .join(" ");
 
+  const WrapperComponent = href ? Link : "div";
+  const wrapperProps = href ? { href } : {};
+
   return (
-    <a href={href || "#"} className={cardClassName}>
+    <WrapperComponent {...wrapperProps} className={cardClassName}>
       {image ? (
         <>
           <div className={styles.imageWrapper}>
@@ -55,6 +59,6 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
       ) : (
         <span className={styles.cardTitle}>{title}</span>
       )}
-    </a>
+    </WrapperComponent>
   );
 }
