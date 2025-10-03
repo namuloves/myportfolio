@@ -27,10 +27,13 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
       {image ? (
         <>
           <div className={styles.imageWrapper}>
-            <img
+            <Image
               src={image}
               alt={title}
+              width={1000}
+              height={1000}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              unoptimized
             />
           </div>
           <span className={styles.cardTitle}>{title}</span>
@@ -64,10 +67,13 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
       {image ? (
         <>
           <div className={styles.imageWrapper}>
-            <img
+            <Image
               src={image}
               alt={title}
+              width={1000}
+              height={1000}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              unoptimized
             />
           </div>
           <span className={styles.cardTitle}>{title}</span>
