@@ -15,7 +15,7 @@ export default function ClaimClam() {
         <section className={styles.hero}>
           <div className={styles.logoWrapper}>
             <div className={styles.logo}>
-              <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={80} height={80} />
+              <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={80} height={80} unoptimized />
             </div>
           </div>
           <h1 className={styles.title}>ClaimClam</h1>
@@ -66,10 +66,10 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/1.home_mockup.png" alt="Hi Tina Screen" width={600} height={1200} />
+            <Image src="/images/1.home_mockup.png" alt="Hi Tina Screen" width={600} height={1200} unoptimized />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/2.claims%20details_mockup.png" alt="Apple iPhone 7 Audio Issues" width={600} height={1200} />
+            <Image src="/images/2.claims%20details_mockup.png" alt="Apple iPhone 7 Audio Issues" width={600} height={1200} unoptimized />
           </div>
         </div>
 
@@ -88,20 +88,20 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots 2 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/3.payout-1-hq.png" alt="Payout History Accepted" width={600} height={1200} />
+            <Image src="/images/3.payout-1-hq.png" alt="Payout History Accepted" width={600} height={1200} unoptimized />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/5.%20claims%20history_mockup.png" alt="Dole Fruit Lawsuit" width={600} height={1200} />
+            <Image src="/images/5.%20claims%20history_mockup.png" alt="Dole Fruit Lawsuit" width={600} height={1200} unoptimized />
           </div>
         </div>
 
         {/* Two Phone Screenshots 3 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/8.connect%20account.png" alt="My Claims" width={600} height={1200} />
+            <Image src="/images/8.connect%20account.png" alt="My Claims" width={600} height={1200} unoptimized />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/4.payout-fail.png" alt="Claim Needs Attention" width={600} height={1200} />
+            <Image src="/images/4.payout-fail.png" alt="Claim Needs Attention" width={600} height={1200} unoptimized />
           </div>
         </div>
       </div>
