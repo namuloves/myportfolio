@@ -1,0 +1,428 @@
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Container with different transition options - uncomment the one you want to use */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+
+  /* Option 1: Simple Fade */
+  animation: fadeToBlack 0.6s ease-out;
+}
+
+/* Option 1: Simple Fade */
+@keyframes fadeToBlack {
+  from {
+    background: #fff;
+  }
+  to {
+    background: #000;
+  }
+}
+
+/* Option 2: Ink Bleed */
+@keyframes inkBleed {
+  0% {
+    background: radial-gradient(circle at center, #fff 100%, #fff 100%);
+  }
+  30% {
+    background: radial-gradient(circle at center, #000 20%, #fff 25%, #fff 100%);
+  }
+  60% {
+    background: radial-gradient(circle at center, #000 50%, #fff 55%, #fff 100%);
+  }
+  100% {
+    background: radial-gradient(circle at center, #000 100%, #000 100%);
+  }
+}
+
+/* Option 5: Split Screen Slide */
+@keyframes splitScreen {
+  0% {
+    background: linear-gradient(90deg, #fff 0%, #fff 50%, #fff 100%);
+  }
+  50% {
+    background: linear-gradient(90deg, #000 0%, #fff 45%, #fff 55%, #000 100%);
+  }
+  100% {
+    background: #000;
+  }
+}
+
+/* Option 7: Wave Curtain */
+@keyframes waveCurtain {
+  0% {
+    background: linear-gradient(180deg, #fff 0%, #fff 100%);
+  }
+  25% {
+    background: linear-gradient(180deg, #000 10%, #fff 25%, #fff 100%);
+  }
+  50% {
+    background: linear-gradient(180deg, #000 30%, #fff 45%, #fff 100%);
+  }
+  75% {
+    background: linear-gradient(180deg, #000 60%, #fff 75%, #fff 100%);
+  }
+  100% {
+    background: #000;
+  }
+}
+
+/* Option 8: Spotlight Fade */
+@keyframes spotlightFade {
+  0% {
+    background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 100%);
+  }
+  20% {
+    background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 80%, #000 80.1%, #000 100%);
+  }
+  40% {
+    background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 60%, #000 60.1%, #000 100%);
+  }
+  60% {
+    background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 40%, #000 40.1%, #000 100%);
+  }
+  80% {
+    background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 20%, #000 20.1%, #000 100%);
+  }
+  90% {
+    background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 10%, #000 10.1%, #000 100%);
+  }
+  100% {
+    background: #000;
+  }
+}
+
+/* Option 9: Card Flip */
+@keyframes cardFlip {
+  0% {
+    background: #fff;
+    transform: perspective(600px) rotateY(0deg);
+  }
+  50% {
+    background: linear-gradient(90deg, #fff 50%, #000 50%);
+    transform: perspective(600px) rotateY(90deg);
+  }
+  100% {
+    background: #000;
+    transform: perspective(600px) rotateY(180deg);
+  }
+}
+
+/* Option 10: Typewriter Wipe */
+@keyframes typewriterWipe {
+  0% {
+    background: linear-gradient(180deg, #fff 0%, #fff 100%);
+  }
+  25% {
+    background: linear-gradient(180deg, #000 25%, #fff 25.5%, #fff 100%);
+  }
+  50% {
+    background: linear-gradient(180deg, #000 50%, #fff 50.5%, #fff 100%);
+  }
+  75% {
+    background: linear-gradient(180deg, #000 75%, #fff 75.5%, #fff 100%);
+  }
+  100% {
+    background: #000;
+  }
+}
+
+.content {
+  width: 100%;
+  padding: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 7vw, 5rem) clamp(2rem, 6vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 6vw, 5rem);
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+/* Header */
+.header {
+  padding: 1rem 0;
+}
+
+.homeLink {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.homeLink:hover {
+  opacity: 1;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 0;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.logoWrapper {
+  margin-bottom: 1rem;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 50%;
+  animation: scaleIn 0.6s ease-out forwards, float 4s ease-in-out infinite 1s;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.metaInfo {
+  max-width: 600px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.role {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin: 0;
+}
+
+.timeline {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin: 0;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.buttonPrimary,
+.buttonSecondary {
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-weight: 500;
+}
+
+.buttonPrimary {
+  background: #fff;
+  color: #000;
+}
+
+.buttonSecondary {
+  background: #333;
+  color: #fff;
+}
+
+.buttonPrimary:hover {
+  background: #f0f0f0;
+}
+
+.buttonSecondary:hover {
+  background: #444;
+}
+
+/* Text Wrapper */
+.textWrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  animation: fadeIn 1s ease-out 0.3s both;
+}
+
+/* Text Sections */
+.textSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  line-height: 1.7;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.textSection p {
+  margin: 0;
+  animation: fadeInText 1s ease-out both;
+}
+
+.textSection p:nth-child(1) {
+  animation-delay: 0.5s;
+}
+
+.textSection p:nth-child(2) {
+  animation-delay: 0.7s;
+}
+
+.textSection p:nth-child(3) {
+  animation-delay: 0.9s;
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Phone Containers */
+.phoneContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.phoneContainer .phone {
+  max-width: 700px;
+}
+
+.phoneContainer video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.twoPhones {
+  display: flex;
+  justify-content: center;
+  gap: 12rem;
+  padding: 2rem 0;
+}
+
+.twoPhones .phone:nth-child(1) {
+  animation: scaleIn 0.8s ease-out 0.3s both;
+}
+
+.twoPhones .phone:nth-child(2) {
+  animation: scaleIn 0.8s ease-out 0.6s both;
+}
+
+.phone {
+  width: auto;
+  max-width: 350px;
+  flex-shrink: 0;
+}
+
+.phone img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    padding: 2rem 1rem;
+    gap: 2rem;
+  }
+
+  .header {
+    padding: 0.5rem 0;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .metaInfo {
+    max-width: 100%;
+  }
+
+  .textWrapper {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .twoPhones {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .phone {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .phoneContainer .phone {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .content {
+    padding: 3rem 2rem;
+  }
+}
