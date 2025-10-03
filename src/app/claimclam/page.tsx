@@ -69,7 +69,7 @@ export default function ClaimClam() {
             <Image src="/images/1.home_mockup.png" alt="Hi Tina Screen" width={600} height={1200} />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/2.claims details_mockup.png" alt="Apple iPhone 7 Audio Issues" width={600} height={1200} />
+            <Image src="/images/2.claims%20details_mockup.png" alt="Apple iPhone 7 Audio Issues" width={600} height={1200} />
           </div>
         </div>
 
@@ -91,14 +91,14 @@ export default function ClaimClam() {
             <Image src="/images/3.payout-1-hq.png" alt="Payout History Accepted" width={600} height={1200} />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/5. claims history_mockup.png" alt="Dole Fruit Lawsuit" width={600} height={1200} />
+            <Image src="/images/5.%20claims%20history_mockup.png" alt="Dole Fruit Lawsuit" width={600} height={1200} />
           </div>
         </div>
 
         {/* Two Phone Screenshots 3 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/8.connect account.png" alt="My Claims" width={600} height={1200} />
+            <Image src="/images/8.connect%20account.png" alt="My Claims" width={600} height={1200} />
           </div>
           <div className={styles.phone}>
             <Image src="/images/4.payout-fail.png" alt="Claim Needs Attention" width={600} height={1200} />
