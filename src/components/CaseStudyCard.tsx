@@ -54,7 +54,7 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
               onCanPlay={() => console.log('Video can play')}
               style={{ backgroundColor: '#f0f0f0', minHeight: '200px' }}
             >
-              <p>Your browser doesn't support video playback.</p>
+              <p>Your browser does not support video playback.</p>
             </video>
           </div>
           <div className={styles.cardTitleWrapper}>
@@ -101,7 +101,7 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
               onCanPlay={() => console.log('Video can play')}
               style={{ backgroundColor: '#f0f0f0', minHeight: '200px' }}
             >
-              <p>Your browser doesn't support video playback.</p>
+              <p>Your browser does not support video playback.</p>
             </video>
           </div>
           <div className={styles.cardTitleWrapper}>

@@ -74,7 +74,7 @@ export default function ClaimClam() {
               preload="auto"
               style={{ width: "100%", height: "auto", display: "block" }}
             >
-              <p>Your browser doesn't support video playback.</p>
+              <p>Your browser does not support video playback.</p>
             </video>
           </div>
         </div>
