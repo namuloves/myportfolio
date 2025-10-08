@@ -47,8 +47,15 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
               loop
               muted
               playsInline
-              controls={false}
-            />
+              controls={true}
+              preload="auto"
+              onError={(e) => console.error('Video error:', e)}
+              onLoadStart={() => console.log('Video loading started')}
+              onCanPlay={() => console.log('Video can play')}
+              style={{ backgroundColor: '#f0f0f0', minHeight: '200px' }}
+            >
+              <p>Your browser doesn't support video playback.</p>
+            </video>
           </div>
           <div className={styles.cardTitleWrapper}>
             <span className={styles.cardTitle}>{title}</span>
@@ -87,8 +94,15 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
               loop
               muted
               playsInline
-              controls={false}
-            />
+              controls={true}
+              preload="auto"
+              onError={(e) => console.error('Video error:', e)}
+              onLoadStart={() => console.log('Video loading started')}
+              onCanPlay={() => console.log('Video can play')}
+              style={{ backgroundColor: '#f0f0f0', minHeight: '200px' }}
+            >
+              <p>Your browser doesn't support video playback.</p>
+            </video>
           </div>
           <div className={styles.cardTitleWrapper}>
             <span className={styles.cardTitle}>{title}</span>

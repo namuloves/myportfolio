@@ -1,8 +1,30 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import styles from "./claimclam.module.css";
 
 export default function ClaimClam() {
+  const [showNavigation, setShowNavigation] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercentage = (scrollTop / documentHeight) * 100;
+      
+      setShowNavigation(scrollPercentage > 25);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <main className={styles.container}>
       <div className={styles.content}>
@@ -22,10 +44,6 @@ export default function ClaimClam() {
           <p className={styles.role}>Role: Founding Product Designer</p>
           <p className={styles.timeline}>Timeline: 2022 - 2024</p>
 
-          <div className={styles.buttonGroup}>
-            <button className={styles.buttonSecondary}>Figma</button>
-            <button className={styles.buttonPrimary}>View now</button>
-          </div>
         </section>
 
         {/* Intro Text */}
@@ -43,19 +61,32 @@ export default function ClaimClam() {
           </section>
         </div>
 
-        {/* Phone Screenshot 1 */}
+        {/* Video Section */}
         <div className={styles.phoneContainer}>
           <div className={styles.phone}>
-            <Image src="/images/claimclam-screen1.png" alt="Claims App Payout History Screen" width={300} height={600} />
+            <video
+              src="/video/claimclam_mobile.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls={true}
+              preload="auto"
+              style={{ width: "100%", height: "auto", display: "block" }}
+            >
+              <p>Your browser doesn't support video playback.</p>
+            </video>
           </div>
         </div>
 
         {/* Text Section 2 */}
-        <section className={styles.textSection}>
-          <p>
-            Filing for class action claims can be stressful for users with lots of repetitive and marketing terminology. As a designer, I focused on which elements of class action settlements were most important to highlight for users in order to file and check status of claim. My focus was on presenting complex information in a simple, easy-to-use way.
-          </p>
-        </section>
+        <div className={styles.textWrapper}>
+          <section className={styles.textSection}>
+            <p>
+              Filing for class action claims can be stressful for users with lots of repetitive and marketing terminology. As a designer, I focused on which elements of class action settlements were most important to highlight for users in order to file and check status of claim. My focus was on presenting complex information in a simple, easy-to-use way.
+            </p>
+          </section>
+        </div>
 
         {/* Two Phone Screenshots */}
         <div className={styles.twoPhones}>
@@ -99,6 +130,25 @@ export default function ClaimClam() {
           </div>
         </div>
       </div>
+
+      {/* Floating Navigation */}
+      {showNavigation && (
+        <>
+          {/* Back to Home Arrow - Left Side */}
+          <Link href="/" className={styles.backToHome}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </Link>
+
+          {/* Back to Top Button - Right Side */}
+          <button onClick={scrollToTop} className={styles.backToTop}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+          </button>
+        </>
+      )}
     </main>
   );
 }
