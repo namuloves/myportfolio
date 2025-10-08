@@ -59,7 +59,7 @@ I love making beautiful things that work.
 </section> */}
 
       <section className={styles.caseGrid}>
-        <CaseStudyCard title="ClaimClam" href="/claimclam" image="/images/namupark_claimclam.png" />
+        <CaseStudyCard title="ClaimClam" href="/claimclam" image="/claimclam/namupark-claimclam.png" />
         <CaseStudyCard title="The Sloth" video="/video/slothvideo2.mp4" comingSoon={true} />
       </section>
     </div>
