@@ -79,15 +79,16 @@
     background: transparent;
   }
 
-.cardTitleWrapper {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-  }
+  .cardTitleWrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      padding-left: 0;
+    }
 
-.cardTitle {
-    display: block;
+  .cardTitle {
+      display: block;
     font-size: clamp(1.25rem, 2.6vw, 1.75rem);
     font-weight: 500;
     letter-spacing: -0.02em;
@@ -193,6 +194,10 @@
 @media (min-width: 768px) {
   .cardWithVideo {
       align-items: center;
+    }
+
+  .cardTitleWrapper {
+      padding-left: 24px;
     }
 }
   

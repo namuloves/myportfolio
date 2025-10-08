@@ -52,7 +52,7 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
               onError={(e) => console.error('Video error:', e)}
               onLoadStart={() => console.log('Video loading started')}
               onCanPlay={() => console.log('Video can play')}
-              style={{ backgroundColor: '#f0f0f0', minHeight: '200px' }}
+              style={{ minHeight: '200px' }}
             >
               <p>Your browser does not support video playback.</p>
             </video>
@@ -99,7 +99,7 @@ export default function CaseStudyCard({ title, href, image, video, comingSoon }:
               onError={(e) => console.error('Video error:', e)}
               onLoadStart={() => console.log('Video loading started')}
               onCanPlay={() => console.log('Video can play')}
-              style={{ backgroundColor: '#f0f0f0', minHeight: '200px' }}
+              style={{ minHeight: '200px' }}
             >
               <p>Your browser does not support video playback.</p>
             </video>

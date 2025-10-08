@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Namu Park Portfolio",
   description: "Making beautiful things that work",
+  icons: {
+    icon: "/namu_favicon9.png",
+  },
 };
  
 export default function RootLayout({
