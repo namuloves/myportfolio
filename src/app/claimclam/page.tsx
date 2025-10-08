@@ -37,7 +37,7 @@ export default function ClaimClam() {
         <section className={styles.hero}>
           <div className={styles.logoWrapper}>
             <div className={styles.logo}>
-          <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={200} height={200} />
+          <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={200} height={200} unoptimized />
             </div>
           </div>
           <h1 className={styles.title}>ClaimClam</h1>
@@ -91,10 +91,10 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/1.home_mockup.png" alt="Claims App Home Screen" width={300} height={600} />
+            <Image src="/images/1.home_mockup.png" alt="Claims App Home Screen" width={300} height={600} unoptimized />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/2.claims details_mockup.png" alt="Claims App Apple iPhone 7 Audio Issues" width={300} height={600} />
+            <Image src="/images/2.claims details_mockup.png" alt="Claims App Apple iPhone 7 Audio Issues" width={300} height={600} unoptimized />
           </div>
         </div>
 
@@ -113,20 +113,20 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots 2 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/3.payout-1-hq.png" alt="Claims App Payout History Accepted" width={300} height={600} />
+            <Image src="/images/3.payout-1-hq.png" alt="Claims App Payout History Accepted" width={300} height={600} unoptimized />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/4.payout-fail.png" alt="Claims App Error" width={300} height={600} />
+            <Image src="/images/4.payout-fail.png" alt="Claims App Error" width={300} height={600} unoptimized />
           </div>
         </div>
 
         {/* Two Phone Screenshots 3 */}
         <div className={styles.twoPhones}>
           <div className={styles.phone}>
-            <Image src="/images/8.connect account.png" alt="Claims App Connect Bank account" width={300} height={600} />
+            <Image src="/images/8.connect account.png" alt="Claims App Connect Bank account" width={300} height={600} unoptimized />
           </div>
           <div className={styles.phone}>
-            <Image src="/images/7.account_mockup.png" alt="Claim Needs Attention" width={300} height={600} />
+            <Image src="/images/7.account_mockup.png" alt="Claim Needs Attention" width={300} height={600} unoptimized />
           </div>
         </div>
       </div>
