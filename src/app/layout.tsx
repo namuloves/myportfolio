@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Namu Park Portfolio",
   description: "Making beautiful things that work",
   icons: {
-    icon: "/namu_favicon9.png",
+    icon: "/namu_favicon12.png",
   },
 };
  
