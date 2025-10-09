@@ -173,7 +173,7 @@
 
 .content {
   width: 100%;
-  padding: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 7vw, 5rem) clamp(2rem, 6vw, 4rem);
+  padding: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 7vw, 5rem) clamp(4rem, 10vw, 8rem);
   display: flex;
   flex-direction: column;
   gap: clamp(3rem, 6vw, 5rem);
@@ -481,6 +481,6 @@
 
 @media (min-width: 769px) {
   .content {
-    padding: 3rem 2rem;
+    padding: 3rem 2rem 8rem;
   }
 }

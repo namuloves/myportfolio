@@ -1,11 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from '../styles/home.module.css'
 import CaseStudyCard from '../components/CaseStudyCard'
+import Image from "next/image";
+
+const faviconSources = [
+  "/namu_favicon.png",
+  "/namu_favicon5.png",
+  "/namu_favicon12.png",
+];
 
 export default function Home() {
   const [showPreview, setShowPreview] = useState(false);
+  const [activeFavicon, setActiveFavicon] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveFavicon((prev) => (prev + 1) % faviconSources.length);
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, []);
   return (
     <main className={styles.container}>
       <nav className={styles.nav}>Navigation</nav>
@@ -59,9 +75,32 @@ I love making beautiful things that work.
 </section> */}
 
       <section className={styles.caseGrid}>
-        <CaseStudyCard title="ClaimClam" href="/claimclam" image="/images/namupark_claimclam.png" />
-        <CaseStudyCard title="The Sloth" video="/video/slothvideo2.mp4" comingSoon={true} />
+        <CaseStudyCard title="ClaimClam" href="/claimclam" image="/images/namupark_claimclam.png" hoverLabel="Read case study" />
+        <CaseStudyCard title="The Sloth" video="/video/slothvideo2.mp4" hoverLabel="Case study coming soon" />
+        <CaseStudyCard title="Heart in the Cloud" image="/images/HITC_namupark_cover1.png" subtitle="Logo Design" disableHoverDim />
+        <CaseStudyCard title="AI Deal Home" href="/termblock" image="/images/A.NamuPark_AIDealHome.png" disableHoverDim />
       </section>
+      <footer className={styles.footer} aria-hidden="true">
+        <div className={styles.faviconStack}>
+          {faviconSources.map((src, index) => (
+            <div
+              key={src}
+              className={`${styles.faviconFrame} ${
+                activeFavicon === index ? styles.faviconFrameActive : ""
+              }`}
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                priority={index === 0}
+                sizes="(min-width: 768px) 96px, 72px"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
+          ))}
+        </div>
+      </footer>
     </div>
     </main>
   )
