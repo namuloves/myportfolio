@@ -8,16 +8,10 @@ import {
   useRef,
   useState,
 } from "react";
-import Image from "next/image";
+import Link from "next/link";
 import CaseStudyCard from "../components/CaseStudyCard";
 import styles from "../styles/home.module.css";
 import { applyThemeWithTransition } from "../lib/themeTransition";
-
-const faviconSources = [
-  "/namu_favicon.png",
-  "/namu_favicon5.png",
-  "/namu_favicon12.png",
-];
 
 const headlineText = "Namu Park is a product designer based in Brooklyn, New York.";
 const headlineWords = headlineText.split(" ");
@@ -66,10 +60,12 @@ const englishToKoreanWordMap = Array.from({ length: englishHeadlineWordCount }, 
 const HERO_WORD_REVEAL_RADIUS = 70;
 const ENGLISH_PROXIMITY_HIDE_STEP_MS = 42;
 const ENGLISH_LINE_EXIT_MAX_DELAY_MS = 360;
+const ENGLISH_LINE_HIDE_DURATION_MS = 460;
+const ENGLISH_LINE_HIDE_COMPLETE_MS = ENGLISH_LINE_EXIT_MAX_DELAY_MS + ENGLISH_LINE_HIDE_DURATION_MS;
 const ENGLISH_RETURN_STAGGER_MS = 80;
 const ENGLISH_MAX_LINE_WORD_COUNT = Math.max(...englishHeadlineWordsByLine.map((lineWords) => lineWords.length));
 const ENGLISH_RETURN_MAX_DELAY_MS = Math.max(0, ENGLISH_MAX_LINE_WORD_COUNT - 1) * ENGLISH_RETURN_STAGGER_MS;
-const FIRST_LINE_KOREAN_REVEAL_DELAY_MS = 360;
+const FIRST_LINE_KOREAN_REVEAL_DELAY_MS = ENGLISH_LINE_HIDE_COMPLETE_MS + 40;
 const SECOND_LINE_KOREAN_REVEAL_DELAY_MS = FIRST_LINE_KOREAN_REVEAL_DELAY_MS;
 const KOREAN_EXIT_FADE_OUT_MS = 600;
 const KOREAN_EXIT_CHAR_FADE_MS = 180;
@@ -80,7 +76,9 @@ const ENGLISH_RETURN_FADE_IN_MS = 640;
 const INTRO_HOLD_MS = 2000;
 const OVERLAY_BLUR_MS = 800;
 const OVERLAY_REMOVE_MS = 800;
+const ENABLE_SCROLL_BG_MORPH = false;
 type Theme = "light" | "dark";
+type EmailPreviewTarget = "main" | "footer";
 type NearbyWordEntry = {
   distanceSquared: number;
   index: number;
@@ -177,7 +175,7 @@ const getBrooklynTime = () =>
 export default function Home() {
   const [theme, setTheme] = useState<Theme | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [activeEmailPreviewTarget, setActiveEmailPreviewTarget] = useState<EmailPreviewTarget | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
   const [activeEnglishWordIndices, setActiveEnglishWordIndices] = useState<number[]>([]);
   const [activeEnglishWordHideOrders, setActiveEnglishWordHideOrders] = useState<Record<number, number>>({});
@@ -191,16 +189,14 @@ export default function Home() {
   const [isSecondLineKoreanVisible, setIsSecondLineKoreanVisible] = useState(false);
   const [isKoreanExiting, setIsKoreanExiting] = useState(false);
   const [isEnglishReturning, setIsEnglishReturning] = useState(false);
-  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [isOverlayBlurring, setIsOverlayBlurring] = useState(false);
-  const [isPageVisible, setIsPageVisible] = useState(false);
-  const [activeFavicon, setActiveFavicon] = useState(0);
+  const [isPageVisible, setIsPageVisible] = useState(true);
   const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
   const [entranceDelays] = useState(() => ({
     hero: 0,
     note: 40 + Math.floor(Math.random() * 60),
     cards: Array.from({ length: 4 }, (_, index) => 90 + index * 70 + Math.floor(Math.random() * 50)),
-    footer: 300 + Math.floor(Math.random() * 80),
   }));
 
   const contraHideTimeoutRef = useRef<number | null>(null);
@@ -215,16 +211,10 @@ export default function Home() {
   const koreanExitTimeoutRef = useRef<number | null>(null);
   const englishReturnTimeoutRef = useRef<number | null>(null);
   const englishLineExitIndexRef = useRef<number | null>(null);
+  const heroBackgroundExitActiveRef = useRef(false);
   const englishWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const englishLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setActiveFavicon((prev) => (prev + 1) % faviconSources.length);
-    }, 3200);
-
-    return () => window.clearInterval(interval);
-  }, []);
+  const footerParallaxSectionRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const systemTheme: Theme = window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -234,6 +224,78 @@ export default function Home() {
     document.documentElement.setAttribute("data-theme", systemTheme);
     setTheme(systemTheme);
   }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!ENABLE_SCROLL_BG_MORPH) {
+      root.classList.remove("home-bg-morph");
+      root.classList.remove("home-footer-nav-dark");
+      root.style.removeProperty("--home-scroll-bg");
+      root.style.removeProperty("--home-scroll-fg");
+      return;
+    }
+
+    if (theme !== "light") {
+      root.classList.remove("home-bg-morph");
+      root.classList.remove("home-footer-nav-dark");
+      root.style.removeProperty("--home-scroll-bg");
+      root.style.removeProperty("--home-scroll-fg");
+      return;
+    }
+
+    root.classList.add("home-bg-morph");
+    root.style.setProperty("--home-scroll-bg", "#ffffff");
+    root.style.setProperty("--home-scroll-fg", "#171717");
+
+    let frameId: number | null = null;
+
+    const updateBackgroundByFooterProgress = () => {
+      frameId = null;
+
+      const footerSection = footerParallaxSectionRef.current;
+      if (!footerSection) return;
+
+      const viewportHeight = window.innerHeight;
+      const footerRect = footerSection.getBoundingClientRect();
+      const currentScrollY = window.scrollY;
+      const isFooterInView = footerRect.top < viewportHeight && footerRect.bottom > 0;
+
+      const transitionStartScrollY = currentScrollY + footerRect.top - viewportHeight * 0.3;
+      const transitionEndScrollY = currentScrollY + footerRect.bottom - viewportHeight;
+      const transitionRange = Math.max(1, transitionEndScrollY - transitionStartScrollY);
+      const rawProgress = (currentScrollY - transitionStartScrollY) / transitionRange;
+      const clampedProgress = Math.min(1, Math.max(0, rawProgress));
+      const backgroundLightness = 100 - clampedProgress * 100;
+      root.style.setProperty("--home-scroll-bg", `hsl(0 0% ${backgroundLightness.toFixed(2)}%)`);
+
+      const foregroundLightness = 12 + clampedProgress * 88;
+      root.style.setProperty("--home-scroll-fg", `hsl(0 0% ${foregroundLightness.toFixed(2)}%)`);
+
+      const shouldUseDarkNav = isFooterInView && backgroundLightness <= 24;
+      root.classList.toggle("home-footer-nav-dark", shouldUseDarkNav);
+    };
+
+    const requestUpdate = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateBackgroundByFooterProgress);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+      root.style.removeProperty("--home-scroll-bg");
+      root.style.removeProperty("--home-scroll-fg");
+      root.classList.remove("home-bg-morph");
+      root.classList.remove("home-footer-nav-dark");
+    };
+  }, [theme]);
 
   useEffect(() => {
     setBrooklynTime(getBrooklynTime());
@@ -249,6 +311,28 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const clearIntroSequenceTimeouts = () => {
+      if (introTimeoutRef.current !== null) {
+        window.clearTimeout(introTimeoutRef.current);
+        introTimeoutRef.current = null;
+      }
+      if (overlayBlurTimeoutRef.current !== null) {
+        window.clearTimeout(overlayBlurTimeoutRef.current);
+        overlayBlurTimeoutRef.current = null;
+      }
+      if (overlayRemoveTimeoutRef.current !== null) {
+        window.clearTimeout(overlayRemoveTimeoutRef.current);
+        overlayRemoveTimeoutRef.current = null;
+      }
+    };
+
+    const skipIntroImmediately = () => {
+      clearIntroSequenceTimeouts();
+      setIsPageVisible(true);
+      setIsOverlayBlurring(false);
+      setIsOverlayVisible(false);
+    };
+
     introTimeoutRef.current = window.setTimeout(() => {
       setIsOverlayBlurring(true);
       overlayBlurTimeoutRef.current = window.setTimeout(() => {
@@ -260,16 +344,13 @@ export default function Home() {
       }, OVERLAY_BLUR_MS);
     }, INTRO_HOLD_MS);
 
+    window.addEventListener("wheel", skipIntroImmediately, { passive: true, once: true });
+    window.addEventListener("touchstart", skipIntroImmediately, { passive: true, once: true });
+
     return () => {
-      if (introTimeoutRef.current !== null) {
-        window.clearTimeout(introTimeoutRef.current);
-      }
-      if (overlayBlurTimeoutRef.current !== null) {
-        window.clearTimeout(overlayBlurTimeoutRef.current);
-      }
-      if (overlayRemoveTimeoutRef.current !== null) {
-        window.clearTimeout(overlayRemoveTimeoutRef.current);
-      }
+      window.removeEventListener("wheel", skipIntroImmediately);
+      window.removeEventListener("touchstart", skipIntroImmediately);
+      clearIntroSequenceTimeouts();
     };
   }, []);
 
@@ -366,24 +447,24 @@ export default function Home() {
     }
   };
 
-  const handleEmailMouseEnter = () => {
+  const handleEmailMouseEnter = (target: EmailPreviewTarget) => {
     clearEmailHideTimeout();
-    setShowEmailPreview(true);
+    setActiveEmailPreviewTarget(target);
   };
 
   const handleEmailMouseLeave = () => {
     clearEmailHideTimeout();
     emailHideTimeoutRef.current = window.setTimeout(() => {
-      setShowEmailPreview(false);
+      setActiveEmailPreviewTarget(null);
       setEmailCopied(false);
       clearEmailCopiedTimeout();
     }, 140);
   };
 
-  const handleEmailCopy = async () => {
+  const handleEmailCopy = async (target: EmailPreviewTarget) => {
     try {
       await navigator.clipboard.writeText("namu.d.park@gmail.com");
-      setShowEmailPreview(true);
+      setActiveEmailPreviewTarget(target);
       setEmailCopied(true);
       clearEmailHideTimeout();
       clearEmailCopiedTimeout();
@@ -441,18 +522,13 @@ export default function Home() {
     englishReturnTimeoutRef.current = window.setTimeout(() => {
       setIsEnglishReturning(false);
       setActiveEnglishWordReturnDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+      heroBackgroundExitActiveRef.current = false;
       englishReturnTimeoutRef.current = null;
     }, ENGLISH_RETURN_FADE_IN_MS + ENGLISH_RETURN_MAX_DELAY_MS);
   };
 
   const handleHeroPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    clearKoreanExitTimeout();
-    clearEnglishReturnTimeout();
-    setIsKoreanExiting((prev) => (prev ? false : prev));
-    setKoreanExitWordIndices((prev) => (prev.length === 0 ? prev : []));
-    setKoreanExitCharDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
-    setIsEnglishReturning((prev) => (prev ? false : prev));
-    setActiveEnglishWordReturnDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+    if (event.pointerType !== "mouse") return;
 
     const firstLineWordCount = englishHeadlineWordsByLine[0]?.length ?? 0;
     const secondLineStartIndex = englishLineStartIndices[1] ?? firstLineWordCount;
@@ -470,6 +546,25 @@ export default function Home() {
         : nextEnglishActiveEntriesRaw;
     const isTouchingFirstLine = activeLineIndex === 0 && nearbyWordsOnActiveLine.length > 0;
     const isTouchingSecondLine = activeLineIndex === 1 && nearbyWordsOnActiveLine.length > 0;
+    const hadLineInteraction =
+      isFirstEnglishLineTouched || isSecondEnglishLineTouched || isFirstLineKoreanVisible || isSecondLineKoreanVisible;
+
+    if (!isTouchingFirstLine && !isTouchingSecondLine && hadLineInteraction) {
+      if (!heroBackgroundExitActiveRef.current) {
+        handleHeroPointerLeave();
+      }
+      return;
+    }
+
+    heroBackgroundExitActiveRef.current = false;
+    clearKoreanExitTimeout();
+    clearEnglishReturnTimeout();
+    setIsKoreanExiting((prev) => (prev ? false : prev));
+    setKoreanExitWordIndices((prev) => (prev.length === 0 ? prev : []));
+    setKoreanExitCharDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+    setIsEnglishReturning((prev) => (prev ? false : prev));
+    setActiveEnglishWordReturnDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+
     const activeLineStartIndex =
       activeLineIndex === 0 ? 0 : activeLineIndex === 1 ? secondLineStartIndex : -1;
     const activeLineWordCount = englishHeadlineWordsByLine[activeLineIndex]?.length ?? 0;
@@ -527,6 +622,7 @@ export default function Home() {
   };
 
   const handleHeroPointerLeave = () => {
+    heroBackgroundExitActiveRef.current = true;
     clearKoreanExitTimeout();
     englishLineExitIndexRef.current = null;
     const hasVisibleKoreanLine =
@@ -605,6 +701,76 @@ export default function Home() {
       "--entrance-delay": `${ms}ms`,
       ...(durationMs !== undefined ? { "--entrance-duration": `${durationMs}ms` } : {}),
     }) as CSSProperties;
+
+  const renderEmailPreview = (target: EmailPreviewTarget) => (
+    <div className={styles.emailPreview} role="status" aria-live="polite">
+      <div className={styles.emailPreviewContent}>
+        {emailCopied ? (
+          <svg
+            className={styles.previewIcon}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M20 6L9 17l-5-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ) : (
+          <svg
+            className={styles.previewIcon}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <rect
+              x="4"
+              y="4"
+              width="14"
+              height="6"
+              rx="2.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+            />
+            <path
+              d="M13 10v4.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
+            <path
+              d="M13 14.5l4.5 4.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
+            <path
+              d="M16.8 18.3l2.2 2.2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
+          </svg>
+        )}
+        <button
+          type="button"
+          className={styles.emailPreviewAction}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => handleEmailCopy(target)}
+          aria-label="Copy email address"
+        >
+          {emailCopied ? "Copied!" : "Copy the email address"}
+        </button>
+      </div>
+    </div>
+  );
   const activeEnglishWordIndexSet = useMemo(
     () => new Set(activeEnglishWordIndices),
     [activeEnglishWordIndices],
@@ -637,7 +803,9 @@ export default function Home() {
       )}
 
       <nav className={navClassName} style={entranceStyle(20, 1200)} aria-label="Site header">
-        <span className={styles.navLeft}>Namu Park</span>
+        <Link href="/" className={styles.navLeft}>
+          Namu Park
+        </Link>
         <div className={styles.navRightGroup}>
           <span className={styles.navRight}>Brooklyn, New York {brooklynTime}</span>
           <button
@@ -790,87 +958,19 @@ export default function Home() {
             {" "}and email{" "}
             <span
               className={styles.emailLinkWrapper}
-              onMouseEnter={handleEmailMouseEnter}
+              onMouseEnter={() => handleEmailMouseEnter("main")}
               onMouseLeave={handleEmailMouseLeave}
             >
               <button
-                onClick={handleEmailCopy}
-                onFocus={handleEmailMouseEnter}
+                onClick={() => handleEmailCopy("main")}
+                onFocus={() => handleEmailMouseEnter("main")}
                 onBlur={handleEmailMouseLeave}
                 className={styles.emailButton}
                 aria-label="Copy email address"
               >
                 namu.d.park@gmail.com
               </button>
-              {showEmailPreview && (
-                <div className={styles.emailPreview} role="status" aria-live="polite">
-                  <div className={styles.emailPreviewContent}>
-                    {emailCopied ? (
-                      <svg
-                        className={styles.previewIcon}
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M20 6L9 17l-5-5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className={styles.previewIcon}
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <rect
-                          x="4"
-                          y="4"
-                          width="14"
-                          height="6"
-                          rx="2.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.7"
-                        />
-                        <path
-                          d="M13 10v4.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.7"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M13 14.5l4.5 4.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.7"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M16.8 18.3l2.2 2.2"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.7"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    )}
-                    <button
-                      type="button"
-                      className={styles.emailPreviewAction}
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={handleEmailCopy}
-                      aria-label="Copy email address"
-                    >
-                      {emailCopied ? "Copied!" : "Copy the email address"}
-                    </button>
-                  </div>
-                </div>
-              )}
+              {activeEmailPreviewTarget === "main" && renderEmailPreview("main")}
             </span>
           </p>
         </div>
@@ -908,31 +1008,30 @@ export default function Home() {
           </div>
         </section>
 
-        <footer
-          className={`${styles.footer} ${styles.entranceItem}`}
-          style={entranceStyle(entranceDelays.footer)}
-          aria-hidden="true"
-        >
-          <div className={styles.faviconStack}>
-            {faviconSources.map((src, index) => (
-              <div
-                key={src}
-                className={`${styles.faviconFrame} ${
-                  activeFavicon === index ? styles.faviconFrameActive : ""
-                }`}
+        <div className={styles.footer} aria-label="Footer">
+          <div className={styles.footerContact}>
+            <span className={styles.footerIcon} aria-hidden="true">
+              📧
+            </span>
+            <span
+              className={styles.emailLinkWrapper}
+              onMouseEnter={() => handleEmailMouseEnter("footer")}
+              onMouseLeave={handleEmailMouseLeave}
+            >
+              <button
+                onClick={() => handleEmailCopy("footer")}
+                onFocus={() => handleEmailMouseEnter("footer")}
+                onBlur={handleEmailMouseLeave}
+                className={`${styles.emailButton} ${styles.footerEmail}`}
+                aria-label="Copy email address"
               >
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  priority={index === 0}
-                  sizes="(min-width: 768px) 96px, 72px"
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            ))}
+                namu.d.park@gmail.com
+              </button>
+              {activeEmailPreviewTarget === "footer" && renderEmailPreview("footer")}
+            </span>
           </div>
-        </footer>
+        </div>
+
       </div>
     </main>
   );

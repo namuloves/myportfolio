@@ -1,7 +1,7 @@
 .container {
     --nav-height: 72px;
     width: 100%;
-    padding: calc(var(--nav-height) + clamp(1.5rem, 4vw, 2.5rem)) clamp(2.5rem, 7vw, 5rem) clamp(2rem, 6vw, 4rem);
+    padding: 0 clamp(2.5rem, 7vw, 5rem) 0;
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 5vw, 4rem);
@@ -10,10 +10,11 @@
   }
 
 .nav {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     height: var(--nav-height);
     display: flex;
     align-items: center;
@@ -81,6 +82,7 @@
     background: var(--surface-hover);
   }
 
+
 .themeToggle:focus-visible {
     outline: 2px solid var(--foreground);
     outline-offset: 2px;
@@ -94,7 +96,7 @@
 .pageLayer {
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 5vw, 3.5rem);
+    gap: clamp(2rem, 5vw, 72px);
     transition: opacity 120ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -145,7 +147,7 @@
     align-items: center;
     justify-content: center;
     padding: 0 clamp(1.25rem, 4vw, 2.5rem);
-    background: var(--overlay);
+    background: transparent;
     z-index: 3000;
     transform: scale(1);
     filter: blur(0);
@@ -209,6 +211,7 @@
     width: fit-content;
     margin: 0 auto;
     cursor: default;
+    touch-action: pan-y;
   }
 
 .heroBase {
@@ -304,7 +307,7 @@
 
 .heroWrapper {
     max-width: 620px;
-    margin: 108px auto 0;
+    margin: 72px auto 0;
   }
   
   .featured {
@@ -624,7 +627,7 @@
 @media (max-width: 767px) {
   .container {
     --nav-height: 56px;
-    padding: calc(var(--nav-height) + 12px) 1rem 1.5rem;
+    padding: 0 1rem 1.5rem;
     gap: 1.5rem;
   }
 
@@ -709,6 +712,7 @@
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: clamp(1.5rem, 4vw, 2.5rem);
     row-gap: clamp(1.25rem, 3.5vw, 2rem);
+    margin-bottom: clamp(9.6rem, 25.6vw, 22.4rem);
     align-items: stretch;
   }
 
@@ -761,6 +765,25 @@
     justify-content: center;
   }
 
+.footerContact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--muted);
+    font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+    letter-spacing: -0.01em;
+  }
+
+.footerIcon {
+    line-height: 1;
+    font-size: 1.05em;
+  }
+
+.footerEmail {
+    color: var(--muted);
+    line-height: 1;
+  }
+
 .faviconStack {
     position: relative;
     width: clamp(64px, 10vw, 112px);
@@ -779,3 +802,73 @@
 .faviconFrameActive {
     opacity: 1;
   }
+
+.footerTransition {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    background: #000000;
+  }
+
+.footerRunway {
+    height: clamp(10svh, 14vh, 20svh);
+    width: 100%;
+  }
+
+.footerParallax {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+.footerParallaxSticky {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+.footerParallaxPanel {
+    width: 100%;
+    min-height: 100%;
+    background: #000000;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0;
+    font-size: clamp(2rem, 7vw, 5.5rem);
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    transition: color 650ms ease-in-out;
+  }
+
+.footerParallaxLabel {
+    display: inline-block;
+    transform: none;
+  }
+
+@media (max-width: 767px) {
+  .footerRunway {
+    height: clamp(8svh, 12vh, 16svh);
+  }
+
+  .footerParallax {
+    height: 100svh;
+    margin-bottom: 0;
+  }
+
+  .footerParallaxPanel {
+    min-height: 100%;
+    font-size: clamp(1.6rem, 9vw, 2.6rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footerParallaxPanel {
+    transition: none;
+  }
+}
