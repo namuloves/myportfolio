@@ -84,6 +84,9 @@ type NearbyWordEntry = {
   index: number;
 };
 
+const getSystemTheme = (): Theme =>
+  window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
 const areIndexListsEqual = (first: number[], second: number[]) => {
   if (first.length !== second.length) return false;
   return first.every((value, index) => value === second[index]);
@@ -189,9 +192,9 @@ export default function Home() {
   const [isSecondLineKoreanVisible, setIsSecondLineKoreanVisible] = useState(false);
   const [isKoreanExiting, setIsKoreanExiting] = useState(false);
   const [isEnglishReturning, setIsEnglishReturning] = useState(false);
-  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
   const [isOverlayBlurring, setIsOverlayBlurring] = useState(false);
-  const [isPageVisible, setIsPageVisible] = useState(true);
+  const [isPageVisible, setIsPageVisible] = useState(false);
   const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
   const [entranceDelays] = useState(() => ({
     hero: 0,
@@ -215,14 +218,37 @@ export default function Home() {
   const englishWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const englishLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const footerParallaxSectionRef = useRef<HTMLDivElement | null>(null);
+  const hasManualThemeOverrideRef = useRef(false);
 
   useEffect(() => {
-    const systemTheme: Theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    const root = document.documentElement;
+    const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const initialTheme = getSystemTheme();
 
-    document.documentElement.setAttribute("data-theme", systemTheme);
-    setTheme(systemTheme);
+    root.setAttribute("data-theme", initialTheme);
+    setTheme(initialTheme);
+
+    const handleSystemThemeChange = (event: MediaQueryListEvent) => {
+      if (hasManualThemeOverrideRef.current) return;
+
+      const nextTheme: Theme = event.matches ? "dark" : "light";
+      root.setAttribute("data-theme", nextTheme);
+      setTheme(nextTheme);
+    };
+
+    if (typeof systemThemeQuery.addEventListener === "function") {
+      systemThemeQuery.addEventListener("change", handleSystemThemeChange);
+    } else {
+      systemThemeQuery.addListener(handleSystemThemeChange);
+    }
+
+    return () => {
+      if (typeof systemThemeQuery.removeEventListener === "function") {
+        systemThemeQuery.removeEventListener("change", handleSystemThemeChange);
+      } else {
+        systemThemeQuery.removeListener(handleSystemThemeChange);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -480,6 +506,7 @@ export default function Home() {
     if (!theme) return;
 
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+    hasManualThemeOverrideRef.current = true;
     applyThemeWithTransition(nextTheme);
     setTheme(nextTheme);
   };
