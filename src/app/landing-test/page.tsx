@@ -2,6 +2,7 @@
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import CaseStudyCard from "@/components/CaseStudyCardTest";
 import styles from "@/styles/landing-test.module.css";
 
@@ -217,7 +218,9 @@ export default function Home() {
       )}
 
       <nav className={navClassName} style={entranceStyle(20, 1200)} aria-label="Site header">
-        <span className={styles.navLeft}>Namu Park</span>
+        <Link href="/" className={styles.navLeft}>
+          Namu Park
+        </Link>
         <span className={styles.navRight}>Brooklyn, New York {brooklynTime}</span>
       </nav>
 

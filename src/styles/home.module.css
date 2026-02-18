@@ -76,6 +76,16 @@
 .themeToggleIcon {
     font-size: 0.82rem;
     line-height: 1;
+    width: 1em;
+    display: inline-flex;
+    justify-content: center;
+    flex: 0 0 1em;
+  }
+
+.themeToggleLabel {
+    display: inline-block;
+    width: 5ch;
+    text-align: left;
   }
 
 .themeToggle:hover {
@@ -647,6 +657,10 @@
   .themeToggle {
     font-size: 11px;
     padding: 0.4rem 0.55rem;
+  }
+
+  .themeToggleLabelDark {
+    text-align: center;
   }
 
   .heroWrapper {
