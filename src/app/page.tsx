@@ -1,9 +1,17 @@
 "use client";
 
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import CaseStudyCard from "../components/CaseStudyCard";
 import styles from "../styles/home.module.css";
+import { applyThemeWithTransition } from "../lib/themeTransition";
 
 const faviconSources = [
   "/namu_favicon.png",
@@ -13,9 +21,150 @@ const faviconSources = [
 
 const headlineText = "Namu Park is a product designer based in Brooklyn, New York.";
 const headlineWords = headlineText.split(" ");
-const INTRO_HOLD_MS = 2300;
-const OVERLAY_BLUR_MS = 1600;
-const OVERLAY_REMOVE_MS = 1600;
+const englishHeadlineLines = ["Namu Park is a product designer", "based in Brooklyn, New York."];
+const englishHeadlineWordsByLine = englishHeadlineLines.map((line) => line.split(" "));
+const englishLineStartIndices = englishHeadlineWordsByLine.reduce<number[]>((acc, lineWords, index) => {
+  if (index === 0) {
+    acc.push(0);
+    return acc;
+  }
+
+  acc.push(acc[index - 1] + englishHeadlineWordsByLine[index - 1].length);
+  return acc;
+}, []);
+const englishHeadlineWordCount = englishHeadlineWordsByLine.flat().length;
+const koreanHeadlineLines = ["안녕하세요!", "제 웹사이트에 오신것을 환영합니다."];
+const koreanHeadlineWordsByLine = koreanHeadlineLines.map((line) => line.split(" "));
+const koreanHeadlineCharsByLine = koreanHeadlineWordsByLine.map((lineWords) =>
+  lineWords.map((word) => Array.from(word)),
+);
+const koreanLineStartIndices = koreanHeadlineWordsByLine.reduce<number[]>((acc, lineWords, index) => {
+  if (index === 0) {
+    acc.push(0);
+    return acc;
+  }
+
+  acc.push(acc[index - 1] + koreanHeadlineWordsByLine[index - 1].length);
+  return acc;
+}, []);
+const koreanHeadlineWordCount = koreanHeadlineWordsByLine.flat().length;
+const koreanHeadlineCharsFlatByWord = koreanHeadlineCharsByLine.flat();
+const koreanWordCharCounts = koreanHeadlineCharsFlatByWord.map((chars) => chars.length);
+const koreanWordCharStartIndices = koreanWordCharCounts.reduce<number[]>((acc, charCount, index) => {
+  if (index === 0) {
+    acc.push(0);
+    return acc;
+  }
+
+  acc.push(acc[index - 1] + koreanWordCharCounts[index - 1]);
+  return acc;
+}, []);
+const englishToKoreanWordMap = Array.from({ length: englishHeadlineWordCount }, (_, index) => {
+  if (englishHeadlineWordCount <= 1 || koreanHeadlineWordCount <= 1) return 0;
+  return Math.round((index / (englishHeadlineWordCount - 1)) * (koreanHeadlineWordCount - 1));
+});
+const HERO_WORD_REVEAL_RADIUS = 70;
+const ENGLISH_PROXIMITY_HIDE_STEP_MS = 42;
+const ENGLISH_LINE_EXIT_MAX_DELAY_MS = 360;
+const ENGLISH_RETURN_STAGGER_MS = 80;
+const ENGLISH_MAX_LINE_WORD_COUNT = Math.max(...englishHeadlineWordsByLine.map((lineWords) => lineWords.length));
+const ENGLISH_RETURN_MAX_DELAY_MS = Math.max(0, ENGLISH_MAX_LINE_WORD_COUNT - 1) * ENGLISH_RETURN_STAGGER_MS;
+const FIRST_LINE_KOREAN_REVEAL_DELAY_MS = 360;
+const SECOND_LINE_KOREAN_REVEAL_DELAY_MS = FIRST_LINE_KOREAN_REVEAL_DELAY_MS;
+const KOREAN_EXIT_FADE_OUT_MS = 600;
+const KOREAN_EXIT_CHAR_FADE_MS = 180;
+const KOREAN_EXIT_MAX_DELAY_MS = Math.max(0, KOREAN_EXIT_FADE_OUT_MS - KOREAN_EXIT_CHAR_FADE_MS);
+const KOREAN_EXIT_TO_ENGLISH_BUFFER_MS = 80;
+const KOREAN_EXIT_COMPLETE_MS = KOREAN_EXIT_FADE_OUT_MS + KOREAN_EXIT_TO_ENGLISH_BUFFER_MS;
+const ENGLISH_RETURN_FADE_IN_MS = 640;
+const INTRO_HOLD_MS = 2000;
+const OVERLAY_BLUR_MS = 800;
+const OVERLAY_REMOVE_MS = 800;
+type Theme = "light" | "dark";
+type NearbyWordEntry = {
+  distanceSquared: number;
+  index: number;
+};
+
+const areIndexListsEqual = (first: number[], second: number[]) => {
+  if (first.length !== second.length) return false;
+  return first.every((value, index) => value === second[index]);
+};
+
+const areWordOrderMapsEqual = (first: Record<number, number>, second: Record<number, number>) => {
+  const firstKeys = Object.keys(first);
+  const secondKeys = Object.keys(second);
+  if (firstKeys.length !== secondKeys.length) return false;
+
+  return firstKeys.every((key) => first[Number(key)] === second[Number(key)]);
+};
+
+const getRandomizedDelayMap = (indices: number[], maxDelay: number) => {
+  if (indices.length === 0) return {};
+
+  const shuffledIndices = [...indices];
+  for (let index = shuffledIndices.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledIndices[index], shuffledIndices[swapIndex]] = [shuffledIndices[swapIndex], shuffledIndices[index]];
+  }
+
+  if (shuffledIndices.length === 1) {
+    return { [shuffledIndices[0]]: 0 };
+  }
+
+  return shuffledIndices.reduce<Record<number, number>>((delayMap, charIndex, order) => {
+    delayMap[charIndex] = Math.round((order / (shuffledIndices.length - 1)) * maxDelay);
+    return delayMap;
+  }, {});
+};
+
+const getNearbyWordEntries = (
+  wordRefs: Array<HTMLSpanElement | null>,
+  clientX: number,
+  clientY: number,
+  radius: number,
+) => {
+  const nearbyEntries: NearbyWordEntry[] = [];
+  const radiusSquared = radius * radius;
+
+  wordRefs.forEach((element, index) => {
+    if (!element) return;
+
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = clientX - centerX;
+    const deltaY = clientY - centerY;
+
+    const distanceSquared = deltaX * deltaX + deltaY * deltaY;
+
+    if (distanceSquared <= radiusSquared) {
+      nearbyEntries.push({ distanceSquared, index });
+    }
+  });
+
+  return nearbyEntries;
+};
+
+const getClosestLineIndex = (lineRefs: Array<HTMLSpanElement | null>, clientY: number) => {
+  let closestIndex = -1;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  lineRefs.forEach((lineElement, index) => {
+    if (!lineElement) return;
+
+    const rect = lineElement.getBoundingClientRect();
+    const centerY = rect.top + rect.height / 2;
+    const distance = Math.abs(clientY - centerY);
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+
+  return closestIndex;
+};
 
 const getBrooklynTime = () =>
   new Intl.DateTimeFormat("en-US", {
@@ -26,9 +175,22 @@ const getBrooklynTime = () =>
   }).format(new Date());
 
 export default function Home() {
+  const [theme, setTheme] = useState<Theme | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
+  const [activeEnglishWordIndices, setActiveEnglishWordIndices] = useState<number[]>([]);
+  const [activeEnglishWordHideOrders, setActiveEnglishWordHideOrders] = useState<Record<number, number>>({});
+  const [activeEnglishWordReturnDelays, setActiveEnglishWordReturnDelays] = useState<Record<number, number>>({});
+  const [activeKoreanWordIndices, setActiveKoreanWordIndices] = useState<number[]>([]);
+  const [koreanExitWordIndices, setKoreanExitWordIndices] = useState<number[]>([]);
+  const [koreanExitCharDelays, setKoreanExitCharDelays] = useState<Record<number, number>>({});
+  const [isFirstEnglishLineTouched, setIsFirstEnglishLineTouched] = useState(false);
+  const [isFirstLineKoreanVisible, setIsFirstLineKoreanVisible] = useState(false);
+  const [isSecondEnglishLineTouched, setIsSecondEnglishLineTouched] = useState(false);
+  const [isSecondLineKoreanVisible, setIsSecondLineKoreanVisible] = useState(false);
+  const [isKoreanExiting, setIsKoreanExiting] = useState(false);
+  const [isEnglishReturning, setIsEnglishReturning] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(true);
   const [isOverlayBlurring, setIsOverlayBlurring] = useState(false);
   const [isPageVisible, setIsPageVisible] = useState(false);
@@ -48,6 +210,13 @@ export default function Home() {
   const overlayBlurTimeoutRef = useRef<number | null>(null);
   const overlayRemoveTimeoutRef = useRef<number | null>(null);
   const brooklynTimeIntervalRef = useRef<number | null>(null);
+  const firstLineRevealTimeoutRef = useRef<number | null>(null);
+  const secondLineRevealTimeoutRef = useRef<number | null>(null);
+  const koreanExitTimeoutRef = useRef<number | null>(null);
+  const englishReturnTimeoutRef = useRef<number | null>(null);
+  const englishLineExitIndexRef = useRef<number | null>(null);
+  const englishWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const englishLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -55,6 +224,15 @@ export default function Home() {
     }, 3200);
 
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const systemTheme: Theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+
+    document.documentElement.setAttribute("data-theme", systemTheme);
+    setTheme(systemTheme);
   }, []);
 
   useEffect(() => {
@@ -96,6 +274,40 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (firstLineRevealTimeoutRef.current !== null) {
+      window.clearTimeout(firstLineRevealTimeoutRef.current);
+      firstLineRevealTimeoutRef.current = null;
+    }
+
+    if (isFirstEnglishLineTouched && !isSecondEnglishLineTouched) {
+      setIsFirstLineKoreanVisible(false);
+      firstLineRevealTimeoutRef.current = window.setTimeout(() => {
+        setIsFirstLineKoreanVisible(true);
+      }, FIRST_LINE_KOREAN_REVEAL_DELAY_MS);
+      return;
+    }
+
+    setIsFirstLineKoreanVisible(false);
+  }, [isFirstEnglishLineTouched, isSecondEnglishLineTouched]);
+
+  useEffect(() => {
+    if (secondLineRevealTimeoutRef.current !== null) {
+      window.clearTimeout(secondLineRevealTimeoutRef.current);
+      secondLineRevealTimeoutRef.current = null;
+    }
+
+    if (isSecondEnglishLineTouched) {
+      setIsSecondLineKoreanVisible(false);
+      secondLineRevealTimeoutRef.current = window.setTimeout(() => {
+        setIsSecondLineKoreanVisible(true);
+      }, SECOND_LINE_KOREAN_REVEAL_DELAY_MS);
+      return;
+    }
+
+    setIsSecondLineKoreanVisible(false);
+  }, [isSecondEnglishLineTouched]);
+
+  useEffect(() => {
     return () => {
       if (contraHideTimeoutRef.current !== null) {
         window.clearTimeout(contraHideTimeoutRef.current);
@@ -105,6 +317,18 @@ export default function Home() {
       }
       if (emailResetTimeoutRef.current !== null) {
         window.clearTimeout(emailResetTimeoutRef.current);
+      }
+      if (firstLineRevealTimeoutRef.current !== null) {
+        window.clearTimeout(firstLineRevealTimeoutRef.current);
+      }
+      if (secondLineRevealTimeoutRef.current !== null) {
+        window.clearTimeout(secondLineRevealTimeoutRef.current);
+      }
+      if (koreanExitTimeoutRef.current !== null) {
+        window.clearTimeout(koreanExitTimeoutRef.current);
+      }
+      if (englishReturnTimeoutRef.current !== null) {
+        window.clearTimeout(englishReturnTimeoutRef.current);
       }
     };
   }, []);
@@ -171,6 +395,190 @@ export default function Home() {
     }
   };
 
+  const handleThemeToggle = () => {
+    if (!theme) return;
+
+    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+    applyThemeWithTransition(nextTheme);
+    setTheme(nextTheme);
+  };
+
+  const clearKoreanExitTimeout = () => {
+    if (koreanExitTimeoutRef.current !== null) {
+      window.clearTimeout(koreanExitTimeoutRef.current);
+      koreanExitTimeoutRef.current = null;
+    }
+  };
+
+  const clearEnglishReturnTimeout = () => {
+    if (englishReturnTimeoutRef.current !== null) {
+      window.clearTimeout(englishReturnTimeoutRef.current);
+      englishReturnTimeoutRef.current = null;
+    }
+  };
+
+  const startEnglishReturn = () => {
+    englishLineExitIndexRef.current = null;
+    const hiddenEnglishWordIndices = [...activeEnglishWordIndices];
+    const nextEnglishWordReturnDelays = hiddenEnglishWordIndices
+      .slice()
+      .sort((first, second) => (activeEnglishWordHideOrders[first] ?? first) - (activeEnglishWordHideOrders[second] ?? second))
+      .reduce<Record<number, number>>((delayMap, wordIndex, order) => {
+        delayMap[wordIndex] = hiddenEnglishWordIndices.length <= 1
+          ? 0
+          : Math.round((order / (hiddenEnglishWordIndices.length - 1)) * ENGLISH_RETURN_MAX_DELAY_MS);
+        return delayMap;
+      }, {});
+
+    setActiveEnglishWordReturnDelays((prev) =>
+      areWordOrderMapsEqual(prev, nextEnglishWordReturnDelays) ? prev : nextEnglishWordReturnDelays,
+    );
+    setActiveEnglishWordIndices((prev) => (prev.length === 0 ? prev : []));
+    setActiveEnglishWordHideOrders((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+    clearEnglishReturnTimeout();
+    setIsEnglishReturning(true);
+
+    englishReturnTimeoutRef.current = window.setTimeout(() => {
+      setIsEnglishReturning(false);
+      setActiveEnglishWordReturnDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+      englishReturnTimeoutRef.current = null;
+    }, ENGLISH_RETURN_FADE_IN_MS + ENGLISH_RETURN_MAX_DELAY_MS);
+  };
+
+  const handleHeroPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    clearKoreanExitTimeout();
+    clearEnglishReturnTimeout();
+    setIsKoreanExiting((prev) => (prev ? false : prev));
+    setKoreanExitWordIndices((prev) => (prev.length === 0 ? prev : []));
+    setKoreanExitCharDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+    setIsEnglishReturning((prev) => (prev ? false : prev));
+    setActiveEnglishWordReturnDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+
+    const firstLineWordCount = englishHeadlineWordsByLine[0]?.length ?? 0;
+    const secondLineStartIndex = englishLineStartIndices[1] ?? firstLineWordCount;
+    const activeLineIndex = getClosestLineIndex(englishLineRefs.current, event.clientY);
+    const nextEnglishActiveEntriesRaw = getNearbyWordEntries(
+      englishWordRefs.current,
+      event.clientX,
+      event.clientY,
+      HERO_WORD_REVEAL_RADIUS,
+    );
+    const nearbyWordsOnActiveLine = activeLineIndex === 0
+      ? nextEnglishActiveEntriesRaw.filter((entry) => entry.index < firstLineWordCount)
+      : activeLineIndex === 1
+        ? nextEnglishActiveEntriesRaw.filter((entry) => entry.index >= secondLineStartIndex)
+        : nextEnglishActiveEntriesRaw;
+    const isTouchingFirstLine = activeLineIndex === 0 && nearbyWordsOnActiveLine.length > 0;
+    const isTouchingSecondLine = activeLineIndex === 1 && nearbyWordsOnActiveLine.length > 0;
+    const activeLineStartIndex =
+      activeLineIndex === 0 ? 0 : activeLineIndex === 1 ? secondLineStartIndex : -1;
+    const activeLineWordCount = englishHeadlineWordsByLine[activeLineIndex]?.length ?? 0;
+    const activeLineWordIndices =
+      activeLineStartIndex >= 0
+        ? Array.from({ length: activeLineWordCount }, (_, index) => activeLineStartIndex + index)
+        : [];
+    const nextEnglishActiveIndices =
+      isTouchingFirstLine || isTouchingSecondLine
+        ? activeLineWordIndices
+        : nearbyWordsOnActiveLine.map((entry) => entry.index).sort((a, b) => a - b);
+    const nextEnglishWordHideOrders =
+      isTouchingFirstLine || isTouchingSecondLine
+        ? (() => {
+            const isSameLineAsExisting = englishLineExitIndexRef.current === activeLineIndex;
+            const hasCompleteDelaysForLine =
+              Object.keys(activeEnglishWordHideOrders).length === activeLineWordIndices.length &&
+              activeLineWordIndices.every((index) => activeEnglishWordHideOrders[index] !== undefined);
+
+            if (isSameLineAsExisting && hasCompleteDelaysForLine) {
+              return activeEnglishWordHideOrders;
+            }
+
+            englishLineExitIndexRef.current = activeLineIndex;
+            return getRandomizedDelayMap(activeLineWordIndices, ENGLISH_LINE_EXIT_MAX_DELAY_MS);
+          })()
+        : nearbyWordsOnActiveLine
+            .slice()
+            .sort((first, second) => first.distanceSquared - second.distanceSquared)
+            .reduce<Record<number, number>>((delayMap, entry, order) => {
+              delayMap[entry.index] = order * ENGLISH_PROXIMITY_HIDE_STEP_MS;
+              return delayMap;
+            }, {});
+    if (!isTouchingFirstLine && !isTouchingSecondLine) {
+      englishLineExitIndexRef.current = null;
+    }
+    const nextEnglishWordHideDelays = nextEnglishWordHideOrders;
+    const nextKoreanActiveIndices = isTouchingSecondLine || isTouchingFirstLine
+      ? []
+      : Array.from(new Set(nextEnglishActiveIndices.map((index) => englishToKoreanWordMap[index] ?? 0))).sort(
+          (first, second) => first - second,
+        );
+
+    setActiveEnglishWordIndices((prev) =>
+      areIndexListsEqual(prev, nextEnglishActiveIndices) ? prev : nextEnglishActiveIndices,
+    );
+    setActiveEnglishWordHideOrders((prev) =>
+      areWordOrderMapsEqual(prev, nextEnglishWordHideDelays) ? prev : nextEnglishWordHideDelays,
+    );
+    setActiveKoreanWordIndices((prev) =>
+      areIndexListsEqual(prev, nextKoreanActiveIndices) ? prev : nextKoreanActiveIndices,
+    );
+    setIsFirstEnglishLineTouched((prev) => (prev === isTouchingFirstLine ? prev : isTouchingFirstLine));
+    setIsSecondEnglishLineTouched((prev) => (prev === isTouchingSecondLine ? prev : isTouchingSecondLine));
+  };
+
+  const handleHeroPointerLeave = () => {
+    clearKoreanExitTimeout();
+    englishLineExitIndexRef.current = null;
+    const hasVisibleKoreanLine =
+      isFirstLineKoreanVisible || isSecondLineKoreanVisible || activeKoreanWordIndices.length > 0;
+    const visibleKoreanWordIndexSet = new Set<number>(activeKoreanWordIndices);
+    const firstLineWordCount = koreanHeadlineWordsByLine[0]?.length ?? 0;
+    const secondLineStartIndex = koreanLineStartIndices[1] ?? firstLineWordCount;
+    const secondLineWordCount = koreanHeadlineWordsByLine[1]?.length ?? 0;
+
+    if (isFirstLineKoreanVisible) {
+      Array.from({ length: firstLineWordCount }, (_, index) => index).forEach((index) => {
+        visibleKoreanWordIndexSet.add(index);
+      });
+    }
+
+    if (isSecondLineKoreanVisible) {
+      Array.from({ length: secondLineWordCount }, (_, index) => secondLineStartIndex + index).forEach((index) => {
+        visibleKoreanWordIndexSet.add(index);
+      });
+    }
+
+    const visibleKoreanWordIndices = Array.from(visibleKoreanWordIndexSet).sort((a, b) => a - b);
+    const visibleKoreanCharIndices = visibleKoreanWordIndices.flatMap((wordIndex) => {
+      const charStartIndex = koreanWordCharStartIndices[wordIndex] ?? 0;
+      const charCount = koreanWordCharCounts[wordIndex] ?? 0;
+      return Array.from({ length: charCount }, (_, index) => charStartIndex + index);
+    });
+    const nextKoreanExitCharDelays = getRandomizedDelayMap(visibleKoreanCharIndices, KOREAN_EXIT_MAX_DELAY_MS);
+
+    setActiveKoreanWordIndices((prev) => (prev.length === 0 ? prev : []));
+    setIsFirstEnglishLineTouched((prev) => (prev ? false : prev));
+    setIsSecondEnglishLineTouched((prev) => (prev ? false : prev));
+
+    if (hasVisibleKoreanLine) {
+      setIsKoreanExiting(true);
+      setKoreanExitWordIndices((prev) => (areIndexListsEqual(prev, visibleKoreanWordIndices) ? prev : visibleKoreanWordIndices));
+      setKoreanExitCharDelays((prev) =>
+        areWordOrderMapsEqual(prev, nextKoreanExitCharDelays) ? prev : nextKoreanExitCharDelays,
+      );
+      koreanExitTimeoutRef.current = window.setTimeout(() => {
+        startEnglishReturn();
+        koreanExitTimeoutRef.current = null;
+      }, KOREAN_EXIT_COMPLETE_MS);
+      return;
+    }
+
+    setIsKoreanExiting((prev) => (prev ? false : prev));
+    setKoreanExitWordIndices((prev) => (prev.length === 0 ? prev : []));
+    setKoreanExitCharDelays((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+    startEnglishReturn();
+  };
+
   const pageLayerClassName = [
     styles.pageLayer,
     isPageVisible ? styles.pageLayerVisible : styles.pageLayerHidden,
@@ -197,6 +605,18 @@ export default function Home() {
       "--entrance-delay": `${ms}ms`,
       ...(durationMs !== undefined ? { "--entrance-duration": `${durationMs}ms` } : {}),
     }) as CSSProperties;
+  const activeEnglishWordIndexSet = useMemo(
+    () => new Set(activeEnglishWordIndices),
+    [activeEnglishWordIndices],
+  );
+  const activeKoreanWordIndexSet = useMemo(
+    () => new Set(activeKoreanWordIndices),
+    [activeKoreanWordIndices],
+  );
+  const koreanExitWordIndexSet = useMemo(
+    () => new Set(koreanExitWordIndices),
+    [koreanExitWordIndices],
+  );
 
   return (
     <main className={styles.container}>
@@ -218,17 +638,121 @@ export default function Home() {
 
       <nav className={navClassName} style={entranceStyle(20, 1200)} aria-label="Site header">
         <span className={styles.navLeft}>Namu Park</span>
-        <span className={styles.navRight}>Brooklyn, New York {brooklynTime}</span>
+        <div className={styles.navRightGroup}>
+          <span className={styles.navRight}>Brooklyn, New York {brooklynTime}</span>
+          <button
+            type="button"
+            className={styles.themeToggle}
+            onClick={handleThemeToggle}
+            disabled={!theme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <span className={styles.themeToggleIcon} aria-hidden="true">
+              {theme === "dark" ? "☀" : "☾"}
+            </span>
+            <span>{theme === "dark" ? "Light" : "Dark"}</span>
+          </button>
+        </div>
       </nav>
 
       <div className={pageLayerClassName}>
         <div className={styles.heroWrapper}>
-          <h1
-            className={`${styles.hero} ${styles.entranceItem}`}
+          <div
+            className={`${styles.heroInteractive} ${styles.entranceItem}`}
             style={entranceStyle(entranceDelays.hero, 650)}
+            onPointerMove={handleHeroPointerMove}
+            onPointerLeave={handleHeroPointerLeave}
           >
-            {headlineText}
-          </h1>
+            <h1 className={`${styles.hero} ${styles.heroBase}`} aria-label={headlineText}>
+              {englishHeadlineWordsByLine.map((lineWords, lineIndex) => (
+                <span
+                  key={`eng-line-${lineIndex}`}
+                  ref={(element) => {
+                    englishLineRefs.current[lineIndex] = element;
+                  }}
+                  className={styles.heroEnglishLine}
+                >
+                  {lineWords.map((word, wordIndex) => {
+                    const globalWordIndex = englishLineStartIndices[lineIndex] + wordIndex;
+
+                    return (
+                      <span
+                        key={`eng-word-${globalWordIndex}`}
+                        ref={(element) => {
+                          englishWordRefs.current[globalWordIndex] = element;
+                        }}
+                        className={`${styles.heroWord} ${isEnglishReturning ? styles.heroWordReturning : ""} ${
+                          activeEnglishWordIndexSet.has(globalWordIndex)
+                            ? styles.heroWordHidden
+                            : ""
+                        }`}
+                        style={
+                          {
+                            "--word-order": `${wordIndex}`,
+                            "--hide-delay": `${activeEnglishWordHideOrders[globalWordIndex] ?? 0}ms`,
+                            "--return-delay": `${activeEnglishWordReturnDelays[globalWordIndex] ?? 0}ms`,
+                          } as CSSProperties
+                        }
+                      >
+                        {word}
+                      </span>
+                    );
+                  })}
+                </span>
+              ))}
+            </h1>
+            <div
+              className={`${styles.hero} ${styles.heroKorean} ${
+                isFirstLineKoreanVisible ? styles.heroKoreanFirstLineVisible : ""
+              } ${
+                isSecondLineKoreanVisible ? styles.heroKoreanSecondLineVisible : ""
+              }`}
+              aria-hidden="true"
+            >
+              {koreanHeadlineWordsByLine.map((lineWords, lineIndex) => (
+                <span key={`kr-line-${lineIndex}`} className={styles.heroKoreanLine}>
+                  {lineWords.map((word, wordIndex) => {
+                    const globalWordIndex = koreanLineStartIndices[lineIndex] + wordIndex;
+                    const wordChars = koreanHeadlineCharsByLine[lineIndex]?.[wordIndex] ?? [];
+
+                    return (
+                      <span
+                        key={`kr-word-${globalWordIndex}`}
+                        className={`${styles.heroWord} ${styles.heroKoreanWord} ${
+                          isKoreanExiting && koreanExitWordIndexSet.has(globalWordIndex)
+                            ? styles.heroKoreanWordExiting
+                            : ""
+                        } ${
+                          activeKoreanWordIndexSet.has(globalWordIndex)
+                            ? styles.heroKoreanWordVisible
+                            : ""
+                        }`}
+                      >
+                        {wordChars.map((char, charIndex) => {
+                          const globalCharIndex = (koreanWordCharStartIndices[globalWordIndex] ?? 0) + charIndex;
+
+                          return (
+                            <span
+                              key={`kr-char-${globalWordIndex}-${charIndex}`}
+                              className={styles.heroKoreanChar}
+                              style={
+                                {
+                                  "--kr-char-exit-delay": `${koreanExitCharDelays[globalCharIndex] ?? 0}ms`,
+                                  "--kr-char-exit-duration": `${KOREAN_EXIT_CHAR_FADE_MS}ms`,
+                                } as CSSProperties
+                              }
+                            >
+                              {char}
+                            </span>
+                          );
+                        })}
+                      </span>
+                    );
+                  })}
+                </span>
+              ))}
+            </div>
+          </div>
           <p
             className={`${styles.constructionNote} ${styles.entranceItem}`}
             style={entranceStyle(entranceDelays.note)}

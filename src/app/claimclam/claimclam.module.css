@@ -41,10 +41,16 @@
 
 /* Container with different transition options - uncomment the one you want to use */
 .container {
+  --nav-height: 72px;
+  --claimclam-body-gray: var(--muted);
+  --floating-nav-bg: #e9e9ee;
+  --floating-nav-bg-hover: #dfdfe6;
+  --floating-nav-fg: #5d5c67;
+  --floating-nav-border: rgba(0, 0, 0, 0.18);
   width: 100%;
   min-height: 100vh;
-  background: #000;
-  color: #fff;
+  background: var(--background);
+  color: var(--foreground);
   padding: 0;
   position: relative;
   overflow: hidden;
@@ -53,13 +59,24 @@
   animation: fadeToBlack 0.6s ease-out;
 }
 
+:global(:root[data-theme="light"]) .container {
+  --claimclam-body-gray: #504f59;
+}
+
+:global(:root[data-theme="dark"]) .container {
+  --floating-nav-bg: #ffffff;
+  --floating-nav-bg-hover: #f2f2f2;
+  --floating-nav-fg: #000000;
+  --floating-nav-border: rgba(0, 0, 0, 0.2);
+}
+
 /* Option 1: Simple Fade */
 @keyframes fadeToBlack {
   from {
-    background: #fff;
+    background: var(--overlay);
   }
   to {
-    background: #000;
+    background: var(--background);
   }
 }
 
@@ -173,28 +190,78 @@
 
 .content {
   width: 100%;
-  padding: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 7vw, 5rem) clamp(4rem, 10vw, 8rem);
+  padding: calc(var(--nav-height) + clamp(1.5rem, 3vw, 2.5rem)) clamp(2.5rem, 7vw, 5rem) clamp(4rem, 10vw, 8rem);
   display: flex;
   flex-direction: column;
   gap: clamp(3rem, 6vw, 5rem);
   animation: fadeIn 0.8s ease-out 0.3s both;
 }
 
-/* Header */
-.header {
-  padding: 1rem 0;
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(2.5rem, 7vw, 5rem);
+  background: var(--nav-surface);
+  backdrop-filter: blur(6px);
+  z-index: 2500;
 }
 
-.homeLink {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1rem;
-  opacity: 0.8;
-  transition: opacity 0.2s;
+.navLeft,
+.navRight {
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  line-height: 1;
+  font-weight: 400;
 }
 
-.homeLink:hover {
-  opacity: 1;
+.navRightGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navRight {
+  text-align: right;
+}
+
+.themeToggle {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface);
+  color: var(--foreground);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  line-height: 1;
+  border-radius: 999px;
+  padding: 0.48rem 0.68rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.themeToggleIcon {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.themeToggle:hover {
+  background: var(--surface-hover);
+}
+
+.themeToggle:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+.themeToggle:disabled {
+  opacity: 0.65;
+  cursor: default;
 }
 
 /* Hero */
@@ -218,8 +285,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: var(--surface);
   border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
   animation: scaleIn 0.6s ease-out forwards, float 4s ease-in-out infinite 1s;
 }
 
@@ -238,21 +306,22 @@
 
 .metaInfo {
   max-width: 600px;
-  text-align: left;
+  text-align: center;
+  align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .role {
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--claimclam-body-gray);
   margin: 0;
 }
 
 .timeline {
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--claimclam-body-gray);
   margin: 0;
 }
 
@@ -274,21 +343,21 @@
 }
 
 .buttonPrimary {
-  background: #fff;
-  color: #000;
+  background: var(--surface);
+  color: var(--foreground);
 }
 
 .buttonSecondary {
-  background: #333;
-  color: #fff;
+  background: var(--surface-hover);
+  color: var(--foreground);
 }
 
 .buttonPrimary:hover {
-  background: #f0f0f0;
+  background: var(--surface-hover);
 }
 
 .buttonSecondary:hover {
-  background: #444;
+  background: var(--surface);
 }
 
 /* Text Wrapper */
@@ -305,8 +374,8 @@
   flex-direction: column;
   gap: 1.5rem;
   line-height: 1.7;
-  font-size: 1rem;
-  color: #ccc;
+  font-size: 18px;
+  color: var(--claimclam-body-gray);
 }
 
 .textSection p {
@@ -384,13 +453,30 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container {
+    --nav-height: 56px;
+  }
+
   .content {
-    padding: 2rem 1rem;
+    padding: calc(var(--nav-height) + 1rem) 1rem 2rem;
     gap: 2rem;
   }
 
-  .header {
-    padding: 0.5rem 0;
+  .nav {
+    padding: 0 1rem;
+  }
+
+  .navRight {
+    font-size: 12px;
+  }
+
+  .navRightGroup {
+    gap: 0.45rem;
+  }
+
+  .themeToggle {
+    font-size: 11px;
+    padding: 0.4rem 0.55rem;
   }
 
   .title {
@@ -429,9 +515,9 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  border: none;
+  background: var(--floating-nav-bg);
+  color: var(--floating-nav-fg);
+  border: 1px solid var(--floating-nav-border);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -442,24 +528,58 @@
 }
 
 .backToHome {
-  left: 2rem;
+  left: clamp(2.5rem, 7vw, 5rem);
+  top: calc(var(--nav-height) + 24px);
+  bottom: auto;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  color: #6b6a74;
+  gap: 0.35rem;
+  justify-content: flex-start;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .backToTop {
   right: 2rem;
+  border: none;
 }
 
 .backToHome:hover,
 .backToTop:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--floating-nav-bg-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+.backToHome:hover {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.backToTop:active {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .backToHome svg,
 .backToTop svg {
   width: 20px;
   height: 20px;
+}
+
+.backToHome svg {
+  width: 18px;
+  height: 18px;
+}
+
+.backToHomeLabel {
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
 @media (max-width: 768px) {
@@ -471,7 +591,9 @@
   }
   
   .backToHome {
-    left: 1rem;
+    left: 2rem;
+    width: auto;
+    height: auto;
   }
   
   .backToTop {
@@ -481,6 +603,22 @@
 
 @media (min-width: 769px) {
   .content {
-    padding: 3rem 2rem 8rem;
+    padding: calc(var(--nav-height) + 1.5rem) 2rem 8rem;
+  }
+
+  .backToHome {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+
+  .backToTop {
+    top: auto;
+    bottom: 2rem;
+    transform: none;
+  }
+
+  .backToHome:hover {
+    transform: translateY(-50%);
   }
 }

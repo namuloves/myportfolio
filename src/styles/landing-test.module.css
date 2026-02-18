@@ -19,7 +19,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 clamp(2.5rem, 7vw, 5rem);
-    background: var(--nav-surface);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(6px);
     z-index: 2500;
   }
@@ -45,50 +45,8 @@
     font-weight: 400;
   }
 
-.navRightGroup {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
 .navRight {
     text-align: right;
-  }
-
-.themeToggle {
-    border: 1px solid var(--border-subtle);
-    background: var(--surface);
-    color: var(--foreground);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.34rem;
-    font-size: 0.75rem;
-    letter-spacing: 0;
-    line-height: 1;
-    border-radius: 999px;
-    padding: 0.48rem 0.68rem;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-.themeToggleIcon {
-    font-size: 0.82rem;
-    line-height: 1;
-  }
-
-.themeToggle:hover {
-    background: var(--surface-hover);
-  }
-
-.themeToggle:focus-visible {
-    outline: 2px solid var(--foreground);
-    outline-offset: 2px;
-  }
-
-.themeToggle:disabled {
-    opacity: 0.65;
-    cursor: default;
   }
 
 .pageLayer {
@@ -145,7 +103,7 @@
     align-items: center;
     justify-content: center;
     padding: 0 clamp(1.25rem, 4vw, 2.5rem);
-    background: var(--overlay);
+    background: #fff;
     z-index: 3000;
     transform: scale(1);
     filter: blur(0);
@@ -204,104 +162,6 @@
     letter-spacing: -0.02em;
   }
 
-.heroInteractive {
-    position: relative;
-    width: fit-content;
-    margin: 0 auto;
-    cursor: default;
-  }
-
-.heroBase {
-    margin: 0;
-    color: var(--foreground);
-  }
-
-.heroEnglishLine {
-    display: block;
-    white-space: nowrap;
-    transition: opacity 420ms ease, filter 520ms ease;
-  }
-
-.heroEnglishLineBlotout {
-    opacity: 0;
-    filter: blur(10px);
-  }
-
-.heroWord {
-    display: inline-block;
-    filter: blur(0);
-    transition: opacity 220ms ease, filter 300ms ease;
-    transition-delay: 0ms;
-  }
-
-.heroWordReturning {
-    transition-duration: 620ms, 700ms;
-    transition-delay: var(--return-delay, 0ms), var(--return-delay, 0ms);
-  }
-
-.heroWord:not(:last-child) {
-    margin-right: 0.3ch;
-  }
-
-.heroWordHidden {
-    opacity: 0;
-    filter: blur(4px);
-    transition-duration: 460ms, 540ms;
-    transition-delay: var(--hide-delay, 0ms), var(--hide-delay, 0ms);
-  }
-
-.heroWordSequentialHide {
-    opacity: 0;
-    filter: blur(8px);
-    transition-duration: 360ms, 460ms;
-    transition-delay: calc(var(--word-order, 0) * 70ms), calc(var(--word-order, 0) * 70ms);
-  }
-
-.heroKorean {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    color: var(--foreground);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-  }
-
-.heroKoreanLine {
-    display: block;
-    white-space: nowrap;
-  }
-
-.heroKoreanWord {
-    opacity: 0;
-    transition: opacity 1600ms ease;
-  }
-
-.heroKoreanChar {
-    display: inline-block;
-    opacity: 1;
-  }
-
-.heroKoreanWordExiting .heroKoreanChar {
-    opacity: 0;
-    transition: opacity var(--kr-char-exit-duration, 180ms) ease;
-    transition-delay: var(--kr-char-exit-delay, 0ms);
-  }
-
-.heroKoreanWordVisible {
-    opacity: 1;
-  }
-
-.heroKoreanFirstLineVisible .heroKoreanLine:first-child .heroKoreanWord {
-    opacity: 1;
-  }
-
-.heroKoreanSecondLineVisible .heroKoreanLine:last-child .heroKoreanWord {
-    opacity: 1;
-  }
-
 .heroWrapper {
     max-width: 620px;
     margin: 108px auto 0;
@@ -326,13 +186,13 @@
     text-decoration: none;
     font-weight: 500;
     font-size: 1.5rem;
-    color: var(--foreground);
+    color: inherit;
     transition: background 0.2s ease, transform 0.2s ease;
-    background: var(--surface);
+    background: #fff;
   }
 
 .cardInteractive:hover {
-    background: var(--surface-hover);
+    background: #f5f5f5;
     transform: translateY(-2px);
     cursor: pointer;
   }
@@ -429,12 +289,12 @@
 .cardSubtitle {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--muted);
+    color: #666;
   }
 
 .comingSoon {
     font-size: clamp(0.625rem, 1.2vw, 0.75rem);
-    color: var(--muted);
+    color: #666;
     font-weight: 600;
     letter-spacing: 0;
     white-space: nowrap;
@@ -442,7 +302,7 @@
 
 .constructionNote {
     font-size: 0.875rem;
-    color: var(--muted);
+    color: #666;
     font-weight: 400;
     letter-spacing: 0;
     text-align: center;
@@ -461,13 +321,13 @@
   }
 
 .constructionNote a {
-    color: var(--muted);
+    color: #666;
     text-decoration: none;
     font-style: italic;
   }
 
 .constructionNote a:hover {
-    color: var(--muted-hover);
+    color: #000;
   }
 
 .contraPreview,
@@ -478,8 +338,8 @@
     transform: translateX(-50%);
     margin-top: 0.5rem;
     padding: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
+    background: white;
+    border: 1px solid #f3f3f3;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
     z-index: 1000;
@@ -488,7 +348,7 @@
 
 .contraPreviewContent,
 .emailPreviewContent {
-    color: var(--muted-strong);
+    color: #333;
     font-size: 12px;
     font-weight: 500;
   }
@@ -503,7 +363,7 @@
     width: 0.875rem;
     height: 0.875rem;
     flex-shrink: 0;
-    color: var(--muted-strong);
+    color: #333;
   }
 
 .contraPreviewContent p {
@@ -531,7 +391,7 @@
 .emailButton {
     background: none;
     border: none;
-    color: var(--muted);
+    color: #666;
     font-size: inherit;
     font-weight: inherit;
     text-decoration: underline;
@@ -541,7 +401,7 @@
   }
 
 .emailButton:hover {
-    color: var(--muted-hover);
+    color: #000;
     opacity: 1;
   }
 
@@ -599,22 +459,6 @@
     transform: none;
   }
 
-  .heroWord {
-    transition: none;
-  }
-
-  .heroEnglishLine {
-    transition: none;
-  }
-
-  .heroKoreanWord {
-    transition: none;
-  }
-
-  .heroKoreanWordExiting .heroKoreanChar {
-    transition: none;
-  }
-
   .cardImage {
     transition: none;
     transition-delay: 0ms;
@@ -631,19 +475,6 @@
   .nav {
     height: var(--nav-height);
     padding: 0 1rem;
-  }
-
-  .navRight {
-    font-size: 12px;
-  }
-
-  .navRightGroup {
-    gap: 0.45rem;
-  }
-
-  .themeToggle {
-    font-size: 11px;
-    padding: 0.4rem 0.55rem;
   }
 
   .heroWrapper {
