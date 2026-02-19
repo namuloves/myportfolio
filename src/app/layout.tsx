@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "../styles/globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const abcDiatype = localFont({
   src: "../fonts/ABCDiatype-Regular.otf",
@@ -52,6 +53,7 @@ export default function RootLayout({
       </head>
       <body className={`${abcDiatype.variable} ${geistMono.variable}`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
