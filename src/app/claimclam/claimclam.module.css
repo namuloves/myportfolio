@@ -43,6 +43,7 @@
 .container {
   --nav-height: 72px;
   --claimclam-body-gray: var(--muted);
+  --claimclam-h3-color: var(--claimclam-body-gray);
   --floating-nav-bg: #f7f7f8;
   --floating-nav-bg-hover: #efeff1;
   --floating-nav-fg: #5d5c67;
@@ -61,9 +62,11 @@
 
 :global(:root[data-theme="light"]) .container {
   --claimclam-body-gray: #504f59;
+  --claimclam-h3-color: var(--claimclam-body-gray);
 }
 
 :global(:root[data-theme="dark"]) .container {
+  --claimclam-h3-color: var(--muted-strong);
   --floating-nav-bg: #f7f7f8;
   --floating-nav-bg-hover: #efeff1;
   --floating-nav-fg: #000000;
@@ -384,6 +387,11 @@
   color: var(--claimclam-body-gray);
 }
 
+.textSection h3 {
+  margin: 0;
+  color: var(--claimclam-h3-color);
+}
+
 .textSection p {
   margin: 0;
   animation: fadeInText 1s ease-out both;
@@ -455,6 +463,20 @@
   width: 100%;
   height: auto;
   display: block;
+}
+
+.desktopBottomImageSection {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.desktopBottomImage {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 /* Responsive */
@@ -644,6 +666,16 @@
 @media (min-width: 769px) {
   .content {
     padding: calc(var(--nav-height) + 1.5rem) 2rem 8rem;
+  }
+
+  .desktopBottomImageSection {
+    width: 100%;
+    margin: clamp(1rem, 3vw, 2.5rem) auto 0;
+  }
+
+  .desktopBottomImage {
+    width: 80%;
+    max-width: 1365px;
   }
 
   .floatingNavigation {

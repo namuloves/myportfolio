@@ -12,6 +12,12 @@ import Link from "next/link";
 import CaseStudyCard from "../components/CaseStudyCard";
 import styles from "../styles/home.module.css";
 import { applyThemeWithTransition } from "../lib/themeTransition";
+import {
+  type Theme,
+  getSystemTheme,
+  getStoredThemePreference,
+  setStoredThemePreference,
+} from "../lib/themePreference";
 
 const headlineText = "Namu Park is a product designer based in Brooklyn, New York.";
 const headlineWords = headlineText.split(" ");
@@ -77,15 +83,11 @@ const INTRO_HOLD_MS = 2000;
 const OVERLAY_BLUR_MS = 800;
 const OVERLAY_REMOVE_MS = 800;
 const ENABLE_SCROLL_BG_MORPH = false;
-type Theme = "light" | "dark";
 type EmailPreviewTarget = "main" | "footer";
 type NearbyWordEntry = {
   distanceSquared: number;
   index: number;
 };
-
-const getSystemTheme = (): Theme =>
-  window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
 const areIndexListsEqual = (first: number[], second: number[]) => {
   if (first.length !== second.length) return false;
@@ -223,7 +225,10 @@ export default function Home() {
   useEffect(() => {
     const root = document.documentElement;
     const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const initialTheme = getSystemTheme();
+    const storedTheme = getStoredThemePreference();
+    const initialTheme = storedTheme ?? getSystemTheme();
+
+    hasManualThemeOverrideRef.current = storedTheme !== null;
 
     root.setAttribute("data-theme", initialTheme);
     setTheme(initialTheme);
@@ -507,6 +512,7 @@ export default function Home() {
 
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
     hasManualThemeOverrideRef.current = true;
+    setStoredThemePreference(nextTheme);
     applyThemeWithTransition(nextTheme);
     setTheme(nextTheme);
   };

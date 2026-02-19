@@ -81,6 +81,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h3 {
+  font-size: 28px;
+}
+
 :root.home-bg-morph body {
   transition: background-color 120ms linear;
 }

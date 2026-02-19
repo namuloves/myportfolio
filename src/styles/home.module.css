@@ -175,7 +175,7 @@
   }
 
 .introHeadline {
-    max-width: 1120px;
+    max-width: 800px;
     margin: 0;
     text-align: center;
     font-size: 60px;
@@ -669,6 +669,7 @@
 
   .introHeadline {
     font-size: 36px;
+    line-height: 1.25;
   }
 }
 
@@ -680,7 +681,18 @@
     object-fit: cover;
   }
 
+@media (min-width: 660px) {
+  .introHeadline {
+    font-size: 48px;
+    line-height: 1.25;
+  }
+}
+
 @media (min-width: 768px) {
+  .introHeadline {
+    line-height: 1.3;
+  }
+
   .cardWithVideo {
       align-items: center;
     }

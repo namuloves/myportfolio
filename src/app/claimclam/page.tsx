@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./claimclam.module.css";
 import mainNavStyles from "../../styles/home.module.css";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
-
-type Theme = "light" | "dark";
+import {
+  type Theme,
+  getSystemTheme,
+  getStoredThemePreference,
+  setStoredThemePreference,
+} from "../../lib/themePreference";
 
 const getBrooklynTime = () =>
   new Intl.DateTimeFormat("en-US", {
@@ -21,6 +25,7 @@ export default function ClaimClam() {
   const [showNavigation, setShowNavigation] = useState(false);
   const [theme, setTheme] = useState<Theme | null>(null);
   const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
+  const hasManualThemeOverrideRef = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,12 +48,36 @@ export default function ClaimClam() {
   }, []);
 
   useEffect(() => {
-    const systemTheme: Theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    const root = document.documentElement;
+    const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const storedTheme = getStoredThemePreference();
+    const initialTheme = storedTheme ?? getSystemTheme();
 
-    document.documentElement.setAttribute("data-theme", systemTheme);
-    setTheme(systemTheme);
+    hasManualThemeOverrideRef.current = storedTheme !== null;
+    root.setAttribute("data-theme", initialTheme);
+    setTheme(initialTheme);
+
+    const handleSystemThemeChange = (event: MediaQueryListEvent) => {
+      if (hasManualThemeOverrideRef.current) return;
+
+      const nextTheme: Theme = event.matches ? "dark" : "light";
+      root.setAttribute("data-theme", nextTheme);
+      setTheme(nextTheme);
+    };
+
+    if (typeof systemThemeQuery.addEventListener === "function") {
+      systemThemeQuery.addEventListener("change", handleSystemThemeChange);
+    } else {
+      systemThemeQuery.addListener(handleSystemThemeChange);
+    }
+
+    return () => {
+      if (typeof systemThemeQuery.removeEventListener === "function") {
+        systemThemeQuery.removeEventListener("change", handleSystemThemeChange);
+      } else {
+        systemThemeQuery.removeListener(handleSystemThemeChange);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -64,6 +93,8 @@ export default function ClaimClam() {
     if (!theme) return;
 
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+    hasManualThemeOverrideRef.current = true;
+    setStoredThemePreference(nextTheme);
     applyThemeWithTransition(nextTheme);
     setTheme(nextTheme);
   };
@@ -127,38 +158,31 @@ export default function ClaimClam() {
         <div className={styles.textWrapper}>
           <section className={styles.textSection}>
             <p>
-              I had been consulting as a freelance product designer for ClaimClam pre-seed. I designed prototypes and pitch decks reflecting founder&apos;s vision for the company, and learned how complex and confusing class-action settlements can be for users. When the founder offered a position to join the company as a Founding Product Designer, I joined the team to not only expand my design experience in B2B2C but also to help design a product where clear and thoughtful user experience can be a meaningful differentiator. 
+              Before joining the team as a Founding Product Designer in 2023, I had been consulting as a freelance product designer for ClaimClam pre-seed. I designed prototypes and pitch decks reflecting founder&apos;s vision for the company, and learned how complex and confusing class-action settlements can be for users. When they closed the round, I joined the team to not only expand my design experience in B2B2C but also to help design a product where clear and thoughtful user experience can be a meaningful differentiator. 
             </p>
-            <p>
-              Class action is a unique niche dominated by law firms. I saw this as an opportunity to bring a fresh and modern perspective as a start-up. For example, we employed vibrant colors and design elements like dialogs and timelines to anticipate questions and clearly communicate the overall process.
-            </p>
-            <p>
-              We used user-friendly fonts for better legibility and aimed to create a sense of excitement throughout the filing process and set clear expectations of payout amount & schedule.
-            </p>
+            <div className={styles.phoneContainer}>
+              <div className={styles.phone}>
+                <video
+                  src="/video/claimclam_mobile.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  controls={true}
+                  preload="auto"
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                >
+                  <p>Your browser does not support video playback.</p>
+                </video>
+              </div>
+            </div>
           </section>
-        </div>
-
-        {/* Video Section */}
-        <div className={styles.phoneContainer}>
-          <div className={styles.phone}>
-            <video
-              src="/video/claimclam_mobile.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              controls={true}
-              preload="auto"
-              style={{ width: "100%", height: "auto", display: "block" }}
-            >
-              <p>Your browser does not support video playback.</p>
-            </video>
-          </div>
         </div>
 
         {/* Text Section 2 */}
         <div className={styles.textWrapper}>
           <section className={styles.textSection}>
+            <h3>Context</h3>
             <p>
             Filing for class action claims can be stressful for users with lots of legalese and confusing terminology. As a designer, I iterated on which elements of class action settlements would be most helpful for users when determining the relevance of a claim. My focus was on presenting complex information in a simple, easy-to-digest way.
             </p>
@@ -173,6 +197,33 @@ export default function ClaimClam() {
           <div className={styles.phone}>
             <Image src="/images/2.claims details_mockup.png" alt="Claims App Apple iPhone 7 Audio Issues" width={300} height={600} unoptimized />
           </div>
+        </div>
+
+        <div className={styles.textWrapper}>
+          <section className={styles.textSection}>
+            <h3>Design System</h3>
+            <p>
+              Class action is a unique niche dominated by law firms. I saw this as an opportunity to bring a fresh and modern perspective as a start-up. For example, we employed vibrant colors and design elements like dialogs and timelines to anticipate questions and clearly communicate the overall process.
+            </p>
+            <p>
+              We used user-friendly fonts for better legibility and aimed to create a sense of excitement throughout the filing process and set clear expectations of payout amount & schedule.
+            </p>
+          </section>
+        </div>
+
+        <div className={styles.desktopBottomImageSection}>
+          <Image
+            src="/images/9.claimclam_components.png"
+            alt=""
+            width={1365}
+            height={768}
+            unoptimized
+            className={styles.desktopBottomImage}
+            onError={(event) => {
+              const parent = event.currentTarget.parentElement;
+              if (parent) parent.style.display = "none";
+            }}
+          />
         </div>
 
         {/* Text Section 3 */}
@@ -213,6 +264,7 @@ export default function ClaimClam() {
             <p>The Company served about 8 settlements and processed up to ~$2M in total claims value, serving more than ~22k users in America before they pivoted its business model to B2B in 2024. My design helped the Company process massive user payouts en mass, while while discovery section led to improved LTV and lowering CAC for users. </p> <p> The Company changed its name to Chariot Claim as of 2025.</p>
           </section>
         </div>
+
       </div>
 
       {/* Floating Navigation */}

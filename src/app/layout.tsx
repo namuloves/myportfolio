@@ -26,7 +26,13 @@ export const metadata: Metadata = {
 
 const themeInitScript = `(() => {
   try {
-    const theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const storedTheme = window.localStorage.getItem("theme-preference");
+    const theme =
+      storedTheme === "light" || storedTheme === "dark"
+        ? storedTheme
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
     document.documentElement.setAttribute("data-theme", theme);
   } catch {
     const fallbackTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
