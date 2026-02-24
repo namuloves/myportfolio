@@ -201,7 +201,7 @@ export default function Home() {
   const [entranceDelays] = useState(() => ({
     hero: 0,
     note: 40 + Math.floor(Math.random() * 60),
-    cards: Array.from({ length: 4 }, (_, index) => 90 + index * 70 + Math.floor(Math.random() * 50)),
+    cards: Array.from({ length: 5 }, (_, index) => 90 + index * 70 + Math.floor(Math.random() * 50)),
   }));
 
   const contraHideTimeoutRef = useRef<number | null>(null);
@@ -1035,6 +1035,13 @@ export default function Home() {
             />
           </div>
           <div className={styles.entranceItem} style={entranceStyle(entranceDelays.cards[3])}>
+            <CaseStudyCard
+              title="Gena AI"
+              video="/video/NamuPark_Gena.mp4"
+              disableHoverDim
+            />
+          </div>
+          <div className={styles.entranceItem} style={entranceStyle(entranceDelays.cards[4])}>
             <CaseStudyCard
               title="AI Deal Home"
               image="/images/A.NamuPark_AIDealHome.png"

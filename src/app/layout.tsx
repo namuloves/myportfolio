@@ -23,6 +23,25 @@ export const metadata: Metadata = {
   icons: {
     icon: "/namu_favicon12.png",
   },
+  openGraph: {
+    title: "Namu Park Portfolio",
+    description: "Making beautiful things that work",
+    images: [
+      {
+        url: "/namupark-opengraph.png",
+        width: 1200,
+        height: 630,
+        alt: "Namu Park Portfolio",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Namu Park Portfolio",
+    description: "Making beautiful things that work",
+    images: ["/namupark-opengraph.png"],
+  },
 };
 
 const themeInitScript = `(() => {
