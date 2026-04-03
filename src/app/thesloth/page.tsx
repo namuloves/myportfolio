@@ -201,19 +201,29 @@ export default function TheSloth() {
           </div>
         </div>
 
-        {/* Product Screenshots - Board View & Product Detail */}
+        {/* Product Screenshots */}
         <div className={cs.screenshotSection}>
-          <div className={cs.screenshotGrid}>
-            <Image src="/sloth/The Sloth board view_v1_OCT 2024.png" alt="The Sloth product discovery grid" width={600} height={800} unoptimized />
-            <Image src="/sloth/Product page_101624portfolio.png" alt="The Sloth product detail page" width={600} height={800} unoptimized />
+          <div className={cs.fullWidthImage}>
+            <Image src="/sloth/The Sloth board view_v1_OCT 2024.png" alt="The Sloth product discovery grid" width={1200} height={800} unoptimized />
+          </div>
+        </div>
+
+        <div className={cs.screenshotSection}>
+          <div className={cs.fullWidthImage}>
+            <Image src="/sloth/Product page_101624portfolio.png" alt="The Sloth product detail page" width={1200} height={800} unoptimized />
           </div>
         </div>
 
         {/* Listing Flow Screenshots */}
         <div className={cs.screenshotSection}>
-          <div className={cs.screenshotGrid}>
-            <Image src="/sloth/Create a listing_v1_102224portfolio.png" alt="Listing flow - create a listing" width={600} height={800} unoptimized />
-            <Image src="/sloth/Creating a listing_v2_102224_previewportfolio.png" alt="Listing flow - ready to publish" width={600} height={800} unoptimized />
+          <div className={cs.fullWidthImage}>
+            <Image src="/sloth/Create a listing_v1_102224portfolio.png" alt="Listing flow - create a listing" width={1200} height={800} unoptimized />
+          </div>
+        </div>
+
+        <div className={cs.screenshotSection}>
+          <div className={cs.fullWidthImage}>
+            <Image src="/sloth/Creating a listing_v2_102224_previewportfolio.png" alt="Listing flow - ready to publish" width={1200} height={800} unoptimized />
           </div>
         </div>
 
