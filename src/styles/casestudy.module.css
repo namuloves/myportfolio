@@ -329,9 +329,16 @@
 
 /* Desktop Image */
 .desktopBottomImageSection {
-  display: block;
+  display: flex;
+  justify-content: center;
   width: 100%;
   margin: 0 auto;
+}
+
+.desktopBottomImageFrame {
+  width: 100%;
+  border: 1px solid #d7d7d7;
+  box-sizing: border-box;
 }
 
 .desktopBottomImage {
@@ -551,9 +558,13 @@
     margin: clamp(1rem, 3vw, 2.5rem) auto 0;
   }
 
-  .desktopBottomImage {
+  .desktopBottomImageFrame {
     width: 80%;
     max-width: 1365px;
+  }
+
+  .desktopBottomImage {
+    width: 100%;
   }
 
   .floatingNavigation {

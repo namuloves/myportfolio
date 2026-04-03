@@ -216,18 +216,20 @@ export default function ClaimClam() {
         </div>
 
         <div className={cs.desktopBottomImageSection}>
-          <Image
-            src="/images/9.claimclam_components.png"
-            alt=""
-            width={1365}
-            height={768}
-            unoptimized
-            className={cs.desktopBottomImage}
-            onError={(event) => {
-              const parent = event.currentTarget.parentElement;
-              if (parent) parent.style.display = "none";
-            }}
-          />
+          <div className={cs.desktopBottomImageFrame}>
+            <Image
+              src="/images/9.claimclam_components.png"
+              alt=""
+              width={1365}
+              height={768}
+              unoptimized
+              className={cs.desktopBottomImage}
+              onError={(event) => {
+                const parent = event.currentTarget.parentElement?.parentElement;
+                if (parent) parent.style.display = "none";
+              }}
+            />
+          </div>
         </div>
 
         {/* Text Section 3 */}
