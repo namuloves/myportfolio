@@ -162,7 +162,7 @@ export default function TheSloth() {
         <div className={cs.textWrapper}>
           <section className={cs.textSection}>
             <p>
-              In 2019, I started The Sloth to rethink how we buy and sell secondhand clothing online. The internet was built for businesses to sell and consumers to buy. While buying takes one-click, selling peer-to-peer was a hassle. Even with popular resale platforms like Poshmark, tools that helped individuals to sell remained limited. Users still handled most of the work &ndash; setting up shops, creating listings, and managing shipping.
+              In 2019, I started The Sloth to rethink how we buy and sell secondhand clothing online. The internet was built for businesses to sell for consumers to purchase. While shopping takes one-click, selling peer-to-peer was a hassle. Even with popular resale platforms like Poshmark, tools that helped individuals to sell remained limited. Users still handled most of the work &ndash; setting up shops, creating listings, and managing shipping.
             </p>
             <p>
               Resale is a $26 billion market growing at 23% yoy, and according to our survey of online shoppers, 58% of shoppers gave up creating a resale listing because they found the process too complicated. Of all the respondents who initiated creating a listing, the completion time was about 16 minutes and completion rate was below 50%. The number one reason for abandoning the process was inconvenience.
@@ -170,13 +170,12 @@ export default function TheSloth() {
           </section>
         </div>
 
-        {/* Photo Collage */}
-        <div className={local.photoCollage}>
+        {/* Photo Collage - hidden until correct photo is found */}
+        {/* <div className={local.photoCollage}>
           <div className={cs.fullWidthImage}>
-            <Image src="/sloth/sloth preview twitter-cover.png" alt="Snapshots of my time as a founder selling and shipping used clothes" width={1200} height={600} unoptimized />
+            <Image src="/sloth/sloth preview twitter-cover.png" alt="" width={1200} height={600} unoptimized />
           </div>
-          <p className={cs.collageCaption}>Snapshots of my time as a founder selling and shipping used clothes.</p>
-        </div>
+        </div> */}
 
         {/* More Text */}
         <div className={cs.textWrapper}>
@@ -273,15 +272,15 @@ export default function TheSloth() {
         </div>
 
         {/* Closing Reflection */}
-        <div className={cs.closingSection}>
-          <div className={cs.closingText}>
+        <div className={cs.textWrapper}>
+          <section className={cs.textSection}>
             <p>
               I built a lot &ndash; a newsletter, a community, a Shopify plug-in, a Chrome extension, an Instagram account, a closet app using no-code tools, and a mobile app. I had a hypothesis and used a variety of approach to test it. I learned that resale is a challenging market, and my hypothesis required a more fundamental approach on data.
             </p>
             <p>
               Building a business from scratch was no easy feat &ndash; I learned what it means to fail, persevere, face rejections, pivot, and still find a courage and focus to build again. I realized that I am passionate about building tools that make it easy for people to be kind and responsible. I wanted be a small part of the force that would contribute to making internet more equitable and sustainable, and decided to deepen my practice in design.
             </p>
-          </div>
+          </section>
         </div>
 
         {/* Bottom Nav Pills */}

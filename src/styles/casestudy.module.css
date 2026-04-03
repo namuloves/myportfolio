@@ -193,7 +193,7 @@
 
 /* Text Sections */
 .textWrapper {
-  max-width: 800px;
+  max-width: 640px;
   margin: 0 auto;
   width: 100%;
   animation: fadeIn 1s ease-out 0.3s both;
