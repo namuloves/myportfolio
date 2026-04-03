@@ -4,6 +4,7 @@ import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -197,6 +198,7 @@ export default function Home() {
   const [isOverlayVisible, setIsOverlayVisible] = useState(true);
   const [isOverlayBlurring, setIsOverlayBlurring] = useState(false);
   const [isPageVisible, setIsPageVisible] = useState(false);
+  const hasSeenIntroRef = useRef(false);
   const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
   const [entranceDelays] = useState(() => ({
     hero: 0,
@@ -341,7 +343,17 @@ export default function Home() {
     };
   }, []);
 
+  useLayoutEffect(() => {
+    if (sessionStorage.getItem("hasSeenIntro") === "1") {
+      hasSeenIntroRef.current = true;
+      setIsPageVisible(true);
+      setIsOverlayVisible(false);
+    }
+  }, []);
+
   useEffect(() => {
+    if (hasSeenIntroRef.current) return;
+
     const clearIntroSequenceTimeouts = () => {
       if (introTimeoutRef.current !== null) {
         window.clearTimeout(introTimeoutRef.current);
@@ -359,6 +371,7 @@ export default function Home() {
 
     const skipIntroImmediately = () => {
       clearIntroSequenceTimeouts();
+      sessionStorage.setItem("hasSeenIntro", "1");
       setIsPageVisible(true);
       setIsOverlayBlurring(false);
       setIsOverlayVisible(false);
@@ -368,6 +381,7 @@ export default function Home() {
       setIsOverlayBlurring(true);
       overlayBlurTimeoutRef.current = window.setTimeout(() => {
         setIsPageVisible(true);
+        sessionStorage.setItem("hasSeenIntro", "1");
 
         overlayRemoveTimeoutRef.current = window.setTimeout(() => {
           setIsOverlayVisible(false);
@@ -730,10 +744,12 @@ export default function Home() {
     .join(" ");
 
   const entranceStyle = (ms: number, durationMs?: number): CSSProperties =>
-    ({
-      "--entrance-delay": `${ms}ms`,
-      ...(durationMs !== undefined ? { "--entrance-duration": `${durationMs}ms` } : {}),
-    }) as CSSProperties;
+    hasSeenIntroRef.current
+      ? ({ "--entrance-delay": "0ms", "--entrance-duration": "0ms" } as CSSProperties)
+      : ({
+          "--entrance-delay": `${ms}ms`,
+          ...(durationMs !== undefined ? { "--entrance-duration": `${durationMs}ms` } : {}),
+        } as CSSProperties);
 
   const renderEmailPreview = (target: EmailPreviewTarget) => (
     <div className={styles.emailPreview} role="status" aria-live="polite">
@@ -1023,7 +1039,8 @@ export default function Home() {
             <CaseStudyCard
               title="The Sloth"
               video="/video/slothvideo2.mp4"
-              hoverLabel="Case study coming soon"
+              href="/thesloth"
+              hoverLabel="Read case study"
             />
           </div>
           <div className={styles.entranceItem} style={entranceStyle(entranceDelays.cards[2])}>

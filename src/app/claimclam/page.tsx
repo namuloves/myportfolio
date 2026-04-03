@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import styles from "./claimclam.module.css";
+import cs from "../../styles/casestudy.module.css";
+import local from "./claimclam.module.css";
 import mainNavStyles from "../../styles/home.module.css";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
@@ -112,8 +113,8 @@ export default function ClaimClam() {
   };
 
   return (
-    <main className={styles.container}>
-      <nav className={`${mainNavStyles.nav} ${styles.claimclamFixedNav}`} aria-label="Site header">
+    <main className={cs.container}>
+      <nav className={`${mainNavStyles.nav} ${cs.fixedNav}`} aria-label="Site header">
         <Link href="/" className={mainNavStyles.navLeft}>
           Namu Park
         </Link>
@@ -138,30 +139,33 @@ export default function ClaimClam() {
         </div>
       </nav>
 
-      <div className={styles.content}>
+      <div className={cs.content}>
         {/* Hero Section */}
-        <section className={styles.hero}>
-          <div className={styles.logoWrapper}>
-            <div className={styles.logo}>
+        <section className={`${cs.hero} ${local.hero}`}>
+          <div className={cs.logoWrapper}>
+            <div className={`${cs.logo} ${local.logo}`}>
           <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={200} height={200} unoptimized />
             </div>
           </div>
-          <h1 className={styles.title}>ClaimClam</h1>
-          <div className={styles.metaInfo}>
-            <p className={styles.role}>Role: Founding Product Designer</p>
-            <p className={styles.timeline}>Timeline: 2022 - 2024</p>
+          <h1 className={cs.title}>ClaimClam</h1>
+          <div className={cs.metaInfo}>
+            <p className={cs.role}>Role: Founding Product Designer</p>
+            <p className={cs.timeline}>Timeline: 2022 - 2024</p>
           </div>
-
+          <div className={cs.navPills}>
+            <Link href="/" className={cs.navPill}>Home</Link>
+            <Link href="/thesloth" className={cs.navPill}>View next</Link>
+          </div>
         </section>
 
         {/* Intro Text */}
-        <div className={styles.textWrapper}>
-          <section className={styles.textSection}>
+        <div className={cs.textWrapper}>
+          <section className={cs.textSection}>
             <p>
               Before joining the team as a Founding Product Designer in 2023, I had been consulting as a freelance product designer for ClaimClam pre-seed. I designed prototypes and pitch decks reflecting founder&apos;s vision for the company, and learned how complex and confusing class-action settlements can be for users. When they closed the round, I joined the team to not only expand my design experience in B2B2C but also to help design a product where clear and thoughtful user experience can be a meaningful differentiator. 
             </p>
-            <div className={styles.phoneContainer}>
-              <div className={styles.phone}>
+            <div className={cs.phoneContainer}>
+              <div className={cs.phone}>
                 <video
                   src="/video/claimclam_mobile.mp4"
                   autoPlay
@@ -180,8 +184,8 @@ export default function ClaimClam() {
         </div>
 
         {/* Text Section 2 */}
-        <div className={styles.textWrapper}>
-          <section className={styles.textSection}>
+        <div className={cs.textWrapper}>
+          <section className={cs.textSection}>
             <h3>Context</h3>
             <p>
             Filing for class action claims can be stressful for users with lots of legalese and confusing terminology. As a designer, I iterated on which elements of class action settlements would be most helpful for users when determining the relevance of a claim. My focus was on presenting complex information in a simple, easy-to-digest way.
@@ -190,17 +194,17 @@ export default function ClaimClam() {
         </div>
 
         {/* Two Phone Screenshots */}
-        <div className={styles.twoPhones}>
-          <div className={styles.phone}>
+        <div className={cs.twoPhones}>
+          <div className={cs.phone}>
             <Image src="/images/1.home_mockup.png" alt="Claims App Home Screen" width={300} height={600} unoptimized />
           </div>
-          <div className={styles.phone}>
+          <div className={cs.phone}>
             <Image src="/images/2.claims details_mockup.png" alt="Claims App Apple iPhone 7 Audio Issues" width={300} height={600} unoptimized />
           </div>
         </div>
 
-        <div className={styles.textWrapper}>
-          <section className={styles.textSection}>
+        <div className={cs.textWrapper}>
+          <section className={cs.textSection}>
             <h3>Design System</h3>
             <p>
               Class action is a unique niche dominated by law firms. I saw this as an opportunity to bring a fresh and modern perspective as a start-up. For example, we employed vibrant colors and design elements like dialogs and timelines to anticipate questions and clearly communicate the overall process.
@@ -211,14 +215,14 @@ export default function ClaimClam() {
           </section>
         </div>
 
-        <div className={styles.desktopBottomImageSection}>
+        <div className={cs.desktopBottomImageSection}>
           <Image
             src="/images/9.claimclam_components.png"
             alt=""
             width={1365}
             height={768}
             unoptimized
-            className={styles.desktopBottomImage}
+            className={cs.desktopBottomImage}
             onError={(event) => {
               const parent = event.currentTarget.parentElement;
               if (parent) parent.style.display = "none";
@@ -227,8 +231,8 @@ export default function ClaimClam() {
         </div>
 
         {/* Text Section 3 */}
-        <div className={styles.textWrapper}>
-          <section className={styles.textSection}>
+        <div className={cs.textWrapper}>
+          <section className={cs.textSection}>
             <p>
               Throughout the process, I designed with these key questions in mind: how can I make this complicated filing process clear? How can we strike the right balance between approachability while establishing trust and credibility?
             </p>
@@ -239,49 +243,57 @@ export default function ClaimClam() {
         </div>
 
         {/* Two Phone Screenshots 2 */}
-        <div className={styles.twoPhones}>
-          <div className={styles.phone}>
+        <div className={cs.twoPhones}>
+          <div className={cs.phone}>
             <Image src="/images/3.payout-1-hq.png" alt="Claims App Payout History Accepted" width={300} height={600} unoptimized />
           </div>
-          <div className={styles.phone}>
+          <div className={cs.phone}>
             <Image src="/images/4.payout-fail.png" alt="Claims App Error" width={300} height={600} unoptimized />
           </div>
         </div>
 
         {/* Two Phone Screenshots 3 */}
-        <div className={styles.twoPhones}>
-          <div className={styles.phone}>
+        <div className={cs.twoPhones}>
+          <div className={cs.phone}>
             <Image src="/images/8.connect account.png" alt="Claims App Connect Bank account" width={300} height={600} unoptimized />
           </div>
-          <div className={styles.phone}>
+          <div className={cs.phone}>
             <Image src="/images/7.account_mockup.png" alt="Claim Needs Attention" width={300} height={600} unoptimized />
           </div>
         </div>
 
         {/* Closing Section */}
-        <div className={styles.textWrapper}>
-          <section className={styles.textSection}>
+        <div className={cs.textWrapper}>
+          <section className={cs.textSection}>
             <p>The Company served about 8 settlements and processed up to ~$2M in total claims value, serving more than ~22k users in America before they pivoted its business model to B2B in 2024. My design helped the Company process massive user payouts en mass, while while discovery section led to improved LTV and lowering CAC for users. </p> <p> The Company changed its name to Chariot Claim as of 2025.</p>
           </section>
+        </div>
+
+        {/* Bottom Nav Pills */}
+        <div className={`${cs.hero} ${local.hero}`}>
+          <div className={cs.navPills}>
+            <Link href="/" className={cs.navPill}>Home</Link>
+            <Link href="/thesloth" className={cs.navPill}>View next</Link>
+          </div>
         </div>
 
       </div>
 
       {/* Floating Navigation */}
       {showNavigation && (
-        <div className={styles.floatingNavigation}>
-          <Link href="/" className={styles.backToHome}>
+        <div className={cs.floatingNavigation}>
+          <Link href="/" className={cs.backToHome}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
-            <span className={styles.backToHomeLabel}>Back</span>
+            <span className={cs.backToHomeLabel}>Back</span>
           </Link>
 
-          <button onClick={scrollToTop} className={styles.backToTop}>
+          <button onClick={scrollToTop} className={cs.backToTop}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 19V5M5 12l7-7 7 7"/>
             </svg>
-            <span className={styles.backToTopLabel}>Top</span>
+            <span className={cs.backToTopLabel}>Top</span>
           </button>
         </div>
       )}
