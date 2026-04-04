@@ -84,7 +84,7 @@
 
 :global(:root[data-theme="light"]) .container {
   --body-gray: #504f59;
-  --h3-color: var(--body-gray);
+  --h3-color: var(--foreground);
 }
 
 :global(:root[data-theme="dark"]) .container {
@@ -193,7 +193,7 @@
 
 /* Text Sections */
 .textWrapper {
-  max-width: 640px;
+  max-width: 800px;
   margin: 0 auto;
   width: 100%;
   animation: fadeIn 1s ease-out 0.3s both;
@@ -337,7 +337,9 @@
 
 .desktopBottomImageFrame {
   width: 100%;
-  border: 1px solid #d7d7d7;
+  border: 1px solid #edebeb;
+  border-radius: 24px;
+  overflow: hidden;
   box-sizing: border-box;
 }
 

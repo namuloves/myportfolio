@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import cs from "../../styles/casestudy.module.css";
 import local from "./thesloth.module.css";
 import mainNavStyles from "../../styles/home.module.css";
+import TheSlothLogo from "../../components/TheSlothLogo";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
   type Theme,
@@ -144,7 +145,7 @@ export default function TheSloth() {
         <section className={cs.hero}>
           <div className={cs.logoWrapper}>
             <div className={`${cs.logo} ${local.logo}`}>
-              <span className={local.logoText}>the sloth</span>
+              <TheSlothLogo className={local.logoImage} />
             </div>
           </div>
           <h1 className={cs.title}>The Sloth</h1>
@@ -264,8 +265,25 @@ export default function TheSloth() {
               </p>
             </section>
           </div>
-          <div className={cs.fullWidthImage}>
-            <Image src="/sloth/sloth mobile design examples.png" alt="Mobile resale listing flow showing resell options and pricing" width={1200} height={600} unoptimized />
+          <div className={cs.phoneMockups}>
+            <div className={cs.phone}>
+              <Image
+                src="/sloth/5. list popup_mockups.png"
+                alt="Resale listing popup mockups"
+                width={1311}
+                height={2652}
+                unoptimized
+              />
+            </div>
+            <div className={cs.phone}>
+              <Image
+                src="/sloth/7. list price_mockup.png"
+                alt="Resale listing price mockup"
+                width={1311}
+                height={2652}
+                unoptimized
+              />
+            </div>
           </div>
         </div>
 
