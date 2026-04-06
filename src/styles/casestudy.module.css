@@ -275,6 +275,13 @@
   border-radius: 8px;
 }
 
+.fullWidthImage video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
 /* Phone Mockups */
 .phoneMockups {
   display: flex;

@@ -197,18 +197,25 @@ export default function TheSloth() {
               <h3>Resale &amp; Shopping Automation Tool</h3>
             </section>
           </div>
-          <div className={cs.fullWidthImage}>
-            <Image src="/sloth/sloth_Chrome extension_preview_ssense.png" alt="The Sloth Chrome Extension on SSENSE showing resale data overlay" width={1200} height={700} unoptimized />
+          <div className={`${cs.fullWidthImage} ${local.extensionVideoFrame}`}>
+            <div className={local.extensionVideoCrop}>
+              <video
+                className={local.extensionVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                preload="metadata"
+                aria-label="The Sloth Chrome Extension demo video"
+              >
+                <source src="/sloth/TheSloth_chrome extension_04.06.2026.mp4" type="video/mp4" />
+              </video>
+            </div>
           </div>
         </div>
 
         {/* Product Screenshots */}
-        <div className={cs.screenshotSection}>
-          <div className={cs.fullWidthImage}>
-            <Image src="/sloth/The Sloth board view_v1_OCT 2024.png" alt="The Sloth product discovery grid" width={1200} height={800} unoptimized />
-          </div>
-        </div>
-
         <div className={cs.screenshotSection}>
           <div className={cs.fullWidthImage}>
             <Image src="/sloth/Product page_101624portfolio.png" alt="The Sloth product detail page" width={1200} height={800} unoptimized />
@@ -234,6 +241,12 @@ export default function TheSloth() {
             <Image src="/sloth/Product page_101624portfolio_shop.png" alt="The Sloth marketplace product detail page" width={1200} height={700} unoptimized />
           </div>
         </div>
+        <div className={cs.screenshotSection}>
+          <div className={cs.fullWidthImage}>
+            <Image src="/sloth/The Sloth board view_v1_OCT 2024.png" alt="The Sloth product discovery grid" width={1200} height={800} unoptimized />
+          </div>
+        </div>
+
 
         {/* Discovery for Resale P2P Marketplace */}
         <div className={cs.screenshotSection}>

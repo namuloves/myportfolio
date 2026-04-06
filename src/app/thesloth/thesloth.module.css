@@ -33,6 +33,34 @@
   border-radius: 4px;
 }
 
+.extensionVideoFrame {
+  aspect-ratio: 12 / 7;
+  overflow: hidden;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.extensionVideoCrop {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  clip-path: inset(3px round 8px);
+}
+
+.extensionVideo {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  border: 0;
+  outline: none;
+  background: transparent;
+  transform: scale(1.04);
+  transform-origin: center center;
+}
+
 @media (max-width: 768px) {
   .collageGrid {
     grid-template-columns: repeat(2, 1fr);
