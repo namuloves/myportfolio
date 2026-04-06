@@ -163,7 +163,7 @@ export default function TheSloth() {
         <div className={cs.textWrapper}>
           <section className={cs.textSection}>
             <p>
-              In 2019, I started The Sloth to rethink how we buy and sell secondhand clothing online. The internet was built for businesses to sell for consumers to purchase. While shopping takes one-click, selling peer-to-peer was a hassle. Even with popular resale platforms like Poshmark, tools that helped individuals to sell remained limited. Users still handled most of the work &ndash; setting up shops, creating listings, and managing shipping.
+              In 2019, I started The Sloth to rethink how we buy and sell secondhand clothing online. The internet was built for businesses to sell – and for people to buy. While shopping takes one-click, selling peer-to-peer was a hassle. Even with popular resale platforms like Poshmark, tools that helped individuals to sell remained limited. Users still handled most of the work &ndash; setting up shops, creating listings, and managing shipping.
             </p>
             <p>
               Resale is a $26 billion market growing at 23% yoy, and according to our survey of online shoppers, 58% of shoppers gave up creating a resale listing because they found the process too complicated. Of all the respondents who initiated creating a listing, the completion time was about 16 minutes and completion rate was below 50%. The number one reason for abandoning the process was inconvenience.
