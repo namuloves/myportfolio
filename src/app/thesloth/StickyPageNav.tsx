@@ -201,6 +201,21 @@ export default function StickyPageNav() {
   // Determine active index in the flattened list for line fill
   const activeIndex = ALL_IDS.indexOf(activeId);
 
+  // Determine which top-level section the active id belongs to, so the sloth
+  // can rest next to that section (Context → top, Desktop → middle, Mobile → bottom).
+  const topLevelActiveIndex = (() => {
+    for (let i = 0; i < NAV_ITEMS.length; i++) {
+      const item = NAV_ITEMS[i];
+      if (item.id === activeId) return i;
+      if (item.children?.some((c) => c.id === activeId)) return i;
+    }
+    return 0;
+  })();
+  // Custom per-section resting positions so the sloth aligns visually with
+  // each label in the nav (Context: top, Desktop: upper-middle, Mobile: bottom).
+  const SLOTH_POSITIONS = [10, 36, 55]; // %
+  const slothTopPct = SLOTH_POSITIONS[topLevelActiveIndex] ?? 10;
+
   return (
     <nav
       className={`${styles.sideNav} ${visible ? styles.visible : ""}`}
@@ -219,7 +234,9 @@ export default function StickyPageNav() {
       <div
         className={styles.slothWrapper}
         style={{
-          top: `${slothProgress * 100}%`,
+          /* Sloth rests next to the active top-level section:
+             Context → 10%, Desktop → 50%, Mobile → 90%. */
+          top: `${slothTopPct}%`,
           transform: `rotate(${slothRotation}deg)`,
         }}
         aria-hidden="true"
