@@ -54,10 +54,28 @@ export default function StickyPageNav() {
   const [slothRotation, setSlothRotation] = useState(0); // degrees
   const listRef = useRef<HTMLOListElement | null>(null);
 
-  // Fade in shortly after mount
+  // Fade in only after the rest of the page has finished loading (images,
+  // videos, fonts). If the window has already fired `load` by the time we
+  // mount, reveal immediately. A short delay after load lets the layout
+  // settle before the nav appears.
   useEffect(() => {
-    const t = window.setTimeout(() => setVisible(true), 200);
-    return () => window.clearTimeout(t);
+    const REVEAL_DELAY_MS = 300;
+    let timer: number | null = null;
+
+    const reveal = () => {
+      timer = window.setTimeout(() => setVisible(true), REVEAL_DELAY_MS);
+    };
+
+    if (document.readyState === "complete") {
+      reveal();
+    } else {
+      window.addEventListener("load", reveal, { once: true });
+    }
+
+    return () => {
+      if (timer !== null) window.clearTimeout(timer);
+      window.removeEventListener("load", reveal);
+    };
   }, []);
 
   // Sloth climbing state: track scroll progress & rotate while scrolling
@@ -201,20 +219,20 @@ export default function StickyPageNav() {
   // Determine active index in the flattened list for line fill
   const activeIndex = ALL_IDS.indexOf(activeId);
 
-  // Determine which top-level section the active id belongs to, so the sloth
-  // can rest next to that section (Context → top, Desktop → middle, Mobile → bottom).
-  const topLevelActiveIndex = (() => {
-    for (let i = 0; i < NAV_ITEMS.length; i++) {
-      const item = NAV_ITEMS[i];
-      if (item.id === activeId) return i;
-      if (item.children?.some((c) => c.id === activeId)) return i;
-    }
-    return 0;
-  })();
-  // Custom per-section resting positions so the sloth aligns visually with
-  // each label in the nav (Context: top, Desktop: upper-middle, Mobile: bottom).
-  const SLOTH_POSITIONS = [10, 36, 55]; // %
-  const slothTopPct = SLOTH_POSITIONS[topLevelActiveIndex] ?? 10;
+  // Explicit vertical % for every nav id. The sloth moves through each of
+  // these positions as the active section changes, producing a smooth descent
+  // down the tree as the user reads through the page.
+  const SLOTH_POSITION_MAP: Record<string, number> = {
+    context: 10,
+    desktop: 36,
+    "desktop-chrome": 45,
+    "desktop-p2p": 54,
+    mobile: 55,
+    "mobile-onboarding": 60,
+    "mobile-listing": 65,
+    "mobile-discovery": 70,
+  };
+  const slothTopPct = SLOTH_POSITION_MAP[activeId] ?? 10;
 
   return (
     <nav
