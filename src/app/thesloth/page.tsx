@@ -7,6 +7,7 @@ import cs from "../../styles/casestudy.module.css";
 import local from "./thesloth.module.css";
 import mainNavStyles from "../../styles/home.module.css";
 import TheSlothLogo from "../../components/TheSlothLogo";
+import StickyPageNav from "./StickyPageNav";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
   type Theme,
@@ -140,7 +141,9 @@ export default function TheSloth() {
         </div>
       </nav>
 
-      <div className={cs.content}>
+      <StickyPageNav />
+
+      <div className={`${cs.content} ${local.contentShift}`}>
         {/* Hero Section */}
         <section className={cs.hero}>
           <div className={cs.logoWrapper}>
@@ -160,7 +163,7 @@ export default function TheSloth() {
         </section>
 
         {/* Intro Text */}
-        <div className={cs.textWrapper}>
+        <div id="context" className={cs.textWrapper}>
           <section className={cs.textSection}>
             <p>
               In 2019, I started The Sloth to rethink how we buy and sell secondhand clothing online. The internet was built for businesses to sell – and for people to buy. While shopping takes one-click, selling peer-to-peer was a hassle. Even with popular resale platforms like Poshmark, tools that helped individuals to sell remained limited. Users still handled most of the work &ndash; setting up shops, creating listings, and managing shipping.
@@ -168,33 +171,29 @@ export default function TheSloth() {
             <p>
               Resale is a $26 billion market growing at 23% yoy, and according to our survey of online shoppers, 58% of shoppers gave up creating a resale listing because they found the process too complicated. Of all the respondents who initiated creating a listing, the completion time was about 16 minutes and completion rate was below 50%. The number one reason for abandoning the process was inconvenience.
             </p>
-          </section>
-        </div>
-
-        {/* Photo Collage - hidden until correct photo is found */}
-        {/* <div className={local.photoCollage}>
-          <div className={cs.fullWidthImage}>
-            <Image src="/sloth/sloth preview twitter-cover.png" alt="" width={1200} height={600} unoptimized />
-          </div>
-        </div> */}
-
-        {/* More Text */}
-        <div className={cs.textWrapper}>
-          <section className={cs.textSection}>
             <p>
-              I ended up reselling over 100 articles of clothing for 13 women in New York where I made on average ~$106 for them, and averted 120 pounds of textile waste from going to the landfill. I identified the most challenging process of reselling, found opportunities for automation, and learned that shoppers value clear product information, original photos, and detailed descriptions.
+              To understand the problem firsthand, I ran an experiment: I offered to resell clothing for women in New York in exchange for candid feedback about their experience. Over a few months, I resold 100+ items for 13 women &mdash; averaging ~$106 per seller &mdash; and diverted 120 pounds of textile waste from landfills. More importantly, I learned exactly where the process broke down and where technology could help.
             </p>
             <p>
-              I built a Chrome Extension that functioned like Pinterest but specifically for clothing, capturing key product data like photos, descriptions, measurements, and materials. Within a month, I grew the user base by unlocking the niche group of professional stylists and aggregated over ~$1M in GMV and facilitated 100+ in resale transactions. A few weeks after launch, I raised from angels like Sahil Lavingia (Gumroad) and Shrug Capital.
+              I built a Chrome Extension that functioned like Pinterest but specifically for clothing, capturing key product data like photos, descriptions, measurements, and materials. Within a month, I grew the user base by unlocking the niche group of professional stylists and aggregated over ~$1M in GMV and facilitated 100+ in resale transactions. A few weeks after launch, I raised from angels like Sahil Lavingia (Gumroad) and Responsibly VC.
             </p>
           </section>
         </div>
 
         {/* Resale & Shopping Automation Tool */}
-        <div className={cs.screenshotSection}>
+        <div id="desktop" className={cs.screenshotSection}>
+          <div className={cs.fullWidthImage}>
+            <Image
+              src="/sloth/sloth_resale_collage.png"
+              alt="The Sloth resale collage"
+              width={1600}
+              height={900}
+              unoptimized
+            />
+          </div>
           <div className={cs.textWrapper}>
             <section className={cs.textSection}>
-              <h3>Resale &amp; Shopping Automation Tool</h3>
+              <h3 id="desktop-chrome">Chrome Extension: The Shopping &amp; Resale Layer</h3>
             </section>
           </div>
           <div className={`${cs.fullWidthImage} ${local.extensionVideoFrame}`}>
@@ -212,6 +211,13 @@ export default function TheSloth() {
                 <source src="/sloth/TheSloth_chrome extension_04.06.2026.mp4" type="video/mp4" />
               </video>
             </div>
+          </div>
+          <div className={cs.textWrapper}>
+            <section className={cs.textSection}>
+              <p>
+                The Chrome extension adds a layer of context to any product you&rsquo;re viewing online. <strong>Brand signals:</strong> see community ratings and the item&rsquo;s average resale value at a glance. <strong>Saved items:</strong> capture photos, descriptions, prices, sizes, and materials with one click. <strong>Matching listings:</strong> if the same item is already being resold, you&rsquo;ll see who&rsquo;s selling it and for how much. Together, these give shoppers the social and economic context they usually have to hunt for.
+              </p>
+            </section>
           </div>
         </div>
 
@@ -236,7 +242,7 @@ export default function TheSloth() {
         </div>
 
         {/* Marketplace Product Page */}
-        <div className={cs.screenshotSection}>
+        <div id="desktop-p2p" className={cs.screenshotSection}>
           <div className={cs.fullWidthImage}>
             <Image src="/sloth/Product page_101624portfolio_shop.png" alt="The Sloth marketplace product detail page" width={1200} height={700} unoptimized />
           </div>
@@ -248,28 +254,38 @@ export default function TheSloth() {
         </div>
 
 
-        {/* Discovery for Resale P2P Marketplace */}
-        <div className={cs.screenshotSection}>
+        {/* Anchor for the Mobile parent nav item */}
+        <div id="mobile" aria-hidden="true" />
+
+        {/* Onboarding & Email Integration */}
+        <div id="mobile-onboarding" className={cs.screenshotSection}>
           <div className={cs.textWrapper}>
             <section className={cs.textSection}>
-              <h3>Discovery for Resale P2P Marketplace</h3>
+              <h3>Onboarding &amp; Email Integration</h3>
               <p>
-                Navigating discovery feeds on secondhand resale marketplaces can be frustrating. Poor photos and unclear product details make it hard for shoppers seeking quality items. To address this, I streamlined the feed design, removing the usual promotional clutter found on e-commerce platforms. I envisioned a space where fashion-forward consumers can connect over what truly inspires them: fashion and design.
+                A guided first-time experience that introduces new users to resale and sets them up to discover, save, and list items in minutes.
               </p>
             </section>
           </div>
-          <div className={cs.phoneMockups}>
-            <div className={cs.phone}>
-              <Image src="/sloth/1.home_mockup.png" alt="Mobile home feed" width={300} height={600} unoptimized />
-            </div>
-            <div className={cs.phone}>
-              <Image src="/sloth/2. feed_mockup.png" alt="Mobile social feed with listings" width={300} height={600} unoptimized />
+          <div className={cs.phoneContainer}>
+            <div className={local.onboardingPhone}>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                preload="metadata"
+                aria-label="The Sloth onboarding demo video"
+              >
+                <source src="/sloth/sloth_onboarding_demo_april 7 2026.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
         </div>
 
         {/* Resale Listing Process */}
-        <div className={cs.screenshotSection}>
+        <div id="mobile-listing" className={cs.screenshotSection}>
           <div className={cs.textWrapper}>
             <section className={cs.textSection}>
               <h3>Resale listing process</h3>
@@ -296,6 +312,26 @@ export default function TheSloth() {
                 height={2652}
                 unoptimized
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Discovery for Resale P2P Marketplace */}
+        <div id="mobile-discovery" className={cs.screenshotSection}>
+          <div className={cs.textWrapper}>
+            <section className={cs.textSection}>
+              <h3>Discovery for Resale P2P Marketplace</h3>
+              <p>
+                Navigating discovery feeds on secondhand resale marketplaces can be frustrating. Poor photos and unclear product details make it hard for shoppers seeking quality items. To address this, I streamlined the feed design, removing the usual promotional clutter found on e-commerce platforms. I envisioned a space where fashion-forward consumers can connect over what truly inspires them: fashion and design.
+              </p>
+            </section>
+          </div>
+          <div className={cs.phoneMockups}>
+            <div className={cs.phone}>
+              <Image src="/sloth/1.home_mockup.png" alt="Mobile home feed" width={300} height={600} unoptimized />
+            </div>
+            <div className={cs.phone}>
+              <Image src="/sloth/2. feed_mockup.png" alt="Mobile social feed with listings" width={300} height={600} unoptimized />
             </div>
           </div>
         </div>

@@ -61,6 +61,30 @@
   transform-origin: center center;
 }
 
+/* Shift The Sloth case study content slightly right.
+   The shared .content padding is symmetric (clamp(2.5rem, 7vw, 5rem) on both sides).
+   The sticky page nav lives on the left, so we have more breathing room on the right —
+   add extra left padding and trim the right to recenter visually. */
+.contentShift {
+  padding-left: clamp(4rem, 11vw, 9rem) !important;
+  padding-right: clamp(1.5rem, 4vw, 3rem) !important;
+}
+
+
+.onboardingPhone {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 36px;
+  overflow: hidden;
+}
+
+.onboardingPhone video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 36px;
+}
+
 @media (max-width: 768px) {
   .collageGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -68,5 +92,11 @@
 
   .phone {
     max-width: 260px;
+  }
+
+  /* Revert the right-shift on mobile — no room for it */
+  .contentShift {
+    padding-left: clamp(2.5rem, 7vw, 5rem) !important;
+    padding-right: clamp(2.5rem, 7vw, 5rem) !important;
   }
 }
