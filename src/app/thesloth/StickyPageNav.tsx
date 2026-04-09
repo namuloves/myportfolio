@@ -28,8 +28,11 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { id: "mobile-onboarding", label: "Onboarding" },
       { id: "mobile-listing", label: "Resale workflow" },
-      { id: "mobile-discovery", label: "Discovery" },
     ],
+  },
+  {
+    id: "marketing",
+    label: "Marketing",
   },
 ];
 
@@ -52,6 +55,11 @@ export default function StickyPageNav() {
   const [visible, setVisible] = useState(false);
   const [slothProgress, setSlothProgress] = useState(0); // 0..1 along the line
   const [slothRotation, setSlothRotation] = useState(0); // degrees
+  // Drag state for the sloth: when the user grabs it, we override its position
+  // and live-scroll the page so the sloth acts as a scrubber.
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragTopPct, setDragTopPct] = useState<number | null>(null);
+  const navRef = useRef<HTMLElement | null>(null);
   const listRef = useRef<HTMLOListElement | null>(null);
 
   // Fade in only after the rest of the page has finished loading (images,
@@ -223,20 +231,105 @@ export default function StickyPageNav() {
   // these positions as the active section changes, producing a smooth descent
   // down the tree as the user reads through the page.
   const SLOTH_POSITION_MAP: Record<string, number> = {
-    context: 10,
-    desktop: 36,
-    "desktop-chrome": 45,
-    "desktop-p2p": 54,
-    mobile: 55,
-    "mobile-onboarding": 60,
-    "mobile-listing": 65,
-    "mobile-discovery": 70,
+    context: 8,
+    desktop: 22,
+    "desktop-chrome": 32,
+    "desktop-p2p": 44,
+    mobile: 56,
+    "mobile-onboarding": 62,
+    "mobile-listing": 74,
+    marketing: 88,
   };
   const slothTopPct = SLOTH_POSITION_MAP[activeId] ?? 10;
 
+  // While dragging, the sloth follows the pointer (dragTopPct overrides the
+  // auto-computed resting position).
+  const displayTopPct = isDragging && dragTopPct !== null ? dragTopPct : slothTopPct;
+
+  // Scrub-scroll helpers ---------------------------------------------------
+
+  // Scroll the page so a given nav id sits near the top of the viewport.
+  // Uses "instant" behavior while dragging for live feedback; "smooth" when
+  // snapping on release.
+  const scrollToId = (id: string, smooth: boolean) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const offset = 96;
+    const rect = el.getBoundingClientRect();
+    const scrollTop = Math.max(
+      window.scrollY,
+      document.documentElement.scrollTop,
+      document.body.scrollTop
+    );
+    const targetTop = rect.top + scrollTop - offset;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = smooth && !prefersReduced ? "smooth" : "auto";
+    // The scroll container on this page is <body> (html has overflow:hidden),
+    // so we must scroll body as well as window/documentElement.
+    window.scrollTo({ top: targetTop, behavior });
+    document.documentElement.scrollTo({ top: targetTop, behavior });
+    document.body.scrollTo({ top: targetTop, behavior });
+  };
+
+  // Given a vertical percentage (0..100 within the nav), pick the nearest
+  // section id from the sloth position map.
+  const idForPct = (pct: number): string => {
+    let closestId = ALL_IDS[0];
+    let minDist = Infinity;
+    for (const id of ALL_IDS) {
+      const p = SLOTH_POSITION_MAP[id];
+      if (p === undefined) continue;
+      const dist = Math.abs(p - pct);
+      if (dist < minDist) {
+        minDist = dist;
+        closestId = id;
+      }
+    }
+    return closestId;
+  };
+
+  // Convert a clientY (from a pointer event) to a vertical % inside the nav,
+  // clamped to the valid sloth range [10, 70].
+  const clientYToPct = (clientY: number): number => {
+    const nav = navRef.current;
+    if (!nav) return 10;
+    const rect = nav.getBoundingClientRect();
+    const raw = ((clientY - rect.top) / rect.height) * 100;
+    return Math.max(8, Math.min(88, raw));
+  };
+
+  const handleSlothPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    const pct = clientYToPct(e.clientY);
+    setIsDragging(true);
+    setDragTopPct(pct);
+    scrollToId(idForPct(pct), false);
+  };
+
+  const handleSlothPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const pct = clientYToPct(e.clientY);
+    setDragTopPct(pct);
+    scrollToId(idForPct(pct), false);
+  };
+
+  const handleSlothPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+    const pct = clientYToPct(e.clientY);
+    const targetId = idForPct(pct);
+    setIsDragging(false);
+    setDragTopPct(null);
+    // Smooth-scroll to final target so the page settles cleanly.
+    scrollToId(targetId, true);
+  };
+
   return (
     <nav
-      className={`${styles.sideNav} ${visible ? styles.visible : ""}`}
+      ref={navRef}
+      className={`${styles.sideNav} ${visible ? styles.visible : ""} ${isDragging ? styles.dragging : ""}`}
       aria-label="Page sections"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -250,14 +343,22 @@ export default function StickyPageNav() {
 
 
       <div
-        className={styles.slothWrapper}
+        className={`${styles.slothWrapper} ${isDragging ? styles.slothWrapperDragging : ""}`}
         style={{
-          /* Sloth rests next to the active top-level section:
-             Context → 10%, Desktop → 50%, Mobile → 90%. */
-          top: `${slothTopPct}%`,
+          /* Sloth rests next to the active section, or follows the pointer
+             while the user is dragging it. */
+          top: `${displayTopPct}%`,
           transform: `rotate(${slothRotation}deg)`,
         }}
-        aria-hidden="true"
+        onPointerDown={handleSlothPointerDown}
+        onPointerMove={handleSlothPointerMove}
+        onPointerUp={handleSlothPointerUp}
+        onPointerCancel={handleSlothPointerUp}
+        role="slider"
+        aria-label="Scroll position. Drag to navigate sections."
+        aria-valuemin={0}
+        aria-valuemax={ALL_IDS.length - 1}
+        aria-valuenow={Math.max(0, activeIndex)}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

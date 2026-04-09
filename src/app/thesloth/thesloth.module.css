@@ -70,12 +70,70 @@
   padding-right: clamp(1.5rem, 4vw, 3rem) !important;
 }
 
+/* Across the range where the sticky tree nav is visible but the viewport
+   isn't yet wide enough for the default 640px text column, hold the column
+   at 540px so it doesn't grow when the viewport shrinks. */
+@media (min-width: 801px) and (max-width: 1280px) {
+  .contentShift :global([class*="textWrapper"]) {
+    max-width: 540px;
+  }
+}
+
 
 .onboardingPhone {
   width: 100%;
   max-width: 320px;
   border-radius: 36px;
   overflow: hidden;
+}
+
+/* Marketing section — sequential layout: hangtag first, packaging design,
+   then the applied photo. */
+.marketingTagWrapper {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.marketingTagWrapper img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Scope down the tape + applied-photo images inside the Marketing section so
+   they read as secondary to the hangtag. */
+.marketingPackaging {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.marketingPackaging img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Only the flat tape design jiggles on hover. The applied-photo stays still. */
+.marketingTape img {
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.marketingTape:hover img,
+.marketingTape:focus-within img {
+  animation: marketingJiggle 0.5s ease-in-out infinite;
+}
+
+@keyframes marketingJiggle {
+  0%,
+  100% { transform: rotate(0deg) translate(0, 0); }
+  20%  { transform: rotate(-3deg) translate(-3px, 1px); }
+  40%  { transform: rotate(3deg) translate(3px, -1px); }
+  60%  { transform: rotate(-2deg) translate(-2px, 1px); }
+  80%  { transform: rotate(2deg) translate(2px, -1px); }
 }
 
 .onboardingPhone video {

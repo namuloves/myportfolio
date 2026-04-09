@@ -23,7 +23,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.6rem;
   position: relative;
 }
 
@@ -212,15 +212,21 @@
   opacity: 1;
 }
 
-/* Sloth that climbs the line */
+/* Sloth that climbs the line. Draggable scrubber — give it a real hit area
+   and pointer events so users can grab and move it. */
 .slothWrapper {
   position: absolute;
   /* Align with the vertical line: list padding-left offset, line at 5px */
   left: 5px;
   top: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
+  width: 44px;
+  height: 44px;
+  /* Center the hit area on the anchor point (left:5px, top:N%). */
+  margin-left: -22px;
+  margin-top: -22px;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none; /* prevent page scroll while dragging on touch */
   /* transform applied inline (includes rotation); smooth ease when the
      active section changes so the sloth glides to its new resting spot. */
   transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -228,19 +234,31 @@
   z-index: 2;
 }
 
+.slothWrapperDragging {
+  cursor: grabbing;
+  /* Disable the easing during drag so the sloth tracks the pointer 1:1. */
+  transition: none;
+}
+
+/* While dragging, add a subtle affordance to the whole nav. */
+.dragging {
+  user-select: none;
+}
+
 .sloth {
   display: block;
   width: 36px;
   height: auto;
   user-select: none;
+  pointer-events: none; /* drag handled on the wrapper */
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
-  /* Center the image on the wrapper's anchor point */
-  margin-left: -18px;
-  margin-top: -18px;
+  /* Center the sloth image inside the 44×44 wrapper. */
+  margin-left: 4px;
+  margin-top: 4px;
 }
 
-/* Hide on tablet and mobile */
-@media (max-width: 1024px) {
+/* Hide only on smaller tablets and mobile */
+@media (max-width: 800px) {
   .sideNav {
     display: none;
   }

@@ -316,26 +316,6 @@ export default function TheSloth() {
           </div>
         </div>
 
-        {/* Discovery for Resale P2P Marketplace */}
-        <div id="mobile-discovery" className={cs.screenshotSection}>
-          <div className={cs.textWrapper}>
-            <section className={cs.textSection}>
-              <h3>Discovery for Resale P2P Marketplace</h3>
-              <p>
-                Navigating discovery feeds on secondhand resale marketplaces can be frustrating. Poor photos and unclear product details make it hard for shoppers seeking quality items. To address this, I streamlined the feed design, removing the usual promotional clutter found on e-commerce platforms. I envisioned a space where fashion-forward consumers can connect over what truly inspires them: fashion and design.
-              </p>
-            </section>
-          </div>
-          <div className={cs.phoneMockups}>
-            <div className={cs.phone}>
-              <Image src="/sloth/1.home_mockup.png" alt="Mobile home feed" width={300} height={600} unoptimized />
-            </div>
-            <div className={cs.phone}>
-              <Image src="/sloth/2. feed_mockup.png" alt="Mobile social feed with listings" width={300} height={600} unoptimized />
-            </div>
-          </div>
-        </div>
-
         {/* Mobile Product Detail */}
         <div className={cs.screenshotSection}>
           <div className={cs.phoneMockups}>
@@ -345,6 +325,42 @@ export default function TheSloth() {
             <div className={cs.phone}>
               <Image src="/sloth/4.listing - public.png" alt="Mobile listing with secondhand prices" width={300} height={600} unoptimized />
             </div>
+          </div>
+        </div>
+
+        {/* Marketing */}
+        <div id="marketing" className={cs.screenshotSection}>
+          <div className={cs.textWrapper}>
+            <section className={cs.textSection}>
+              <h3>Marketing</h3>
+            </section>
+          </div>
+          <div className={local.marketingTagWrapper}>
+            <Image
+              src="/sloth/sloth-tag-flip-animation-v2.gif"
+              alt="The Sloth hangtag flip animation"
+              width={1200}
+              height={1200}
+              unoptimized
+            />
+          </div>
+          <div className={`${local.marketingPackaging} ${local.marketingTape}`}>
+            <Image
+              src="/sloth/thesloth_packaging.png"
+              alt="The Sloth packaging tape design"
+              width={1920}
+              height={407}
+              unoptimized
+            />
+          </div>
+          <div className={local.marketingPackaging}>
+            <Image
+              src="/sloth/thesloth_packaging2.png"
+              alt="The Sloth packaging tape applied to a shipping package"
+              width={738}
+              height={545}
+              unoptimized
+            />
           </div>
         </div>
 
