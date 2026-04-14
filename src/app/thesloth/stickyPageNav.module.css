@@ -229,7 +229,8 @@
   touch-action: none; /* prevent page scroll while dragging on touch */
   /* transform applied inline (includes rotation); smooth ease when the
      active section changes so the sloth glides to its new resting spot. */
-  transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform, top;
   z-index: 2;
 }
