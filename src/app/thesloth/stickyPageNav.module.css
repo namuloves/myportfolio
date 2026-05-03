@@ -97,7 +97,7 @@
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition: grid-template-rows 0.35s ease, opacity 0.25s ease;
+  transition: grid-template-rows 300ms ease-out, opacity 300ms ease-out;
 }
 
 .collapsible.collapsibleOpen {
@@ -229,8 +229,8 @@
   touch-action: none; /* prevent page scroll while dragging on touch */
   /* transform applied inline (includes rotation); smooth ease when the
      active section changes so the sloth glides to its new resting spot. */
-  transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: top 450ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform, top;
   z-index: 2;
 }
@@ -258,9 +258,43 @@
   margin-top: 4px;
 }
 
-/* Hide only on smaller tablets and mobile */
+/* Mobile: hide the text labels — keep the tree, sloth, and dots only. */
 @media (max-width: 800px) {
   .sideNav {
+    /* Position so the tree trunk centers in the left margin (~24px in). */
+    left: 24px;
+  }
+
+  /* Hide all text — sections and sub-sections — on mobile. */
+  .topLabel,
+  .subLabel,
+  .collapsible {
     display: none;
+  }
+
+  /* Slightly smaller tree so it fits cleanly in the margin. */
+  .tree {
+    height: 76.8px;
+  }
+
+  /* Smaller sloth on mobile. */
+  .sloth {
+    width: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .subDot,
+  .topLabel,
+  .subLabel,
+  .collapsible,
+  .slothWrapper {
+    transition: none;
+  }
+
+  .dotActive,
+  .subDot.dotActive {
+    transform: none;
   }
 }

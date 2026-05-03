@@ -33,7 +33,7 @@
   }
 
 .navVisible {
-    animation: landingContentIn var(--entrance-duration, 1200ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: landingContentIn var(--entrance-duration, 800ms) cubic-bezier(0.16, 1, 0.3, 1) both;
     animation-delay: var(--entrance-delay, 0ms);
     pointer-events: auto;
   }
@@ -122,7 +122,7 @@
 
 .entranceItem {
     --entrance-delay: 0ms;
-    --entrance-duration: 1400ms;
+    --entrance-duration: 900ms;
   }
 
 .pageLayerHidden .entranceItem {
@@ -163,9 +163,9 @@
     filter: blur(0);
     opacity: 1;
     pointer-events: none;
-    transition: opacity 1600ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 1600ms cubic-bezier(0.16, 1, 0.3, 1),
-      filter 1600ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 800ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
 .introOverlayBlur {
@@ -189,7 +189,7 @@
     margin-right: 0.28ch;
     opacity: 0;
     transform: translateY(10px);
-    animation: introWordFadeIn 560ms ease forwards;
+    animation: introWordFadeIn 560ms ease-out forwards;
   }
 
 .introWord:last-child {
@@ -232,7 +232,7 @@
 .heroEnglishLine {
     display: block;
     white-space: nowrap;
-    transition: opacity 420ms ease, filter 520ms ease;
+    transition: opacity 420ms ease-in-out, filter 420ms ease-in-out;
   }
 
 .heroEnglishLineBlotout {
@@ -243,7 +243,7 @@
 .heroWord {
     display: inline-block;
     filter: blur(0);
-    transition: opacity 220ms ease, filter 300ms ease;
+    transition: opacity 220ms ease-in-out, filter 220ms ease-in-out;
     transition-delay: 0ms;
   }
 
@@ -289,7 +289,7 @@
 
 .heroKoreanWord {
     opacity: 0;
-    transition: opacity 1600ms ease;
+    transition: opacity 700ms ease-out;
   }
 
 .heroKoreanChar {
@@ -576,8 +576,8 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-    transition-delay: 120ms;
+    transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 80ms;
   }
 
 .cardImageLoaded {

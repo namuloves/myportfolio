@@ -122,9 +122,18 @@
   will-change: transform;
 }
 
-.marketingTape:hover img,
-.marketingTape:focus-within img {
-  animation: marketingJiggle 0.5s ease-in-out infinite;
+@media (hover: hover) and (pointer: fine) {
+  .marketingTape:hover img,
+  .marketingTape:focus-within img {
+    animation: marketingJiggle 0.5s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketingTape:hover img,
+  .marketingTape:focus-within img {
+    animation: none;
+  }
 }
 
 @keyframes marketingJiggle {
@@ -152,9 +161,9 @@
     max-width: 260px;
   }
 
-  /* Revert the right-shift on mobile — no room for it */
+  /* Symmetric mobile padding — leaves room for the tree margin nav on the left. */
   .contentShift {
-    padding-left: clamp(2.5rem, 7vw, 5rem) !important;
-    padding-right: clamp(2.5rem, 7vw, 5rem) !important;
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
   }
 }

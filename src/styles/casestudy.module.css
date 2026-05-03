@@ -79,7 +79,7 @@
   padding: 0;
   position: relative;
   overflow: hidden;
-  animation: fadeToBlack 0.6s ease-out;
+  animation: fadeToBlack 0.4s ease-out;
 }
 
 :global(:root[data-theme="light"]) .container {
@@ -109,7 +109,7 @@
   display: flex;
   flex-direction: column;
   gap: clamp(3rem, 6vw, 5rem);
-  animation: fadeIn 0.8s ease-out 0.3s both;
+  animation: fadeIn 0.4s ease-out 0.2s both;
 }
 
 /* Hero */
@@ -120,7 +120,7 @@
   text-align: center;
   gap: 1rem;
   padding: clamp(2rem, 6vw, 5rem) 0 clamp(0.5rem, 1.5vw, 1rem);
-  animation: fadeInUp 0.8s ease-out;
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .logoWrapper {
@@ -136,7 +136,7 @@
   background: var(--surface);
   border-radius: 50%;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
-  animation: scaleIn 0.6s ease-out forwards, float 4s ease-in-out infinite 1s;
+  animation: scaleIn 0.5s ease-out forwards;
   overflow: hidden;
 }
 
@@ -196,7 +196,7 @@
   max-width: 640px;
   margin: 0 auto;
   width: 100%;
-  animation: fadeIn 1s ease-out 0.3s both;
+  animation: fadeIn 0.5s ease-out 0.2s both;
 }
 
 .textSection {
@@ -217,19 +217,19 @@
 
 .textSection p {
   margin: 0;
-  animation: fadeInText 1s ease-out both;
+  animation: fadeInText 0.5s ease-out both;
 }
 
 .textSection p:nth-child(1) {
-  animation-delay: 0.5s;
+  animation-delay: 0.3s;
 }
 
 .textSection p:nth-child(2) {
-  animation-delay: 0.7s;
+  animation-delay: 0.45s;
 }
 
 .textSection p:nth-child(3) {
-  animation-delay: 0.9s;
+  animation-delay: 0.6s;
 }
 
 /* Image Containers */
@@ -305,11 +305,11 @@
 }
 
 .twoPhones .phone:nth-child(1) {
-  animation: scaleIn 0.8s ease-out 0.3s both;
+  animation: scaleIn 0.5s ease-out 0.2s both;
 }
 
 .twoPhones .phone:nth-child(2) {
-  animation: scaleIn 0.8s ease-out 0.6s both;
+  animation: scaleIn 0.5s ease-out 0.35s both;
 }
 
 .phone {
@@ -404,7 +404,7 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  transition: all 0.3s ease;
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
   backdrop-filter: blur(10px);
   box-shadow: none;
   text-decoration: none;
@@ -456,13 +456,29 @@
    Responsive
    =========================== */
 
+/* Tablet — phones side-by-side, but smaller and tighter so they don't
+   collide with the sticky page nav at iPad widths. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .twoPhones {
+    gap: 2.5rem;
+  }
+
+  .phoneMockups {
+    gap: 1.5rem;
+  }
+
+  .phone {
+    max-width: 220px;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     --nav-height: 56px;
   }
 
   .content {
-    padding: calc(var(--nav-height) + 1rem) 1.5rem 2rem;
+    padding: calc(var(--nav-height) + 1rem) 3rem 2rem;
     gap: 2rem;
   }
 
@@ -597,5 +613,29 @@
   :global(:root[data-theme="dark"]) .backToHome,
   :global(:root[data-theme="dark"]) .backToTop {
     background: rgba(247, 247, 248, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .content,
+  .hero,
+  .logo,
+  .textWrapper,
+  .textSection p,
+  .twoPhones .phone:nth-child(1),
+  .twoPhones .phone:nth-child(2) {
+    animation: none;
+  }
+
+  .backToHome,
+  .backToTop {
+    transition: none;
+  }
+
+  .backToHome:hover,
+  .backToTop:hover,
+  .backToTop:active {
+    transform: none;
   }
 }
