@@ -115,9 +115,14 @@ export default function ClaimClam() {
   return (
     <main className={cs.container}>
       <nav className={`${mainNavStyles.nav} ${cs.fixedNav}`} aria-label="Site header">
-        <Link href="/" className={mainNavStyles.navLeft}>
-          Namu Park
-        </Link>
+        <div className={mainNavStyles.navLeftGroup}>
+          <Link href="/" className={mainNavStyles.navLeft}>
+            Namu Park
+          </Link>
+          <Link href="/about" className={mainNavStyles.navAbout}>
+            About
+          </Link>
+        </div>
         <div className={mainNavStyles.navRightGroup}>
           <span className={mainNavStyles.navRight}>Brooklyn, New York {brooklynTime}</span>
           <button
