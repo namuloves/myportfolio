@@ -46,6 +46,12 @@
     font-weight: 400;
   }
 
+.navLeftGroup {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+  }
+
 .navRightGroup {
     display: flex;
     align-items: center;
@@ -791,6 +797,87 @@
       max-height: 450px;
     }
   }
+.about {
+    width: 100%;
+    max-width: 600px;
+    margin: clamp(4rem, 10vw, 9rem) auto 0;
+    padding: 0 clamp(1.5rem, 7vw, 3rem) clamp(3rem, 6vw, 5rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+    scroll-margin-top: calc(var(--nav-height) + 1rem);
+  }
+
+.aboutHeadline {
+    font-size: clamp(1.5rem, 3.2vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    color: var(--foreground);
+    margin: 0;
+  }
+
+.aboutBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    color: var(--foreground);
+    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    max-width: 56ch;
+  }
+
+.aboutBody p {
+    margin: 0;
+  }
+
+.aboutClients {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: clamp(1rem, 2vw, 2rem);
+  }
+
+.aboutClientsHeading {
+    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--foreground);
+  }
+
+.aboutClientsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.85rem 1.5rem;
+    color: var(--foreground);
+    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    letter-spacing: -0.005em;
+  }
+
+.aboutClientsList li {
+    line-height: 1.4;
+  }
+
+.navAbout {
+    font-size: 13px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--foreground);
+    text-decoration: none;
+    padding: 0.4rem 0;
+  }
+
+.navAbout:hover {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
 .footer {
     width: 100%;
     height: clamp(12rem, 18vw, 16rem);
