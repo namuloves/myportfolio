@@ -46,6 +46,14 @@
     font-weight: 400;
   }
 
+.navLeft {
+    white-space: nowrap;
+  }
+
+.navRightShort {
+    display: none;
+  }
+
 .navLeftGroup {
     display: flex;
     align-items: center;
@@ -643,7 +651,7 @@
 @media (max-width: 767px) {
   .container {
     --nav-height: 56px;
-    padding: 0 1rem 1.5rem;
+    padding: 0 2rem 1.5rem;
     gap: 1.5rem;
   }
 
@@ -654,6 +662,18 @@
 
   .navRight {
     font-size: 12px;
+  }
+
+  .navRightFull {
+    display: none;
+  }
+
+  .navRightShort {
+    display: inline;
+  }
+
+  .navLeftGroup {
+    gap: 1rem;
   }
 
   .navRightGroup {
@@ -672,6 +692,7 @@
   .heroWrapper {
     margin: 28px auto 0;
   }
+
 
   .introHeadline {
     font-size: 36px;
@@ -973,6 +994,11 @@
   }
 
 @media (max-width: 767px) {
+  .aboutClientsList {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem 1rem;
+  }
+
   .footerRunway {
     height: clamp(8svh, 12vh, 16svh);
   }

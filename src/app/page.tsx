@@ -11,6 +11,7 @@ import {
 } from "react";
 import Link from "next/link";
 import CaseStudyCard from "../components/CaseStudyCard";
+import SiteFooter from "../components/SiteFooter";
 import styles from "../styles/home.module.css";
 import { applyThemeWithTransition } from "../lib/themeTransition";
 import {
@@ -888,7 +889,11 @@ export default function Home() {
           </Link>
         </div>
         <div className={styles.navRightGroup}>
-          <span className={styles.navRight}>Brooklyn, New York {brooklynTime}</span>
+          <span className={styles.navRight}>
+            <span className={styles.navRightFull}>Brooklyn, New York</span>
+            <span className={styles.navRightShort}>Brooklyn, NY</span>
+            {" "}{brooklynTime}
+          </span>
           <button
             type="button"
             className={styles.themeToggle}
@@ -1099,29 +1104,7 @@ export default function Home() {
           </div>
         </section>
 
-        <div className={styles.footer} aria-label="Footer">
-          <div className={styles.footerContact}>
-            <span className={styles.footerIcon} aria-hidden="true">
-              📧
-            </span>
-            <span
-              className={styles.emailLinkWrapper}
-              onMouseEnter={() => handleEmailMouseEnter("footer")}
-              onMouseLeave={handleEmailMouseLeave}
-            >
-              <button
-                onClick={() => handleEmailCopy("footer")}
-                onFocus={() => handleEmailMouseEnter("footer")}
-                onBlur={handleEmailMouseLeave}
-                className={`${styles.emailButton} ${styles.footerEmail}`}
-                aria-label="Copy email address"
-              >
-                hello@namupark.com
-              </button>
-              {activeEmailPreviewTarget === "footer" && renderEmailPreview("footer")}
-            </span>
-          </div>
-        </div>
+        <SiteFooter />
 
       </div>
     </main>

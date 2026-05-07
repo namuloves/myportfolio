@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import cs from "../../styles/casestudy.module.css";
 import local from "./thesloth.module.css";
 import mainNavStyles from "../../styles/home.module.css";
+import SiteFooter from "../../components/SiteFooter";
 import TheSlothLogo from "../../components/TheSlothLogo";
 import StickyPageNav from "./StickyPageNav";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
@@ -126,7 +127,11 @@ export default function TheSloth() {
           </Link>
         </div>
         <div className={mainNavStyles.navRightGroup}>
-          <span className={mainNavStyles.navRight}>Brooklyn, New York {brooklynTime}</span>
+          <span className={mainNavStyles.navRight}>
+            <span className={mainNavStyles.navRightFull}>Brooklyn, New York</span>
+            <span className={mainNavStyles.navRightShort}>Brooklyn, NY</span>
+            {" "}{brooklynTime}
+          </span>
           <button
             type="button"
             className={mainNavStyles.themeToggle}
@@ -409,6 +414,8 @@ export default function TheSloth() {
           </button>
         </div>
       )}
+
+      <SiteFooter />
     </main>
   );
 }
