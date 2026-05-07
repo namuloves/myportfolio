@@ -97,6 +97,13 @@ h3 {
   transition-timing-function: var(--theme-transition-easing);
 }
 
+/* Slow About link and Brooklyn time so they appear in lockstep with Namu Park during theme swap */
+:root.theme-transitioning [class*="navAbout"],
+:root.theme-transitioning [class*="navRight"] {
+  transition-duration: calc(var(--theme-transition-duration) * 1.6);
+  transition-delay: calc(var(--theme-transition-duration) * 0.667);
+}
+
 /* Theme transition: page blurs out, theme swaps behind blur, page sharpens back */
 :root.theme-fx-blur body {
   will-change: filter;
