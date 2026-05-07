@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import mainNavStyles from "../../styles/home.module.css";
+import SiteFooter from "../../components/SiteFooter";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
   type Theme,
@@ -85,7 +86,11 @@ export default function About() {
           </Link>
         </div>
         <div className={mainNavStyles.navRightGroup}>
-          <span className={mainNavStyles.navRight}>Brooklyn, New York {brooklynTime}</span>
+          <span className={mainNavStyles.navRight}>
+            <span className={mainNavStyles.navRightFull}>Brooklyn, New York</span>
+            <span className={mainNavStyles.navRightShort}>Brooklyn, NY</span>
+            {" "}{brooklynTime}
+          </span>
           <button
             type="button"
             className={mainNavStyles.themeToggle}
@@ -150,6 +155,8 @@ export default function About() {
           </ul>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
