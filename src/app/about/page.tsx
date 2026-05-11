@@ -125,9 +125,6 @@ export default function About() {
           <p>
             I started out as a founder building my own company, The Sloth, where I fell in love with design and its power to set a product apart and shape a delightful user experience.
           </p>
-        </div>
-
-        <div className={mainNavStyles.aboutBody}>
           <p>
             I believe that good design is kind design. A thoughtful interface can make someone&rsquo;s day easier, and the right tool can shift how they move through the world. I aim to design software that makes it easy for people to be kind &mdash; to themselves, to those around them, and ultimately, to the planet.
           </p>

@@ -33,10 +33,6 @@ export default function SiteFooter() {
   return (
     <div className={styles.footer} aria-label="Footer">
       <div className={styles.footerContact}>
-        <span className={styles.footerIcon} aria-hidden="true">
-          📧
-        </span>
-        <span>say</span>
         <button
           type="button"
           onClick={handleEmailCopy}
