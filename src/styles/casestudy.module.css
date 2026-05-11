@@ -390,7 +390,8 @@
 }
 
 .backToHome,
-.backToTop {
+.backToTop,
+.nextCase {
   position: relative;
   width: 40px;
   height: 40px;
@@ -411,6 +412,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.nextCase {
+  position: fixed;
+  right: calc(clamp(2.5rem, 7vw, 5rem) + 40px + 0.6rem);
+  top: auto;
+  bottom: 2rem;
+}
+
 .backToHome {
   position: fixed;
   left: clamp(2.5rem, 7vw, 5rem);
@@ -426,19 +434,22 @@
 }
 
 .backToHome:hover,
-.backToTop:hover {
+.backToTop:hover,
+.nextCase:hover {
   background: var(--floating-nav-bg-hover);
   transform: translateY(-2px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
 }
 
-.backToTop:active {
+.backToTop:active,
+.nextCase:active {
   transform: translateY(-1px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .backToHome svg,
-.backToTop svg {
+.backToTop svg,
+.nextCase svg {
   width: 16px;
   height: 16px;
   stroke-linecap: round;
@@ -446,7 +457,8 @@
 }
 
 .backToHomeLabel,
-.backToTopLabel {
+.backToTopLabel,
+.nextCaseLabel {
   display: none;
   font-size: 0.78rem;
   line-height: 1;
@@ -547,31 +559,41 @@
   }
 
   .backToHome,
-  .backToTop {
+  .backToTop,
+  .nextCase {
     width: 36px;
     height: 36px;
   }
 
   :global(:root[data-theme="light"]) .backToHome,
-  :global(:root[data-theme="light"]) .backToTop {
+  :global(:root[data-theme="light"]) .backToTop,
+  :global(:root[data-theme="light"]) .nextCase {
     background: rgba(105, 108, 121, 0.2);
     color: #ffffff;
   }
 
   :global(:root[data-theme="dark"]) .backToHome,
-  :global(:root[data-theme="dark"]) .backToTop {
+  :global(:root[data-theme="dark"]) .backToTop,
+  :global(:root[data-theme="dark"]) .nextCase {
     background: rgba(232, 232, 236, 0.62);
+  }
+
+  .nextCase {
+    display: flex;
+    position: fixed;
+    right: 1rem;
+    bottom: 1.5rem;
   }
 
   .backToTop {
     position: fixed;
-    right: 1rem;
-    bottom: calc(1.5rem + 36px);
+    right: calc(1rem + 36px + 0.4rem);
+    bottom: calc(1.5rem + 24px);
   }
 
   .backToHome {
     left: auto;
-    right: calc(1rem + 36px + 0.4rem);
+    right: calc(1rem + (36px + 0.4rem) * 2);
     top: auto;
     bottom: 1.5rem;
   }
