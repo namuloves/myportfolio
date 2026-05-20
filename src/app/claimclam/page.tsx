@@ -150,9 +150,9 @@ export default function ClaimClam() {
           <h1 className={cs.title}>ClaimClam</h1>
           <div className={cs.metaInfo}>
             <p className={cs.role}>Role: Founding Product Designer</p>
-            <p className={cs.timeline}>Timeline: 2022 - 2024</p>
+            <p className={cs.timeline}>Timeline: 2023 - 2024</p>
           </div>
-          <div className={cs.navPills}>
+          <div className={cs.navPills} style={{ display: 'none' }}>
             <Link href="/" className={cs.navPill}>Home</Link>
             <Link href="/thesloth" className={cs.navPill}>View next</Link>
           </div>
@@ -161,6 +161,9 @@ export default function ClaimClam() {
         {/* Intro Text */}
         <div className={cs.textWrapper}>
           <section className={cs.textSection}>
+            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', margin: 0 }}>
+              Bringing class action claims to everyone
+            </h2>
             <p>
               Before joining the team as a Founding Product Designer in 2023, I had been consulting as a freelance product designer for ClaimClam pre-seed. I designed prototypes and pitch decks reflecting founder&apos;s vision for the company, and learned how complex and confusing class-action settlements can be for users. When they closed the round, I joined the team to not only expand my design experience in B2B2C but also to help design a product where clear and thoughtful user experience can be a meaningful differentiator. 
             </p>
@@ -186,9 +189,9 @@ export default function ClaimClam() {
         {/* Text Section 2 */}
         <div className={cs.textWrapper}>
           <section className={cs.textSection}>
-            <h3>Context</h3>
+            <h3>&ldquo;We need your SSN to pay you.&rdquo; Convincing users wasn&rsquo;t easy.</h3>
             <p>
-            Filing for class action claims can be stressful for users with lots of legalese and confusing terminology. As a designer, I iterated on which elements of class action settlements would be most helpful for users when determining the relevance of a claim. My focus was on presenting complex information in a simple, easy-to-digest way.
+            Class action settlements are buried in legalese, and we were asking users for SSNs, addresses, and bank info just to get paid. Skepticism was the default reaction, and we were losing people mid-flow. I designed for reassurance at every step &mdash; clear language, visible progress, and context for why each piece of information was needed &mdash; so trust could be earned in the moments it mattered most.
             </p>
           </section>
         </div>
@@ -196,10 +199,10 @@ export default function ClaimClam() {
         {/* Two Phone Screenshots */}
         <div className={cs.twoPhones}>
           <div className={cs.phone}>
-            <Image src="/images/1.home_mockup.png" alt="Claims App Home Screen" width={300} height={600} unoptimized />
+            <Image src="/images/1. Explore.png" alt="Claims App Home Screen" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
           </div>
           <div className={cs.phone}>
-            <Image src="/images/2.claims details_mockup.png" alt="Claims App Apple iPhone 7 Audio Issues" width={300} height={600} unoptimized />
+            <Image src="/images/2. Claim detailsv2.png" alt="Claims App Apple iPhone 7 Audio Issues" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
           </div>
         </div>
 
@@ -244,23 +247,29 @@ export default function ClaimClam() {
           </section>
         </div>
 
-        {/* Two Phone Screenshots 2 */}
-        <div className={cs.twoPhones}>
+        {/* Three Phone Screenshots */}
+        <div className={cs.threePhones}>
           <div className={cs.phone}>
-            <Image src="/images/3.payout-1-hq.png" alt="Claims App Payout History Accepted" width={300} height={600} unoptimized />
+            <Image src="/images/3. Filed.png" alt="Claims App Payout History Accepted" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
           </div>
           <div className={cs.phone}>
-            <Image src="/images/4.payout-fail.png" alt="Claims App Error" width={300} height={600} unoptimized />
+            <Image src="/images/3. Accepted.png" alt="Claims App Accepted" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+          <div className={cs.phone}>
+            <Image src="/images/3. Error.png" alt="Claims App Error" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
           </div>
         </div>
 
-        {/* Two Phone Screenshots 3 */}
-        <div className={cs.twoPhones}>
+        {/* Three Phone Screenshots 2 */}
+        <div className={cs.threePhones}>
           <div className={cs.phone}>
-            <Image src="/images/8.connect account.png" alt="Claims App Connect Bank account" width={300} height={600} unoptimized />
+            <Image src="/images/4. View balance.png" alt="Claims App View Balance" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
           </div>
           <div className={cs.phone}>
-            <Image src="/images/7.account_mockup.png" alt="Claim Needs Attention" width={300} height={600} unoptimized />
+            <Image src="/images/5. Connect account.png" alt="Claims App Connect Bank account" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+          <div className={cs.phone}>
+            <Image src="/images/6. my account.png" alt="Claims App My Account" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
           </div>
         </div>
 

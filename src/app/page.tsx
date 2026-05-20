@@ -508,7 +508,7 @@ export default function Home() {
 
   const handleEmailCopy = async (target: EmailPreviewTarget) => {
     try {
-      await navigator.clipboard.writeText("namu.d.park@gmail.com");
+      await navigator.clipboard.writeText("hello@namupark.com");
       setActiveEmailPreviewTarget(target);
       setEmailCopied(true);
       clearEmailHideTimeout();
@@ -1019,7 +1019,7 @@ export default function Home() {
                 className={styles.emailButton}
                 aria-label="Copy email address"
               >
-                namu.d.park@gmail.com
+                hello@namupark.com
               </button>
               {activeEmailPreviewTarget === "main" && renderEmailPreview("main")}
             </span>
@@ -1031,7 +1031,7 @@ export default function Home() {
             <CaseStudyCard
               title="ClaimClam"
               href="/claimclam"
-              image="/images/namupark_claimclam.png"
+              image="/images/ClaimClam_NamuPark_cover.png"
               hoverLabel="Read case study"
             />
           </div>
@@ -1084,7 +1084,7 @@ export default function Home() {
                 className={`${styles.emailButton} ${styles.footerEmail}`}
                 aria-label="Copy email address"
               >
-                namu.d.park@gmail.com
+                hello@namupark.com
               </button>
               {activeEmailPreviewTarget === "footer" && renderEmailPreview("footer")}
             </span>

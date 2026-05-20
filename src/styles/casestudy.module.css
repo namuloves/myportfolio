@@ -83,7 +83,7 @@
 }
 
 :global(:root[data-theme="light"]) .container {
-  --body-gray: #504f59;
+  --body-gray: #676E77;
   --h3-color: var(--foreground);
 }
 
@@ -213,6 +213,7 @@
   color: var(--h3-color);
   font-size: 1.5rem;
   font-weight: 400;
+  line-height: 1.3;
 }
 
 .textSection p {
@@ -310,6 +311,30 @@
 
 .twoPhones .phone:nth-child(2) {
   animation: scaleIn 0.8s ease-out 0.6s both;
+}
+
+.threePhones {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  padding: 2rem 0;
+}
+
+.threePhones .phone {
+  max-width: 260px;
+}
+
+.threePhones .phone:nth-child(1) {
+  animation: scaleIn 0.8s ease-out 0.3s both;
+}
+
+.threePhones .phone:nth-child(2) {
+  animation: scaleIn 0.8s ease-out 0.5s both;
+}
+
+.threePhones .phone:nth-child(3) {
+  animation: scaleIn 0.8s ease-out 0.7s both;
 }
 
 .phone {
@@ -513,6 +538,15 @@
   .twoPhones {
     flex-direction: column;
     gap: 2rem;
+  }
+
+  .threePhones {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .threePhones .phone {
+    max-width: 100%;
   }
 
   .phone {

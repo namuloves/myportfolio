@@ -74,8 +74,8 @@ body {
   padding: 0;
   overflow-y: auto;
   background: var(--home-scroll-bg, var(--background));
-  color: var(--foreground);
-  font-family: var(--font-abc-diatype), -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #858D97;
+  font-family: var(--font-suisse-intl), var(--font-abc-diatype), -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

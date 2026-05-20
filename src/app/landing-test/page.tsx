@@ -159,7 +159,7 @@ export default function Home() {
 
   const handleEmailCopy = async () => {
     try {
-      await navigator.clipboard.writeText("namu.d.park@gmail.com");
+      await navigator.clipboard.writeText("hello@namupark.com");
       setShowEmailPreview(true);
       setEmailCopied(true);
       clearEmailHideTimeout();
@@ -279,7 +279,7 @@ export default function Home() {
                 className={styles.emailButton}
                 aria-label="Copy email address"
               >
-                namu.d.park@gmail.com
+                hello@namupark.com
               </button>
               {showEmailPreview && (
                 <div className={styles.emailPreview} role="status" aria-live="polite">
@@ -359,7 +359,7 @@ export default function Home() {
             <CaseStudyCard
               title="ClaimClam"
               href="/claimclam"
-              image="/images/namupark_claimclam.png"
+              image="/images/ClaimClam_NamuPark_cover.png"
               hoverLabel="Read case study"
             />
           </div>

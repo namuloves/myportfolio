@@ -12,6 +12,14 @@ const abcDiatype = localFont({
   display: "swap",
 });
 
+const suisseIntl = localFont({
+  src: "../fonts/SuisseIntl-Regular.otf",
+  variable: "--font-suisse-intl",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+});
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -70,7 +78,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${abcDiatype.variable} ${geistMono.variable}`}>
+      <body className={`${abcDiatype.variable} ${suisseIntl.variable} ${geistMono.variable}`}>
         {children}
         <Analytics />
       </body>
