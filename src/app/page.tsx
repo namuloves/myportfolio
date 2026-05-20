@@ -11,6 +11,7 @@ import {
 } from "react";
 import Link from "next/link";
 import CaseStudyCard from "../components/CaseStudyCard";
+import SiteFooter from "../components/SiteFooter";
 import styles from "../styles/home.module.css";
 import { applyThemeWithTransition } from "../lib/themeTransition";
 import {
@@ -400,6 +401,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (!isPageVisible) return;
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#about") return;
+
+    const aboutSection = document.getElementById("about");
+    if (!aboutSection) return;
+
+    const scrollTimeout = window.setTimeout(() => {
+      aboutSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+
+    return () => {
+      window.clearTimeout(scrollTimeout);
+    };
+  }, [isPageVisible]);
+
+  useEffect(() => {
     if (firstLineRevealTimeoutRef.current !== null) {
       window.clearTimeout(firstLineRevealTimeoutRef.current);
       firstLineRevealTimeoutRef.current = null;
@@ -518,6 +536,16 @@ export default function Home() {
       }, 1600);
     } catch {
       setEmailCopied(false);
+    }
+  };
+
+  const handleAboutNavClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const aboutSection = document.getElementById("about");
+    if (!aboutSection) return;
+    event.preventDefault();
+    aboutSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (typeof history !== "undefined") {
+      history.replaceState(null, "", "#about");
     }
   };
 
@@ -852,11 +880,20 @@ export default function Home() {
       )}
 
       <nav className={navClassName} style={entranceStyle(20, 1200)} aria-label="Site header">
-        <Link href="/" className={styles.navLeft}>
-          Namu Park
-        </Link>
+        <div className={styles.navLeftGroup}>
+          <Link href="/" className={styles.navLeft}>
+            Namu Park
+          </Link>
+          <Link href="/about" className={styles.navAbout}>
+            About
+          </Link>
+        </div>
         <div className={styles.navRightGroup}>
-          <span className={styles.navRight}>Brooklyn, New York {brooklynTime}</span>
+          <span className={styles.navRight}>
+            <span className={styles.navRightFull}>Brooklyn, New York</span>
+            <span className={styles.navRightShort}>Brooklyn, NY</span>
+            {" "}{brooklynTime}
+          </span>
           <button
             type="button"
             className={styles.themeToggle}
@@ -1067,29 +1104,7 @@ export default function Home() {
           </div>
         </section>
 
-        <div className={styles.footer} aria-label="Footer">
-          <div className={styles.footerContact}>
-            <span className={styles.footerIcon} aria-hidden="true">
-              📧
-            </span>
-            <span
-              className={styles.emailLinkWrapper}
-              onMouseEnter={() => handleEmailMouseEnter("footer")}
-              onMouseLeave={handleEmailMouseLeave}
-            >
-              <button
-                onClick={() => handleEmailCopy("footer")}
-                onFocus={() => handleEmailMouseEnter("footer")}
-                onBlur={handleEmailMouseLeave}
-                className={`${styles.emailButton} ${styles.footerEmail}`}
-                aria-label="Copy email address"
-              >
-                hello@namupark.com
-              </button>
-              {activeEmailPreviewTarget === "footer" && renderEmailPreview("footer")}
-            </span>
-          </div>
-        </div>
+        <SiteFooter />
 
       </div>
     </main>

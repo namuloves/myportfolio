@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import cs from "../../styles/casestudy.module.css";
 import local from "./claimclam.module.css";
 import mainNavStyles from "../../styles/home.module.css";
+import SiteFooter from "../../components/SiteFooter";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
   type Theme,
@@ -115,11 +116,20 @@ export default function ClaimClam() {
   return (
     <main className={cs.container}>
       <nav className={`${mainNavStyles.nav} ${cs.fixedNav}`} aria-label="Site header">
-        <Link href="/" className={mainNavStyles.navLeft}>
-          Namu Park
-        </Link>
+        <div className={mainNavStyles.navLeftGroup}>
+          <Link href="/" className={mainNavStyles.navLeft}>
+            Namu Park
+          </Link>
+          <Link href="/about" className={mainNavStyles.navAbout}>
+            About
+          </Link>
+        </div>
         <div className={mainNavStyles.navRightGroup}>
-          <span className={mainNavStyles.navRight}>Brooklyn, New York {brooklynTime}</span>
+          <span className={mainNavStyles.navRight}>
+            <span className={mainNavStyles.navRightFull}>Brooklyn, New York</span>
+            <span className={mainNavStyles.navRightShort}>Brooklyn, NY</span>
+            {" "}{brooklynTime}
+          </span>
           <button
             type="button"
             className={mainNavStyles.themeToggle}
@@ -306,8 +316,17 @@ export default function ClaimClam() {
             </svg>
             <span className={cs.backToTopLabel}>Top</span>
           </button>
+
+          <Link href="/thesloth" className={cs.nextCase}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            <span className={cs.nextCaseLabel}>Next</span>
+          </Link>
         </div>
       )}
+
+      <SiteFooter />
     </main>
   );
 }

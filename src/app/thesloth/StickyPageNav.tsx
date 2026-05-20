@@ -230,21 +230,37 @@ export default function StickyPageNav() {
   // Explicit vertical % for every nav id. The sloth moves through each of
   // these positions as the active section changes, producing a smooth descent
   // down the tree as the user reads through the page.
-  const SLOTH_POSITION_MAP: Record<string, number> = {
-    context: 8,
-    desktop: 22,
-    "desktop-chrome": 32,
-    "desktop-p2p": 44,
-    mobile: 56,
-    "mobile-onboarding": 62,
-    "mobile-listing": 74,
-    marketing: 88,
+  const SLOTH_POSITION_MAP: Record<string, { top: number; left: number }> = {
+    context:              { top: 8,  left:  0 },
+    desktop:              { top: 22, left:  14 },
+    "desktop-chrome":     { top: 32, left: -6 },
+    "desktop-p2p":        { top: 44, left:  12 },
+    mobile:               { top: 56, left: -4 },
+    "mobile-onboarding":  { top: 62, left:  10 },
+    "mobile-listing":     { top: 74, left: -8 },
+    marketing:            { top: 88, left:  6 },
   };
-  const slothTopPct = SLOTH_POSITION_MAP[activeId] ?? 10;
+  const slothPos = SLOTH_POSITION_MAP[activeId] ?? { top: 10, left: 0 };
+  const slothTopPct = slothPos.top;
+  const slothLeftPx = slothPos.left;
 
   // While dragging, the sloth follows the pointer (dragTopPct overrides the
   // auto-computed resting position).
   const displayTopPct = isDragging && dragTopPct !== null ? dragTopPct : slothTopPct;
+  // When dragging, interpolate left offset from the two nearest mapped positions
+  const displayLeftPx = isDragging && dragTopPct !== null
+    ? (() => {
+        const entries = ALL_IDS.map((id) => SLOTH_POSITION_MAP[id]).filter(Boolean);
+        let below = entries[0], above = entries[entries.length - 1];
+        for (const e of entries) {
+          if (e.top <= dragTopPct) below = e;
+          if (e.top >= dragTopPct && above === entries[entries.length - 1]) above = e;
+        }
+        if (below === above) return below.left;
+        const t = (dragTopPct - below.top) / (above.top - below.top);
+        return below.left + (above.left - below.left) * t;
+      })()
+    : slothLeftPx;
 
   // Scrub-scroll helpers ---------------------------------------------------
 
@@ -277,9 +293,9 @@ export default function StickyPageNav() {
     let closestId = ALL_IDS[0];
     let minDist = Infinity;
     for (const id of ALL_IDS) {
-      const p = SLOTH_POSITION_MAP[id];
-      if (p === undefined) continue;
-      const dist = Math.abs(p - pct);
+      const pos = SLOTH_POSITION_MAP[id];
+      if (pos === undefined) continue;
+      const dist = Math.abs(pos.top - pct);
       if (dist < minDist) {
         minDist = dist;
         closestId = id;
@@ -346,9 +362,9 @@ export default function StickyPageNav() {
         className={`${styles.slothWrapper} ${isDragging ? styles.slothWrapperDragging : ""}`}
         style={{
           /* Sloth rests next to the active section, or follows the pointer
-             while the user is dragging it. */
+             while the user is dragging it. Zig-zags left/right as it descends. */
           top: `${displayTopPct}%`,
-          transform: `rotate(${slothRotation}deg)`,
+          transform: `translateX(${displayLeftPx}px) rotate(${slothRotation}deg)`,
         }}
         onPointerDown={handleSlothPointerDown}
         onPointerMove={handleSlothPointerMove}

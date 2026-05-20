@@ -79,7 +79,7 @@
   padding: 0;
   position: relative;
   overflow: hidden;
-  animation: fadeToBlack 0.6s ease-out;
+  animation: fadeToBlack 0.4s ease-out;
 }
 
 :global(:root[data-theme="light"]) .container {
@@ -109,7 +109,7 @@
   display: flex;
   flex-direction: column;
   gap: clamp(3rem, 6vw, 5rem);
-  animation: fadeIn 0.8s ease-out 0.3s both;
+  animation: fadeIn 0.4s ease-out 0.2s both;
 }
 
 /* Hero */
@@ -120,7 +120,7 @@
   text-align: center;
   gap: 1rem;
   padding: clamp(2rem, 6vw, 5rem) 0 clamp(0.5rem, 1.5vw, 1rem);
-  animation: fadeInUp 0.8s ease-out;
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .logoWrapper {
@@ -136,7 +136,7 @@
   background: var(--surface);
   border-radius: 50%;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
-  animation: scaleIn 0.6s ease-out forwards, float 4s ease-in-out infinite 1s;
+  animation: scaleIn 0.5s ease-out forwards;
   overflow: hidden;
 }
 
@@ -196,7 +196,7 @@
   max-width: 640px;
   margin: 0 auto;
   width: 100%;
-  animation: fadeIn 1s ease-out 0.3s both;
+  animation: fadeIn 0.5s ease-out 0.2s both;
 }
 
 .textSection {
@@ -218,19 +218,19 @@
 
 .textSection p {
   margin: 0;
-  animation: fadeInText 1s ease-out both;
+  animation: fadeInText 0.5s ease-out both;
 }
 
 .textSection p:nth-child(1) {
-  animation-delay: 0.5s;
+  animation-delay: 0.3s;
 }
 
 .textSection p:nth-child(2) {
-  animation-delay: 0.7s;
+  animation-delay: 0.45s;
 }
 
 .textSection p:nth-child(3) {
-  animation-delay: 0.9s;
+  animation-delay: 0.6s;
 }
 
 /* Image Containers */
@@ -306,11 +306,11 @@
 }
 
 .twoPhones .phone:nth-child(1) {
-  animation: scaleIn 0.8s ease-out 0.3s both;
+  animation: scaleIn 0.5s ease-out 0.2s both;
 }
 
 .twoPhones .phone:nth-child(2) {
-  animation: scaleIn 0.8s ease-out 0.6s both;
+  animation: scaleIn 0.5s ease-out 0.35s both;
 }
 
 .threePhones {
@@ -415,7 +415,8 @@
 }
 
 .backToHome,
-.backToTop {
+.backToTop,
+.nextCase {
   position: relative;
   width: 40px;
   height: 40px;
@@ -429,11 +430,18 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  transition: all 0.3s ease;
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
   backdrop-filter: blur(10px);
   box-shadow: none;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.nextCase {
+  position: fixed;
+  right: calc(clamp(2.5rem, 7vw, 5rem) + 40px + 0.6rem);
+  top: auto;
+  bottom: 2rem;
 }
 
 .backToHome {
@@ -451,19 +459,22 @@
 }
 
 .backToHome:hover,
-.backToTop:hover {
+.backToTop:hover,
+.nextCase:hover {
   background: var(--floating-nav-bg-hover);
   transform: translateY(-2px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
 }
 
-.backToTop:active {
+.backToTop:active,
+.nextCase:active {
   transform: translateY(-1px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .backToHome svg,
-.backToTop svg {
+.backToTop svg,
+.nextCase svg {
   width: 16px;
   height: 16px;
   stroke-linecap: round;
@@ -471,7 +482,8 @@
 }
 
 .backToHomeLabel,
-.backToTopLabel {
+.backToTopLabel,
+.nextCaseLabel {
   display: none;
   font-size: 0.78rem;
   line-height: 1;
@@ -481,13 +493,29 @@
    Responsive
    =========================== */
 
+/* Tablet — phones side-by-side, but smaller and tighter so they don't
+   collide with the sticky page nav at iPad widths. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .twoPhones {
+    gap: 2.5rem;
+  }
+
+  .phoneMockups {
+    gap: 1.5rem;
+  }
+
+  .phone {
+    max-width: 220px;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     --nav-height: 56px;
   }
 
   .content {
-    padding: calc(var(--nav-height) + 1rem) 1.5rem 2rem;
+    padding: calc(var(--nav-height) + 1rem) 3rem 2rem;
     gap: 2rem;
   }
 
@@ -565,31 +593,41 @@
   }
 
   .backToHome,
-  .backToTop {
+  .backToTop,
+  .nextCase {
     width: 36px;
     height: 36px;
   }
 
   :global(:root[data-theme="light"]) .backToHome,
-  :global(:root[data-theme="light"]) .backToTop {
+  :global(:root[data-theme="light"]) .backToTop,
+  :global(:root[data-theme="light"]) .nextCase {
     background: rgba(105, 108, 121, 0.2);
     color: #ffffff;
   }
 
   :global(:root[data-theme="dark"]) .backToHome,
-  :global(:root[data-theme="dark"]) .backToTop {
+  :global(:root[data-theme="dark"]) .backToTop,
+  :global(:root[data-theme="dark"]) .nextCase {
     background: rgba(232, 232, 236, 0.62);
+  }
+
+  .nextCase {
+    display: flex;
+    position: fixed;
+    right: 1rem;
+    bottom: 1.5rem;
   }
 
   .backToTop {
     position: fixed;
-    right: 1rem;
-    bottom: calc(1.5rem + 36px);
+    right: calc(1rem + 36px + 0.4rem);
+    bottom: calc(1.5rem + 24px);
   }
 
   .backToHome {
     left: auto;
-    right: calc(1rem + 36px + 0.4rem);
+    right: calc(1rem + (36px + 0.4rem) * 2);
     top: auto;
     bottom: 1.5rem;
   }
@@ -631,5 +669,29 @@
   :global(:root[data-theme="dark"]) .backToHome,
   :global(:root[data-theme="dark"]) .backToTop {
     background: rgba(247, 247, 248, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .content,
+  .hero,
+  .logo,
+  .textWrapper,
+  .textSection p,
+  .twoPhones .phone:nth-child(1),
+  .twoPhones .phone:nth-child(2) {
+    animation: none;
+  }
+
+  .backToHome,
+  .backToTop {
+    transition: none;
+  }
+
+  .backToHome:hover,
+  .backToTop:hover,
+  .backToTop:active {
+    transform: none;
   }
 }
