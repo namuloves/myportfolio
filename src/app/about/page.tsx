@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import mainNavStyles from "../../styles/home.module.css";
 import SiteFooter from "../../components/SiteFooter";
+import AboutLinkPreview from "../../components/AboutLinkPreview";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
   type Theme,
@@ -120,10 +121,10 @@ export default function About() {
             I&rsquo;m currently working as a fractional design partner with founders and entrepreneurs across consumer, B2B, fintech, AI, and healthcare.
           </p>
           <p>
-            Previously Founding Product Designer at Chariot Claims (formerly Claim Clam), where I shaped the visual language and designed the consumer app from scratch &mdash; processing over $2M in payouts.
+            Previously Founding Product Designer at <AboutLinkPreview href="/claimclam" images={["/images/ClaimClam_NamuPark_cover.png", "/images/1. Explore.png", "/images/3. Filed.png"]}>ClaimClam</AboutLinkPreview> (rebranded to <em>Chariot Claims</em>), where I shaped the visual language and designed the consumer app from scratch &mdash; processing over $2M in payouts.
           </p>
           <p>
-            I started out as a founder building my own company, The Sloth, where I fell in love with design and its power to set a product apart and shape a delightful user experience.
+            I started out as a founder building my own company, <AboutLinkPreview href="/thesloth" images={["/sloth/sloth_Chrome extension_preview_ssense.png", "/sloth/Product page_101624portfolio.png", "/sloth/The Sloth board view_v1_OCT 2024.png"]}>The Sloth</AboutLinkPreview>, where I fell in love with design and its power to set a product apart and shape a delightful user experience.
           </p>
           <p>
             I believe that good design is kind design. A thoughtful interface can make someone&rsquo;s day easier, and the right tool can shift how they move through the world. I aim to design software that makes it easy for people to be kind &mdash; to themselves, to those around them, and ultimately, to the planet.
@@ -137,7 +138,7 @@ export default function About() {
           <h2 className={mainNavStyles.aboutClientsHeading}>Clients</h2>
           <ul className={mainNavStyles.aboutClientsList}>
             <li>Asilica</li>
-            <li>Cerv AI</li>
+            <li>Fastrak AI</li>
             <li>Domos</li>
             <li>Excellence</li>
             <li>Gena AI</li>

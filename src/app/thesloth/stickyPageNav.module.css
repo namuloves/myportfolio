@@ -70,9 +70,9 @@
 }
 
 .topLabel {
-  font-size: 0.875rem;
-  /* Inactive: faded gray */
-  color: rgba(119, 119, 119, 0.45);
+  font-size: 0.8rem;
+  /* Inactive: faded gray (matches ClaimClam rail) */
+  color: #B8BCC2;
   text-decoration: none;
   font-weight: 400;
   letter-spacing: 0;
@@ -83,12 +83,12 @@
 }
 
 .topLabel:hover {
-  color: var(--muted, #777);
+  color: var(--foreground);
 }
 
 .labelActive {
-  /* Active: full gray */
-  color: var(--muted, #777);
+  /* Active: foreground (matches ClaimClam rail) */
+  color: var(--foreground);
   font-weight: 500;
 }
 
@@ -154,21 +154,22 @@
 }
 
 .subLabel {
-  font-size: 0.78rem;
-  /* Inactive: faded gray */
-  color: rgba(153, 153, 153, 0.4);
+  font-size: 0.8rem;
+  /* Inactive: faded gray (matches ClaimClam rail) */
+  color: #B8BCC2;
   text-decoration: none;
   transition: color 0.2s ease;
   cursor: pointer;
 }
 
 .subLabel:hover {
-  color: var(--muted, #999);
+  color: var(--foreground);
 }
 
 .subLabel.labelActive {
-  /* Active: full gray */
-  color: var(--muted, #999);
+  /* Active: foreground (matches ClaimClam rail) */
+  color: var(--foreground);
+  font-weight: 500;
 }
 
 /* Apples scattered over the tree canopy */

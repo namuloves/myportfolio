@@ -9,3 +9,18 @@
   border-radius: 50%;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
 }
+
+/* Shift content right when the sticky page nav is visible, so the centered
+   content optically sits between the rail and the right edge of the viewport. */
+@media (min-width: 1100px) {
+  .contentShift {
+    padding-left: clamp(6rem, 14vw, 16.75rem) !important;
+    padding-right: clamp(2.5rem, 7vw, 5rem) !important;
+  }
+}
+
+/* Tighten the section-to-section gap on ClaimClam from clamp(3rem, 6vw, 5rem)
+   (up to 80px) down to 4rem (64px). */
+.contentShift {
+  gap: 4rem !important;
+}

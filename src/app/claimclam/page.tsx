@@ -7,6 +7,7 @@ import cs from "../../styles/casestudy.module.css";
 import local from "./claimclam.module.css";
 import mainNavStyles from "../../styles/home.module.css";
 import SiteFooter from "../../components/SiteFooter";
+import ClaimClamPageNav from "./ClaimClamPageNav";
 import { applyThemeWithTransition } from "../../lib/themeTransition";
 import {
   type Theme,
@@ -149,18 +150,42 @@ export default function ClaimClam() {
         </div>
       </nav>
 
-      <div className={cs.content}>
+      <ClaimClamPageNav />
+
+      <div className={`${cs.content} ${local.contentShift}`}>
         {/* Hero Section */}
-        <section className={`${cs.hero} ${local.hero}`}>
+        <section id="overview" className={`${cs.hero} ${local.hero}`}>
           <div className={cs.logoWrapper}>
             <div className={`${cs.logo} ${local.logo}`}>
           <Image src="/images/ClaimClam_Logo.png" alt="ClaimClam Logo" width={200} height={200} unoptimized />
             </div>
           </div>
-          <h1 className={cs.title}>ClaimClam</h1>
-          <div className={cs.metaInfo}>
-            <p className={cs.role}>Role: Founding Product Designer</p>
-            <p className={cs.timeline}>Timeline: 2023 - 2024</p>
+          <h3 className={cs.title}>ClaimClam</h3>
+          <div className={cs.projectMeta}>
+            <div className={cs.projectMetaCol}>
+              <span className={cs.projectMetaLabel}>Role &amp; Timeline</span>
+              <p className={cs.projectMetaValue}>
+                Founding Product
+                <br />Designer
+                <br />2023 &ndash; 2024
+              </p>
+            </div>
+            <div className={cs.projectMetaCol}>
+              <span className={cs.projectMetaLabel}>Team</span>
+              <p className={cs.projectMetaValue}>
+                1 CEO
+                <br />3 Engineers
+                <br />1 Designer (me!)
+              </p>
+            </div>
+            <div className={cs.projectMetaCol}>
+              <span className={cs.projectMetaLabel}>Skills</span>
+              <p className={cs.projectMetaValue}>
+                Product Design
+                <br />User Research
+                <br />Prototyping
+              </p>
+            </div>
           </div>
           <div className={cs.navPills} style={{ display: 'none' }}>
             <Link href="/" className={cs.navPill}>Home</Link>
@@ -171,11 +196,17 @@ export default function ClaimClam() {
         {/* Intro Text */}
         <div className={cs.textWrapper}>
           <section className={cs.textSection}>
-            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', margin: 0 }}>
+            <h1 style={{ fontSize: '40px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>
               Bringing class action claims to everyone
-            </h2>
+            </h1>
             <p>
-              Before joining the team as a Founding Product Designer in 2023, I had been consulting as a freelance product designer for ClaimClam pre-seed. I designed prototypes and pitch decks reflecting founder&apos;s vision for the company, and learned how complex and confusing class-action settlements can be for users. When they closed the round, I joined the team to not only expand my design experience in B2B2C but also to help design a product where clear and thoughtful user experience can be a meaningful differentiator. 
+              Before joining the team as a Founding Product Designer in 2023, I had been consulting as a freelance product designer for ClaimClam pre-seed. I designed prototypes and pitch decks reflecting founder&apos;s vision for the company, and learned how complex and confusing class-action settlements can be for users.
+            </p>
+            <p>
+              In 2024, the top 10 U.S. class action settlements totaled ~$42 billion, yet FTC research shows that only 4&ndash;9% of eligible consumers typically filed a claim.
+            </p>
+            <p>
+              I joined the team to not only expand my design experience in B2B2C but also to help design a product where clear and thoughtful user experience can be a meaningful differentiator for the product.
             </p>
             <div className={cs.phoneContainer}>
               <div className={cs.phone}>
@@ -197,11 +228,11 @@ export default function ClaimClam() {
         </div>
 
         {/* Text Section 2 */}
-        <div className={cs.textWrapper}>
+        <div id="trust" className={cs.textWrapper}>
           <section className={cs.textSection}>
-            <h3>&ldquo;We need your SSN to pay you.&rdquo; Convincing users wasn&rsquo;t easy.</h3>
+            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>In its early days, ClaimClam faced skepticism from both users and regulators.</h2>
             <p>
-            Class action settlements are buried in legalese, and we were asking users for SSNs, addresses, and bank info just to get paid. Skepticism was the default reaction, and we were losing people mid-flow. I designed for reassurance at every step &mdash; clear language, visible progress, and context for why each piece of information was needed &mdash; so trust could be earned in the moments it mattered most.
+            In the early days, ClaimClam faced real pushback from users and regulators who questioned its credibility. So I centered my design process around one signal above all else: trust. There weren&rsquo;t many tech startups serving users in the class action settlement space; most people only encountered settlements through paper mail or emails buried in their spam folder. I saw this as an opportunity to position ClaimClam as a more cohesive, put-together alternative.
             </p>
           </section>
         </div>
@@ -216,9 +247,59 @@ export default function ClaimClam() {
           </div>
         </div>
 
-        <div className={cs.textWrapper}>
+        <div id="filing-flow" className={cs.textWrapper}>
           <section className={cs.textSection}>
-            <h3>Design System</h3>
+            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>Making class action filing feel credible and approachable</h2>
+            <p>
+              The window between submitting a claim and seeing money in your account can stretch weeks or months. As of today, after you file, you have no idea what happens. Did they accept? When am I getting paid? Instead of leaving users to refresh and wonder, we treated the wait as a design surface.
+            </p>
+            <p>
+              Two decisions came out of that. First, a bold cover for each state &mdash; easy to recognize at a glance, and a real moment to celebrate when a claim is approved.
+            </p>
+            <p>
+              Second, a step-by-step timeline that sets expectations and quietly educates users on how the process actually works. The dual benefit: less anxiety while waiting, and a reason to come back to the app between updates.
+            </p>
+          </section>
+        </div>
+
+        {/* Three Phone Screenshots */}
+        <div className={cs.threePhones}>
+          <div className={cs.phone}>
+            <Image src="/images/3. Filed.png" alt="Claims App Payout History Accepted" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+          <div className={cs.phone}>
+            <Image src="/images/3. Accepted.png" alt="Claims App Accepted" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+          <div className={cs.phone}>
+            <Image src="/images/3. Error.png" alt="Claims App Error" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+        </div>
+
+        <div id="payouts" className={cs.textWrapper}>
+          <section className={cs.textSection}>
+            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>Designing to reduce risk, not innovate.</h2>
+            <p>In payments, sending money is harder than receiving it. Mass-payout infrastructure (ACH, PayPal mass pay, KYC checks) is fragile &mdash; a single typo in an account number means returned funds, fees, and broken trust.</p>
+            <p>While the Company was working through payment infrastructure setup, I focused on what design could control: one question per screen to reduce errors, re-entry validation for the account number, and an explicit confirmation step before submit.</p>
+            <p>The goal wasn&rsquo;t to innovate &mdash; it was to make sure every user got paid the first time.</p>
+          </section>
+        </div>
+
+        {/* Three Phone Screenshots 2 */}
+        <div className={cs.threePhones}>
+          <div className={cs.phone}>
+            <Image src="/images/4. View balance.png" alt="Claims App View Balance" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+          <div className={cs.phone}>
+            <Image src="/images/5. Connect account.png" alt="Claims App Connect Bank account" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+          <div className={cs.phone}>
+            <Image src="/images/6. my account.png" alt="Claims App My Account" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
+          </div>
+        </div>
+
+        <div id="design-system" className={cs.textWrapper}>
+          <section className={cs.textSection}>
+            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>Design System</h2>
             <p>
               Class action is a unique niche dominated by law firms. I saw this as an opportunity to bring a fresh and modern perspective as a start-up. For example, we employed vibrant colors and design elements like dialogs and timelines to anticipate questions and clearly communicate the overall process.
             </p>
@@ -245,53 +326,16 @@ export default function ClaimClam() {
           </div>
         </div>
 
-        {/* Text Section 3 */}
-        <div className={cs.textWrapper}>
-          <section className={cs.textSection}>
-            <p>
-              Throughout the process, I designed with these key questions in mind: how can I make this complicated filing process clear? How can we strike the right balance between approachability while establishing trust and credibility?
-            </p>
-            <p>
-              Because there&apos;s a lot of scammers and spammers online, users are understandably skeptical about any service that claims to help them – especially one that involves recouping unclaimed money. Since we ask for sensitive personal information to file a claim, I tried to embed elements of trust and incentives to create a feeling that we&apos;re guiding users throughout the process.
-            </p>
-          </section>
-        </div>
-
-        {/* Three Phone Screenshots */}
-        <div className={cs.threePhones}>
-          <div className={cs.phone}>
-            <Image src="/images/3. Filed.png" alt="Claims App Payout History Accepted" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
-          </div>
-          <div className={cs.phone}>
-            <Image src="/images/3. Accepted.png" alt="Claims App Accepted" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
-          </div>
-          <div className={cs.phone}>
-            <Image src="/images/3. Error.png" alt="Claims App Error" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
-          </div>
-        </div>
-
-        {/* Three Phone Screenshots 2 */}
-        <div className={cs.threePhones}>
-          <div className={cs.phone}>
-            <Image src="/images/4. View balance.png" alt="Claims App View Balance" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
-          </div>
-          <div className={cs.phone}>
-            <Image src="/images/5. Connect account.png" alt="Claims App Connect Bank account" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
-          </div>
-          <div className={cs.phone}>
-            <Image src="/images/6. my account.png" alt="Claims App My Account" width={300} height={600} unoptimized style={{ border: '1px solid #E8E8E9', borderRadius: '24px' }} />
-          </div>
-        </div>
-
         {/* Closing Section */}
-        <div className={cs.textWrapper}>
+        <div id="outcome" className={cs.textWrapper}>
           <section className={cs.textSection}>
+            <h2 style={{ fontSize: '32px', color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>Impact &amp; Reflection</h2>
             <p>The Company served about 8 settlements and processed up to ~$2M in total claims value, serving more than ~22k users in America before they pivoted its business model to B2B in 2024. My design helped the Company process massive user payouts en mass, while while discovery section led to improved LTV and lowering CAC for users. </p> <p> The Company changed its name to Chariot Claim as of 2025.</p>
           </section>
         </div>
 
         {/* Bottom Nav Pills */}
-        <div className={`${cs.hero} ${local.hero}`}>
+        <div className={`${cs.hero} ${local.hero}`} style={{ display: 'none' }}>
           <div className={cs.navPills}>
             <Link href="/" className={cs.navPill}>Home</Link>
             <Link href="/thesloth" className={cs.navPill}>View next</Link>

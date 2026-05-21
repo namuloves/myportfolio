@@ -161,12 +161,12 @@ export default function TheSloth() {
               <TheSlothLogo className={local.logoImage} />
             </div>
           </div>
-          <h1 className={cs.title}>The Sloth</h1>
+          <h3 className={cs.title}>The Sloth</h3>
           <div className={cs.metaInfo}>
             <p className={cs.role}>Role: Founder, Designer</p>
             <p className={cs.timeline}>Years: 2019-2023</p>
           </div>
-          <div className={cs.navPills}>
+          <div className={cs.navPills} style={{ display: 'none' }}>
             <Link href="/" className={cs.navPill}>Home</Link>
             <Link href="/claimclam" className={cs.navPill}>View next</Link>
           </div>
@@ -387,7 +387,7 @@ export default function TheSloth() {
         </div>
 
         {/* Bottom Nav Pills */}
-        <div className={cs.hero} style={{ padding: 0 }}>
+        <div className={cs.hero} style={{ padding: 0, display: 'none' }}>
           <div className={cs.navPills}>
             <Link href="/" className={cs.navPill}>Home</Link>
             <Link href="/claimclam" className={cs.navPill}>View next</Link>
