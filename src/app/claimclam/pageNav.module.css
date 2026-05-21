@@ -59,13 +59,3 @@
   white-space: nowrap;
 }
 
-/* Apply scroll-margin globally to all anchor targets used by the page nav so
-   the section header sits below the fixed site nav when scrolled-to. */
-:global(#overview),
-:global(#trust),
-:global(#design-system),
-:global(#filing-flow),
-:global(#payouts),
-:global(#outcome) {
-  scroll-margin-top: 96px;
-}

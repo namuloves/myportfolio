@@ -24,3 +24,15 @@
 .contentShift {
   gap: 4rem !important;
 }
+
+/* Apply scroll-margin to anchor targets used by the page nav so the section
+   header sits below the fixed site nav when scrolled-to. Nested under the
+   local .contentShift so CSS Modules' "pure" rule is satisfied. */
+.contentShift :global(#overview),
+.contentShift :global(#trust),
+.contentShift :global(#design-system),
+.contentShift :global(#filing-flow),
+.contentShift :global(#payouts),
+.contentShift :global(#outcome) {
+  scroll-margin-top: 96px;
+}
