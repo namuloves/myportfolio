@@ -257,7 +257,11 @@
 
 @media (max-width: 640px) {
   .heroEnglishLine {
+    display: inline;
     white-space: normal;
+  }
+  .heroEnglishLine:not(:last-child)::after {
+    content: " ";
   }
 }
 
