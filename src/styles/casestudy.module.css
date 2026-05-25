@@ -691,7 +691,7 @@
     left: auto;
     right: calc(1rem + (36px + 0.4rem) * 2);
     top: auto;
-    bottom: 1.5rem;
+    bottom: 72px;
   }
 }
 

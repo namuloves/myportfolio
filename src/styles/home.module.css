@@ -231,11 +231,14 @@
     font-weight: 400;
     line-height: 1.2;
     letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    max-width: 100%;
   }
 
 .heroInteractive {
     position: relative;
     width: fit-content;
+    max-width: 100%;
     margin: 0 auto;
     cursor: default;
     touch-action: pan-y;
