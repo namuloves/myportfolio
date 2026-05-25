@@ -255,6 +255,12 @@
     transition: opacity 420ms ease-in-out, filter 420ms ease-in-out;
   }
 
+@media (max-width: 640px) {
+  .heroEnglishLine {
+    white-space: normal;
+  }
+}
+
 .heroEnglishLineBlotout {
     opacity: 0;
     filter: blur(10px);
