@@ -1,5 +1,64 @@
 /* ClaimClam - page-specific overrides only */
 
+/* Shared 3-column grid (claimclam + thesloth use identical structure).
+   Nav is position:fixed and lives OUTSIDE grid flow. Grid column 1 reserves
+   space so content doesn't overlap with fixed nav. */
+.layout {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + clamp(1.5rem, 3vw, 2.5rem)) clamp(1.5rem, 4vw, 3rem) clamp(4rem, 10vw, 8rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  animation: fadeIn 0.4s ease-out 0.2s both;
+}
+
+@media (min-width: 1100px) {
+  .layout {
+    grid-template-columns:
+      minmax(180px, 1fr)
+      minmax(0, 56rem)
+      minmax(0, 1fr);
+    column-gap: clamp(2rem, 4vw, 4rem);
+  }
+}
+
+.layoutAside {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .layoutAside {
+    display: block;
+    position: fixed;
+    left: clamp(1.5rem, 4vw, 3rem);
+    top: 50%;
+    transform: translateY(-50%);
+    height: fit-content;
+    z-index: 100;
+  }
+}
+
+.layoutContent {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .layoutContent {
+    grid-column: 2;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .hero {
   padding: 0;
 }
@@ -10,19 +69,10 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
 }
 
-/* Shift content right when the sticky page nav is visible, so the centered
-   content optically sits between the rail and the right edge of the viewport. */
-@media (min-width: 1100px) {
-  .contentShift {
-    padding-left: clamp(6rem, 14vw, 16.75rem) !important;
-    padding-right: clamp(2.5rem, 7vw, 5rem) !important;
-  }
-}
-
 /* Tighten the section-to-section gap on ClaimClam from clamp(3rem, 6vw, 5rem)
    (up to 80px) down to 4rem (64px). */
 .contentShift {
-  gap: 4rem !important;
+  row-gap: 4rem !important;
 }
 
 /* Apply scroll-margin to anchor targets used by the page nav so the section

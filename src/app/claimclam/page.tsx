@@ -150,9 +150,12 @@ export default function ClaimClam() {
         </div>
       </nav>
 
-      <ClaimClamPageNav />
+      <div className={local.layout}>
+        <aside className={local.layoutAside}>
+          <ClaimClamPageNav />
+        </aside>
 
-      <div className={`${cs.content} ${local.contentShift}`}>
+        <div className={local.layoutContent}>
         {/* Hero Section */}
         <section id="overview" className={`${cs.hero} ${local.hero}`}>
           <div className={cs.logoWrapper}>
@@ -191,6 +194,16 @@ export default function ClaimClam() {
             <Link href="/" className={cs.navPill}>Home</Link>
             <Link href="/thesloth" className={cs.navPill}>View next</Link>
           </div>
+        </section>
+
+        {/* Clam pattern animation */}
+        <section style={{ display: 'flex', justifyContent: 'center' }}>
+          <iframe
+            src="/clam-animation/index.html"
+            style={{ width: '100%', maxWidth: '720px', aspectRatio: '4 / 3', border: 'none', display: 'block' }}
+            title="ClaimClam pattern animation"
+            loading="lazy"
+          />
         </section>
 
         {/* Intro Text */}
@@ -342,6 +355,7 @@ export default function ClaimClam() {
           </div>
         </div>
 
+        </div>
       </div>
 
       {/* Floating Navigation */}

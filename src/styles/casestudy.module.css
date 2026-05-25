@@ -102,14 +102,29 @@
   z-index: 2500;
 }
 
-/* Content */
+/* Content — symmetric grid layout
+   Three columns: [left 1fr] [content auto, max 900px] [right 1fr]
+   This centers all children regardless of fixed-position sidebars.
+   Children with class .content > * automatically land in the middle column. */
 .content {
   width: 100%;
-  padding: calc(var(--nav-height) + clamp(1.5rem, 3vw, 2.5rem)) clamp(2.5rem, 7vw, 5rem) clamp(4rem, 10vw, 8rem);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(3rem, 6vw, 5rem);
+  padding: calc(var(--nav-height) + clamp(1.5rem, 3vw, 2.5rem)) 0 clamp(4rem, 10vw, 8rem);
+  display: grid;
+  grid-template-columns: 1fr min(900px, calc(100% - 4rem)) 1fr;
+  row-gap: clamp(3rem, 6vw, 5rem);
   animation: fadeIn 0.4s ease-out 0.2s both;
+}
+
+/* All direct children land in the centered middle column by default. */
+.content > * {
+  grid-column: 2;
+  min-width: 0;
+}
+
+/* A child with this class breaks out of the middle column to span full viewport width.
+   Use for full-bleed hero backgrounds, banners, etc. */
+.content > .fullBleed {
+  grid-column: 1 / -1;
 }
 
 /* Hero */

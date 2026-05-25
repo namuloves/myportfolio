@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Clam animation</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #4075FF; overflow: hidden; }
+  body {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+  svg.field {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  img.phone {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 116%;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Wider feathered gradient band — v2 style */
+  @keyframes pulse {
+    0%, 100% { opacity: 0.10; }
+    50%      { opacity: 1.00; }
+  }
+  .clam-row {
+    animation: pulse 4s ease-in-out infinite;
+  }
+  .clam { fill: #8FB4F2; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clam-row { animation: none; opacity: 0.6; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg class="field" viewBox="0 0 1080 1350" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="clam" viewBox="0 0 73 40" overflow="visible">
+        <path d="M71.9135 17.2944L73 16.4387L72.0052 15.4846C65.7615 9.4956 57.7264 5.52185 49.0179 4.11628C40.3095 2.71072 31.3607 3.94324 23.4167 7.64236C22.8291 5.52758 22.4831 3.35774 22.3851 1.17117L22.333 0H0V1.71151C0 6.58149 1.08556 11.3955 3.22521 16.0172C3.87536 17.4205 4.61143 18.7856 5.42957 20.1056H5.43587C7.19837 22.9411 9.31039 25.5628 11.7263 27.9143C18.9568 34.9801 28.4707 39.3562 37.8354 39.9336C38.498 39.9779 39.157 40 39.8124 40C45.4244 40 50.8773 38.3936 56.0472 35.2128C60.9295 32.2111 65.5844 27.7884 69.8979 22.0687L71.156 20.3891L69.0127 20.1392C68.6443 20.0961 68.275 20.0608 67.9047 20.0332C68.2174 19.843 68.5275 19.6505 68.8348 19.4558C69.8998 18.7882 70.9267 18.0661 71.9108 17.2927M35.2203 6.5453C41.2757 5.55016 47.4888 5.90836 53.3762 7.59201C59.2637 9.27567 64.6666 12.2394 69.1646 16.2525C68.6362 16.6308 68.0764 17.0057 67.4284 17.4176C66.4202 18.0588 65.375 18.6733 64.3263 19.2507C62.2226 20.4004 60.0416 21.415 57.7977 22.2876C55.5588 23.1574 53.2622 23.884 50.9231 24.4628C48.5794 25.0418 46.1982 25.471 43.7951 25.7477C41.9298 25.9616 40.0543 26.0833 38.176 26.1122L38.1957 26.0786C31.6686 22.5009 26.6949 16.798 24.177 10.0045C27.6607 8.34069 31.3798 7.17524 35.2158 6.5453M2.55393 2.44318H19.912C20.2916 7.08002 21.7012 11.5853 24.0463 15.6566C26.3914 19.7278 29.6176 23.2708 33.5084 26.0476C24.2447 25.6126 15.2409 22.9662 7.31402 18.3484C6.66909 17.2702 6.08211 16.161 5.55538 15.0253C3.66824 10.9482 2.66087 6.71852 2.55753 2.44318M54.6741 33.1514C49.3721 36.415 43.7637 37.8748 38.0052 37.4905C29.2561 36.9527 20.3416 32.8368 13.5479 26.201C12.4313 25.1109 11.3811 23.9599 10.4026 22.7539C18.4384 26.5671 27.2836 28.5499 36.2493 28.5477H36.4685C36.7441 28.5517 37.02 28.5537 37.2962 28.5537C39.5698 28.5536 41.8414 28.4238 44.0989 28.165C46.6134 27.8752 49.1051 27.4258 51.5576 26.8198C54.0061 26.2176 56.4104 25.4607 58.7548 24.5541C60.3094 23.9509 61.8443 23.2735 63.3441 22.5367C64.3749 22.428 65.4122 22.3854 66.4489 22.4091C62.7268 27.024 58.7737 30.6332 54.6768 33.1548" />
+        <path d="M39.9066 19.2762C43.3582 19.2762 46.0622 15.4843 46.0622 10.6506H43.5128C43.5128 12.3741 43.0635 14.0426 42.2781 15.2318C41.8836 15.8291 41.0541 16.8287 39.9066 16.8287C38.759 16.8287 37.9296 15.8291 37.5351 15.2258C36.7506 14.0365 36.3003 12.3673 36.3003 10.6445H33.75C33.75 15.4843 36.454 19.2762 39.9066 19.2762Z"/>
+        <path d="M53.4916 19.2771C56.9433 19.2771 59.6482 15.4852 59.6482 10.6514H57.0987C57.0987 12.375 56.6494 14.0469 55.8685 15.2336C55.4749 15.8308 54.6437 16.8322 53.4925 16.8322C52.3414 16.8322 51.5092 15.8299 51.1156 15.2267C50.3338 14.04 49.8845 12.3698 49.8845 10.6445H47.3359C47.3359 15.4852 50.0372 19.2771 53.4916 19.2771Z"/>
+      </symbol>
+    </defs>
+    <g id="clams"></g>
+  </svg>
+  <img class="phone" src="phone.png" alt="ClaimClam app mockup" />
+</div>
+
+<script>
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const clamsG = document.getElementById("clams");
+
+  const CANVAS_W = 1080;
+  const CANVAS_H = 1350;
+  const DURATION = 4.0; // must match CSS @keyframes pulse duration
+
+  // ~630 clams — larger, more breathing room
+  const CLAM_W = 37;
+  const CLAM_H = 37 * 40 / 73;
+  const COL_STEP = 43;
+  const ROW_STEP = 29;
+
+  const DIAG_SPAN = 1.0;
+  const BUCKET_COUNT = 64;
+  const buckets = new Map();
+
+  function getBucket(x, y) {
+    const diag = (x + y) / (CANVAS_W + CANVAS_H);
+    const bucketIdx = Math.round(diag * BUCKET_COUNT);
+    if (!buckets.has(bucketIdx)) {
+      let phase = (DURATION / 2) - ((bucketIdx / BUCKET_COUNT) * DURATION * DIAG_SPAN);
+      phase = ((phase % DURATION) + DURATION) % DURATION;
+      const g = document.createElementNS(SVG_NS, "g");
+      g.setAttribute("class", "clam-row");
+      g.style.animationDelay = `${-phase}s`;
+      buckets.set(bucketIdx, g);
+      clamsG.appendChild(g);
+    }
+    return buckets.get(bucketIdx);
+  }
+
+  for (let r = -1; r * ROW_STEP < CANVAS_H + 20; r++) {
+    const y = r * ROW_STEP;
+    const xOffset = (r % 2 === 0) ? 0 : COL_STEP / 2;
+    for (let c = -1; c * COL_STEP < CANVAS_W + 20; c++) {
+      const x = c * COL_STEP + xOffset;
+      const use = document.createElementNS(SVG_NS, "use");
+      use.setAttribute("href", "#clam");
+      use.setAttribute("x", x);
+      use.setAttribute("y", y);
+      use.setAttribute("width", CLAM_W);
+      use.setAttribute("height", CLAM_H);
+      use.setAttribute("class", "clam");
+      getBucket(x, y).appendChild(use);
+    }
+  }
+</script>
+</body>
+</html>

@@ -151,11 +151,14 @@ export default function TheSloth() {
         </div>
       </nav>
 
-      <StickyPageNav />
+      <div className={local.layout}>
+        <aside className={local.layoutAside}>
+          <StickyPageNav />
+        </aside>
 
-      <div className={`${cs.content} ${local.contentShift}`}>
+        <div className={local.layoutContent}>
         {/* Hero Section */}
-        <section className={cs.hero}>
+        <section className={`${cs.hero} ${local.hero}`}>
           <div className={cs.logoWrapper}>
             <div className={`${cs.logo} ${local.logo}`}>
               <TheSlothLogo className={local.logoImage} />
@@ -394,6 +397,7 @@ export default function TheSloth() {
           </div>
         </div>
 
+        </div>
       </div>
 
       {/* Floating Navigation */}

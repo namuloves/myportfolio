@@ -1,17 +1,6 @@
 .pageNav {
-  position: fixed;
-  top: 50%;
-  left: 60px;
-  transform: translateY(-50%);
-  z-index: 100;
-  display: none;
   pointer-events: auto;
-}
-
-@media (min-width: 1100px) {
-  .pageNav {
-    display: block;
-  }
+  display: block;
 }
 
 .list {
