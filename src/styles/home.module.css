@@ -256,6 +256,9 @@
   }
 
 @media (max-width: 640px) {
+  .hero {
+    line-height: 1.33;
+  }
   .heroEnglishLine {
     display: inline;
     white-space: normal;
