@@ -167,7 +167,7 @@ export default function TheSloth() {
           <h3 className={cs.title}>The Sloth</h3>
           <div className={cs.metaInfo}>
             <p className={cs.role}>Role: Founder, Designer</p>
-            <p className={cs.timeline}>Years: 2019-2023</p>
+            <p className={cs.timeline}>Years: 2021-2024</p>
           </div>
           <div className={cs.navPills} style={{ display: 'none' }}>
             <Link href="/" className={cs.navPill}>Home</Link>
