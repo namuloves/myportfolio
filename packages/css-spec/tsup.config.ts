@@ -32,8 +32,12 @@ export default defineConfig([
     external: ["next", "next/server", "postcss"],
   },
   {
-    // The `npx css-spec init` CLI — plain Node, no deps, ESM with a shebang.
-    entry: { "cli/init": "src/cli/init.ts" },
+    // CLI scripts — plain Node, no deps, ESM. init.ts gets a shebang (it's the
+    // `bin`); postinstall.ts runs via `node` from the npm lifecycle script.
+    entry: {
+      "cli/init": "src/cli/init.ts",
+      "cli/postinstall": "src/cli/postinstall.ts",
+    },
     format: ["esm"],
     dts: false,
     splitting: false,

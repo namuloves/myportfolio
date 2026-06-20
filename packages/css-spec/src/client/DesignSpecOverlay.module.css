@@ -225,6 +225,22 @@
   margin-right: 4px;
 }
 
+/* ⓘ hint shown next to a value whose displayed number needs context (e.g. the
+   editable width differs from the rendered size). Native title= is the tooltip. */
+.specNote {
+  display: inline-block;
+  margin-left: 5px;
+  color: var(--ds-panel-muted);
+  font-size: 10px;
+  cursor: help;
+  opacity: 0.7;
+  vertical-align: baseline;
+}
+.specNote:hover {
+  opacity: 1;
+  color: var(--ds-accent);
+}
+
 /* ----- Callout edit affordances ----- */
 .calloutModeRow {
   display: flex;

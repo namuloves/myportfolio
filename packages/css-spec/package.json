@@ -1,7 +1,7 @@
 {
   "name": "css-spec",
   "version": "0.2.2",
-  "description": "Dev-only Figma-style CSS design-spec overlay for Next.js App Router. Hover to inspect, edit design tokens live, and copy precise Claude Code instructions.",
+  "description": "Dev-only Figma-style CSS design-spec overlay for Next.js App Router. Hover to inspect, edit design tokens live, and copy precise prompts for your AI coding tool.",
   "type": "module",
   "types": "./dist/client/index.d.ts",
   "bin": {
@@ -35,7 +35,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node ./dist/cli/postinstall.js || true"
   },
   "peerDependencies": {
     "next": ">=14",

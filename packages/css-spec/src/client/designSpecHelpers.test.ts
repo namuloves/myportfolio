@@ -10,6 +10,10 @@ import {
   suggestSpaceName,
   suggestTokenName,
   inferKind,
+  extractColors,
+  colorAlpha,
+  collectElementColors,
+  dimensionNote,
   mergeSavedTokenBase,
   migrateTokenKey,
   reconcileUpdateResponse,
@@ -260,5 +264,133 @@ describe("reconcileUpdateResponse", () => {
     const r = reconcileUpdateResponse(["--a", "--b"], {});
     expect(r.updated).toEqual(["--a", "--b"]);
     expect(r.missed).toEqual([]);
+  });
+});
+
+describe("dimensionNote (rect vs computed width explanation)", () => {
+  // Stub just the CSSStyleDeclaration fields dimensionNote reads.
+  const cs = (o: Record<string, string>) =>
+    ({
+      width: "0px", height: "0px",
+      borderLeftWidth: "0px", borderRightWidth: "0px",
+      borderTopWidth: "0px", borderBottomWidth: "0px",
+      paddingLeft: "0px", paddingRight: "0px",
+      paddingTop: "0px", paddingBottom: "0px",
+      boxSizing: "border-box", transform: "none",
+      ...o,
+    }) as unknown as CSSStyleDeclaration;
+
+  it("returns undefined when rendered ≈ CSS width", () => {
+    expect(dimensionNote("width", cs({ width: "167.336px" }), 167.4)).toBeUndefined();
+  });
+
+  it("attributes the extra pixels to a border", () => {
+    // CSS width 167.336, rendered 172.3 → +~5px from a 5px border.
+    const note = dimensionNote(
+      "width",
+      cs({ width: "167.336px", borderLeftWidth: "2.5px", borderRightWidth: "2.5px" }),
+      172.336
+    );
+    expect(note).toContain("border");
+    expect(note).toContain("167.3px"); // the editable CSS value
+    expect(note).toMatch(/Rendered 172\.3px/);
+  });
+
+  it("counts padding only under content-box", () => {
+    const withPad = dimensionNote(
+      "width",
+      cs({ width: "100px", boxSizing: "content-box", paddingLeft: "10px", paddingRight: "10px" }),
+      120
+    );
+    expect(withPad).toContain("padding");
+    // Under border-box, padding is inside the width → not the cause.
+    const borderBox = dimensionNote(
+      "width",
+      cs({ width: "100px", boxSizing: "border-box", paddingLeft: "10px", paddingRight: "10px" }),
+      100
+    );
+    expect(borderBox).toBeUndefined();
+  });
+});
+
+describe("extractColors (gradient / multi-color values)", () => {
+  it("pulls every rgb stop out of a linear-gradient", () => {
+    const got = extractColors("linear-gradient(116deg, rgb(0, 199, 76) 7.97%, rgb(10, 157, 50) 100%)");
+    expect(got).toEqual(["rgb(0, 199, 76)", "rgb(10, 157, 50)"]);
+  });
+  it("handles lab()/oklab() (SVG stroke, wide-gamut)", () => {
+    expect(extractColors("lab(65.9269 -0.832707 -8.17473)")).toEqual(["lab(65.9269 -0.832707 -8.17473)"]);
+  });
+  it("pulls hex out of a box-shadow", () => {
+    expect(extractColors("0 2px 8px #1e1e1ee6")).toEqual(["#1e1e1ee6"]);
+  });
+  it("returns [] for none/empty", () => {
+    expect(extractColors("none")).toEqual([]);
+    expect(extractColors("")).toEqual([]);
+  });
+});
+
+describe("colorAlpha (skip near-invisible shadow tints)", () => {
+  it("reads alpha from rgba()", () => {
+    expect(colorAlpha("rgba(0, 0, 0, 0.05)")).toBeCloseTo(0.05);
+    expect(colorAlpha("rgba(0, 0, 0, 0.5)")).toBeCloseTo(0.5);
+  });
+  it("returns 1 for opaque rgb()/named", () => {
+    expect(colorAlpha("rgb(0, 0, 0)")).toBe(1);
+    expect(colorAlpha("red")).toBe(1);
+  });
+  it("reads alpha from 8-digit hex", () => {
+    expect(colorAlpha("#000000ff")).toBeCloseTo(1);
+    expect(colorAlpha("#00000080")).toBeCloseTo(0.5, 1);
+  });
+});
+
+describe("collectElementColors (all sources in one place)", () => {
+  // Stub the CSSStyleDeclaration fields the collector reads.
+  const cs = (o: Record<string, string>) =>
+    ({
+      color: "rgb(0,0,0)", backgroundColor: "rgba(0, 0, 0, 0)",
+      borderTopWidth: "0px", borderTopColor: "rgb(0,0,0)",
+      backgroundImage: "none", fill: "", stroke: "",
+      outlineWidth: "0px", outlineColor: "rgb(0,0,0)", boxShadow: "none",
+      ...o,
+    }) as unknown as CSSStyleDeclaration;
+  const svgEl = { namespaceURI: "http://www.w3.org/2000/svg" } as unknown as HTMLElement;
+  const htmlEl = { namespaceURI: "http://www.w3.org/1999/xhtml" } as unknown as HTMLElement;
+
+  const emitted = (el: HTMLElement, style: CSSStyleDeclaration, hasText: boolean) => {
+    const out: Array<[string, string]> = [];
+    collectElementColors(el, style, hasText, (c, role) => out.push([c, role]));
+    return out;
+  };
+
+  it("emits text color only when hasText", () => {
+    expect(emitted(htmlEl, cs({ color: "rgb(1,2,3)" }), false).some(([c]) => c === "rgb(1,2,3)")).toBe(false);
+    expect(emitted(htmlEl, cs({ color: "rgb(1,2,3)" }), true)).toContainEqual(["rgb(1,2,3)", "text"]);
+  });
+
+  it("emits gradient stops as bg", () => {
+    const out = emitted(htmlEl, cs({ backgroundImage: "linear-gradient(90deg, rgb(7,77,177), rgb(0,90,146))" }), false);
+    expect(out).toContainEqual(["rgb(7,77,177)", "bg"]);
+    expect(out).toContainEqual(["rgb(0,90,146)", "bg"]);
+  });
+
+  it("emits SVG fill/stroke but skips the UA-default black fill", () => {
+    const out = emitted(svgEl, cs({ fill: "rgb(50,160,80)", stroke: "rgb(220,40,90)" }), false);
+    expect(out).toContainEqual(["rgb(50,160,80)", "bg"]);
+    expect(out).toContainEqual(["rgb(220,40,90)", "border"]);
+    // default black fill is dropped:
+    expect(emitted(svgEl, cs({ fill: "rgb(0, 0, 0)" }), false).some(([c]) => c === "rgb(0, 0, 0)")).toBe(false);
+  });
+
+  it("emits visible box-shadow colors and drops faint tints", () => {
+    const out = emitted(htmlEl, cs({ boxShadow: "0 4px 12px rgba(220, 40, 90, 0.4), 0 1px 2px rgba(0, 0, 0, 0.04)" }), false);
+    expect(out).toContainEqual(["rgba(220, 40, 90, 0.4)", "border"]);
+    expect(out.some(([c]) => c === "rgba(0, 0, 0, 0.04)")).toBe(false);
+  });
+
+  it("emits outline color when there's an outline", () => {
+    expect(emitted(htmlEl, cs({ outlineWidth: "2px", outlineColor: "rgb(12,69,167)" }), false))
+      .toContainEqual(["rgb(12,69,167)", "border"]);
   });
 });

@@ -22,6 +22,25 @@ export const isTransparent = (color: string) =>
   color === "rgba(0, 0, 0, 0)" ||
   color === "rgba(0,0,0,0)";
 
+/** A barely-visible color (very low alpha) — e.g. the faint rgba(0,0,0,0.05) of
+    a soft shadow. We skip these so the inventory isn't cluttered with shadow
+    tints the user can't even see. Returns the alpha (0–1), or 1 if none. */
+export function colorAlpha(color: string): number {
+  const m = color.match(/rgba?\(([^)]+)\)/);
+  if (m) {
+    const a = m[1].split(",")[3];
+    return a !== undefined ? parseFloat(a) : 1;
+  }
+  // hex with alpha: #rrggbbaa / #rgba
+  const hex = color.match(/^#([0-9a-fA-F]{4}|[0-9a-fA-F]{8})$/);
+  if (hex) {
+    const h = hex[1];
+    const aa = h.length === 4 ? h[3] + h[3] : h.slice(6, 8);
+    return parseInt(aa, 16) / 255;
+  }
+  return 1;
+}
+
 /** Convert an rgb()/rgba() computed color to #hex (with alpha when < 1). */
 export function rgbToHex(color: string): string {
   const match = color.match(/rgba?\(([^)]+)\)/);
@@ -317,12 +336,17 @@ export function collectOutline(): OutlineItem[] {
 /* ------------------------------------------------------------------ */
 
 export type Sides = { top: number; right: number; bottom: number; left: number };
+/** A callout row: [label, value, swatch?, note?].
+    - swatch: a raw color for the color chip (color rows only).
+    - note: an explanation shown via an ⓘ hint when the displayed value needs
+      context (e.g. why the editable width differs from the rendered size). */
+export type SpecRow = [string, string, (string | undefined)?, (string | undefined)?];
 export type Spec = {
   rect: DOMRect;
   padding: Sides;
   margin: Sides;
   tag: string;
-  groups: { title: string; rows: [string, string, string?][] }[];
+  groups: { title: string; rows: SpecRow[] }[];
   width: number;
   height: number;
   // The inspected element, so callout edits can write inline styles to it.
@@ -364,6 +388,50 @@ export const EDITABLE_FIELDS: Record<
   radius: { prop: "border-radius", kind: "size", tokenable: false, text: true },
 };
 
+/** Explain why an element's rendered size (getBoundingClientRect) differs from
+    its CSS width/height (the editable value). The displayed number is the CSS
+    value; this note tells the user what the extra/missing pixels are — border,
+    padding (under content-box), or a transform — so the two numbers don't look
+    like a glitch. Returns undefined when they match (no note needed). */
+export function dimensionNote(
+  axis: "width" | "height",
+  cs: CSSStyleDeclaration,
+  renderedPx: number
+): string | undefined {
+  const cssPx = parseFloat(axis === "width" ? cs.width : cs.height);
+  if (Number.isNaN(cssPx)) return undefined;
+  const diff = renderedPx - cssPx;
+  // Ignore sub-pixel rounding (< 1.5px) — not worth a hint, and it'd put an ⓘ on
+  // nearly every element.
+  if (Math.abs(diff) < 1.5) return undefined;
+
+  const r = (n: number) => Math.round(n * 10) / 10;
+  const sideA = axis === "width" ? "borderLeftWidth" : "borderTopWidth";
+  const sideB = axis === "width" ? "borderRightWidth" : "borderBottomWidth";
+  const padA = axis === "width" ? "paddingLeft" : "paddingTop";
+  const padB = axis === "width" ? "paddingRight" : "paddingBottom";
+  const border =
+    parseFloat(cs[sideA as keyof CSSStyleDeclaration] as string) +
+    parseFloat(cs[sideB as keyof CSSStyleDeclaration] as string);
+  const padding =
+    parseFloat(cs[padA as keyof CSSStyleDeclaration] as string) +
+    parseFloat(cs[padB as keyof CSSStyleDeclaration] as string);
+  const contentBox = cs.boxSizing === "content-box";
+
+  const causes: string[] = [];
+  if (border > 0.5) causes.push(`${r(border)}px border`);
+  if (contentBox && padding > 0.5) causes.push(`${r(padding)}px padding`);
+  if (cs.transform && cs.transform !== "none") causes.push("a transform");
+
+  const rendered = `Rendered ${r(renderedPx)}px on screen`;
+  if (causes.length === 0) {
+    // Diff exists but none of the usual suspects — likely a transform/zoom.
+    return `${rendered}. The editable value is the CSS ${axis} (${r(cssPx)}px), which the rendered size differs from.`;
+  }
+  const sign = diff > 0 ? "adds" : "removes";
+  return `${rendered} — ${causes.join(" + ")} ${sign} ${r(Math.abs(diff))}px outside the CSS ${axis}. The editable value is the CSS ${axis} (${r(cssPx)}px).`;
+}
+
 export function buildSpec(el: HTMLElement): Spec {
   const cs = getComputedStyle(el);
   const rect = el.getBoundingClientRect();
@@ -404,16 +472,24 @@ export function buildSpec(el: HTMLElement): Spec {
   };
 
   // Box model — always show margin & padding (even when 0) for examination.
-  const boxRows: [string, string, string?][] = [
-    ["width", `${round(rect.width)}px`],
-    ["height", `${round(rect.height)}px`],
+  // Use the COMPUTED width/height (the CSS content-box value, e.g. 167.336px),
+  // not the rendered rect (which includes borders, e.g. 172.3px). This keeps the
+  // displayed number identical to what the editor seeds when you click to edit,
+  // so it never appears to "jump" on edit. Fall back to the rect if the computed
+  // value isn't a concrete pixel length (rare). The highlight boxes still use
+  // `rect` for true on-screen size.
+  const computedLen = (cssVal: string, fallback: number) =>
+    /^-?\d*\.?\d+px$/.test(cssVal) ? `${round(parseFloat(cssVal))}px` : `${round(fallback)}px`;
+  const boxRows: SpecRow[] = [
+    ["width", computedLen(cs.width, rect.width), undefined, dimensionNote("width", cs, rect.width)],
+    ["height", computedLen(cs.height, rect.height), undefined, dimensionNote("height", cs, rect.height)],
   ];
   if (cs.maxWidth !== "none") boxRows.push(["max-width", px(cs.maxWidth)]);
   boxRows.push(["margin", sidesStr(mar)]);
   boxRows.push(["padding", sidesStr(pad)]);
 
   // Typography
-  const typeRows: [string, string, string?][] = [
+  const typeRows: SpecRow[] = [
     ["font", shortFont(cs.fontFamily)],
     ["size", px(cs.fontSize)],
     ["weight", cs.fontWeight],
@@ -424,14 +500,14 @@ export function buildSpec(el: HTMLElement): Spec {
   typeRows.push(["align", cs.textAlign]);
 
   // Color (value carries a third "swatch" entry = the raw color)
-  const colorRows: [string, string, string?][] = [];
+  const colorRows: SpecRow[] = [];
   const textColor = cs.color;
   colorRows.push(["color", rgbToHex(textColor), textColor]);
   const bg = cs.backgroundColor;
   if (!isTransparent(bg)) colorRows.push(["background", rgbToHex(bg), bg]);
 
   // Layout
-  const layoutRows: [string, string, string?][] = [
+  const layoutRows: SpecRow[] = [
     ["display", cs.display],
     ["position", cs.position],
   ];
@@ -441,7 +517,7 @@ export function buildSpec(el: HTMLElement): Spec {
   }
 
   // Effects
-  const effectRows: [string, string, string?][] = [];
+  const effectRows: SpecRow[] = [];
   if (cs.borderRadius && cs.borderRadius !== "0px")
     effectRows.push(["radius", cs.borderRadius]);
   if (cs.boxShadow && cs.boxShadow !== "none")
@@ -503,6 +579,56 @@ export function tokenForValue(
 /* ------------------------------------------------------------------ */
 
 export type ColorUsage = { text: number; bg: number; border: number };
+
+/** Pull every color token out of a CSS value string (e.g. a gradient or a
+    multi-color box-shadow). getComputedStyle resolves colors to rgb()/rgba(),
+    so we match those plus any lab()/oklab()/lch()/oklch()/hsl()/color() and hex.
+    Used to surface gradient/shadow colors the per-property scan would miss. */
+export function extractColors(value: string): string[] {
+  if (!value || value === "none") return [];
+  const re =
+    /(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\([^)]*\)|#[0-9a-fA-F]{3,8}\b/g;
+  return value.match(re) ?? [];
+}
+
+/** Below this alpha a shadow tint is effectively invisible — don't inventory it. */
+const MIN_VISIBLE_ALPHA = 0.12;
+
+/** Feed every paintable color on `el` to `emit(color, role)`. One place for all
+    the color sources — text, background, borders, gradients, SVG fill/stroke,
+    outline, and box-shadow — so the inventory loop stays readable and the set of
+    sources is easy to see and test. `hasText` gates the inherited text color so
+    structural wrappers don't pollute the text bucket. */
+export function collectElementColors(
+  el: HTMLElement,
+  cs: CSSStyleDeclaration,
+  hasText: boolean,
+  emit: (color: string, role: keyof ColorUsage) => void
+): void {
+  if (hasText) emit(cs.color, "text");
+  emit(cs.backgroundColor, "bg");
+  if (parseFloat(cs.borderTopWidth) > 0) emit(cs.borderTopColor, "border");
+
+  // Gradient stops in background-image (treated as bg fills).
+  if (cs.backgroundImage && cs.backgroundImage.includes("gradient")) {
+    for (const c of extractColors(cs.backgroundImage)) emit(c, "bg");
+  }
+  // SVG fill/stroke — only real SVG nodes, and skip the UA-default black fill
+  // (which would otherwise inject black from every iconless SVG).
+  const isSvg = el.namespaceURI === "http://www.w3.org/2000/svg";
+  if (isSvg && cs.fill && cs.fill !== "none" && cs.fill !== "rgb(0, 0, 0)")
+    emit(cs.fill, "bg");
+  if (isSvg && cs.stroke && cs.stroke !== "none") emit(cs.stroke, "border");
+  // The outline ring (border-like).
+  if (parseFloat(cs.outlineWidth) > 0) emit(cs.outlineColor, "border");
+  // box-shadow colors (a shadow may carry several); drop near-invisible tints.
+  if (cs.boxShadow && cs.boxShadow !== "none") {
+    for (const c of extractColors(cs.boxShadow)) {
+      if (!isTransparent(c) && colorAlpha(c) >= MIN_VISIBLE_ALPHA) emit(c, "border");
+    }
+  }
+}
+
 export type Inventory = {
   colors: { value: string; raw: string; count: number; usage: ColorUsage }[];
   typeScale: { size: number; weight: string; lineHeight: string; count: number }[];
@@ -574,9 +700,7 @@ export function collectInventory(): Inventory {
       (n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim()
     );
 
-    if (hasText) addColor(cs.color, "text", el);
-    addColor(cs.backgroundColor, "bg", el);
-    if (parseFloat(cs.borderTopWidth) > 0) addColor(cs.borderTopColor, "border", el);
+    collectElementColors(el, cs, hasText, (color, role) => addColor(color, role, el));
 
     const rawSize = parseFloat(cs.fontSize);
     // Skip nodes whose font-size doesn't resolve to a real number — they'd

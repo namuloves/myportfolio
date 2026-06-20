@@ -4,9 +4,10 @@ A **dev-only**, Figma-style CSS design-spec overlay for **Next.js (App Router)**
 
 Hover any element to read its box model, type, and color spec. Open the inventory
 panel to edit design tokens live and write them back to your globals stylesheet.
-Built for developers running Claude Code on localhost — when a change can't be made
-safely in-place, it copies a precise, natural-language instruction for Claude Code
-to edit the exact CSS rule (never a global find-replace).
+Built for developers working with an AI coding tool (Claude Code, Cursor, Copilot,
+…) on localhost — when a change can't be made safely in-place, it copies a precise,
+natural-language prompt for your tool to edit the exact CSS rule (never a global
+find-replace).
 
 Toggle the overlay with **⌥D** (Alt+D).
 

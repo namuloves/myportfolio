@@ -784,8 +784,8 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
 
     showToast(
       copied
-        ? `Copied an instruction — paste it into Claude Code to set ${c.prop}: ${c.value} on this element (that rule only). Previewing meanwhile.`
-        : `Couldn't auto-copy. Here's the command — Copy it and paste into Claude Code. Previewing meanwhile.`,
+        ? `Copied a prompt — paste it into your AI coding tool to set ${c.prop}: ${c.value} on this element (that rule only). Previewing meanwhile.`
+        : `Couldn't auto-copy. Here's the prompt — Copy it and paste into your AI coding tool. Previewing meanwhile.`,
       copied ? "success" : "info",
       copied ? undefined : prompt
     );
@@ -861,7 +861,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
 
       showToast(
         copied
-          ? `Created ${name} = ${c.value} in globals.css. Copied an instruction — paste it into Claude Code to point this element at the token (that rule only). Previewing meanwhile.`
+          ? `Created ${name} = ${c.value} in globals.css. Copied a prompt — paste it into your AI coding tool to point this element at the token (that rule only). Previewing meanwhile.`
           : `Created ${name} = ${c.value} in globals.css. Couldn't auto-copy — here's the command to point this element at the token.`,
         "success",
         copied ? undefined : prompt
@@ -1214,12 +1214,12 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
         await navigator.clipboard.writeText(prompt);
         setSnapMsg((m) => ({ ...m, [key]: "copied ✓" }));
         showToast(
-          `Copied an instruction — paste it into Claude Code to set ${prop}: var(${toToken}) on ${tag} (that rule only).`
+          `Copied a prompt — paste it into your AI coding tool to set ${prop}: var(${toToken}) on ${tag} (that rule only).`
         );
       } catch {
         setSnapMsg((m) => ({ ...m, [key]: "copy failed" }));
         showToast(
-          `Couldn't auto-copy. Here's the command — Copy it and paste into Claude Code.`,
+          `Couldn't auto-copy. Here's the prompt — Copy it and paste into your AI coding tool.`,
           "info",
           prompt
         );
@@ -1369,7 +1369,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(toast.command!);
-                    showToast("Command copied — paste it into Claude Code.", "success");
+                    showToast("Prompt copied — paste it into your AI coding tool.", "success");
                   } catch {
                     // Even the click-gesture copy was blocked: select the text
                     // so the user can ⌘C it themselves.
@@ -1571,7 +1571,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
           {spec.groups.map((group) => (
             <div key={group.title} className={styles.specGroup}>
               <div className={styles.specGroupTitle}>{group.title}</div>
-              {group.rows.map(([label, value, swatch], i) => {
+              {group.rows.map(([label, value, swatch, note], i) => {
                 const field = EDITABLE_FIELDS[label];
                 const rowKey = `${group.title}|${label}`;
                 const isEditing = editingRow === rowKey;
@@ -1651,9 +1651,9 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                                 <button
                                   className={styles.noTokenPrimary}
                                   onClick={resolveAsCssWrite}
-                                  title="Copy a precise instruction to paste into Claude Code, which edits only this element's CSS rule"
+                                  title="Copy a precise instruction to paste into your AI coding tool, which edits only this element's CSS rule"
                                 >
-                                  Copy for Claude
+                                  Copy prompt
                                 </button>
                                 <button
                                   className={styles.noTokenSecondary}
@@ -1739,6 +1739,16 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                           />
                         )}
                         {value}
+                        {note && (
+                          <span
+                            className={styles.specNote}
+                            title={note}
+                            aria-label={note}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            ⓘ
+                          </span>
+                        )}
                       </button>
                     )}
                   </div>
@@ -2549,7 +2559,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                                 {literal && near && !near.exact && (
                                   <button
                                     className={styles.snapBtn}
-                                    title={`Copy a Claude Code instruction to set ${src.prop} → var(${near.name}) (${near.px}px) on this element only`}
+                                    title={`Copy a prompt to set ${src.prop} → var(${near.name}) (${near.px}px) on this element only`}
                                     onClick={() =>
                                       snapDecl(it.tag, src.prop, src.value, near.name, key)
                                     }
