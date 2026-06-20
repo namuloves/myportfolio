@@ -2,15 +2,23 @@
   "name": "myportfolio",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run && npm run test --workspace css-spec",
+    "test:watch": "vitest",
+    "css-spec:build": "npm run build --workspace css-spec",
+    "css-spec:dev": "npm run dev --workspace css-spec"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
     "next": "^15.5.12",
+    "postcss": "^8.5.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -19,8 +27,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "css-spec": "^0.1.0",
     "eslint": "^9",
     "eslint-config-next": "^15.5.12",
-    "typescript": "^5"
+    "jsdom": "^27.0.1",
+    "typescript": "^5",
+    "vitest": "^4.1.9"
   }
 }

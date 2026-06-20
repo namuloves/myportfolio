@@ -1,0 +1,1344 @@
+/*
+ * Dev-only design-spec overlay styling.
+ * Redline / Figma-annotation look: dotted guides, monospace callouts.
+ * Theme-aware via the site's [data-theme] attribute, with sensible fallbacks.
+ */
+
+.root {
+  /* Local design tokens so the overlay reads well in light & dark. */
+  --ds-accent: #e5377a;
+  --ds-accent-soft: rgba(229, 55, 122, 0.12);
+  --ds-panel-bg: rgba(255, 255, 255, 0.96);
+  --ds-panel-fg: #171717;
+  --ds-panel-muted: #6a6a6a;
+  --ds-panel-border: rgba(0, 0, 0, 0.12);
+  --ds-panel-row: rgba(0, 0, 0, 0.04);
+  --ds-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  --ds-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ds-panel-fg);
+}
+
+:global([data-theme="dark"]) .root {
+  --ds-accent: #ff5fa2;
+  --ds-accent-soft: rgba(255, 95, 162, 0.16);
+  --ds-panel-bg: rgba(20, 20, 22, 0.96);
+  --ds-panel-fg: #ededed;
+  --ds-panel-muted: #9a9a9a;
+  --ds-panel-border: rgba(255, 255, 255, 0.14);
+  --ds-panel-row: rgba(255, 255, 255, 0.06);
+  --ds-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* ----- Bounding box drawn around the inspected element ----- */
+.box {
+  position: fixed;
+  pointer-events: none;
+  border: 1px dotted var(--ds-accent);
+  background: var(--ds-accent-soft);
+  box-sizing: border-box;
+  transition: all 60ms linear;
+}
+
+/* Pinned selection: unmistakable. Solid accent outline + soft outer glow so
+   the locked element reads clearly apart from casual hover. */
+.boxPinned {
+  border: 2px solid var(--ds-accent);
+  background: transparent;
+  /* Above the dim scrim. */
+  z-index: 1;
+  box-shadow:
+    0 0 0 1px var(--ds-panel-bg),
+    0 0 0 4px var(--ds-accent-soft);
+}
+
+/* Dim everything except the selected rect: one fixed element whose enormous
+   spread shadow paints the rest of the viewport. The element itself is the
+   transparent "hole". */
+.selScrim {
+  position: fixed;
+  pointer-events: none;
+  box-shadow: 0 0 0 100000px rgba(0, 0, 0, 0.28);
+  /* Bottom of the overlay's own positive stack: above the page (the whole
+     root context floats high), below the box/callout/panels. */
+  z-index: 0;
+}
+
+/* Padding-box visualization (inner dotted ring). */
+.padBox {
+  position: fixed;
+  pointer-events: none;
+  border: 1px dashed rgba(120, 180, 120, 0.7);
+  box-sizing: border-box;
+}
+
+/* Margin ring: outset rectangle (orange, DevTools convention). */
+.marginBox {
+  position: fixed;
+  pointer-events: none;
+  border: 1px dashed rgba(230, 150, 70, 0.8);
+  background: rgba(230, 150, 70, 0.08);
+  box-sizing: border-box;
+}
+/* Pinned: bolder ring + stronger fill so margins are easy to read. */
+.marginBoxPinned {
+  border: 1px solid rgba(230, 150, 70, 0.95);
+  background: rgba(230, 150, 70, 0.16);
+}
+
+/* Always-on outline (architecture) layer. */
+.outlineBox {
+  position: fixed;
+  pointer-events: none;
+  border: 1px dotted color-mix(in srgb, var(--ds-accent) 45%, transparent);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.outlineTag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: var(--ds-mono);
+  font-size: 8px;
+  line-height: 1;
+  color: var(--ds-accent);
+  background: var(--ds-panel-bg);
+  padding: 1px 2px;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+
+/* Small boxes hide their tag to avoid overlap; hovering the box reveals it
+   (lifted above siblings, full text, not clipped). */
+.outlineBoxSmall {
+  pointer-events: auto;
+}
+.outlineBoxSmall > .outlineTag {
+  display: none;
+}
+.outlineBoxSmall:hover {
+  overflow: visible;
+  border-color: var(--ds-accent);
+  z-index: 10;
+}
+.outlineBoxSmall:hover > .outlineTag {
+  display: inline-block;
+  max-width: none;
+  opacity: 1;
+  z-index: 11;
+}
+
+/* Dimension tab on the box edges. */
+.dimTab {
+  position: fixed;
+  pointer-events: none;
+  background: var(--ds-accent);
+  color: #fff;
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
+/* ----- Spec callout ----- */
+.callout {
+  position: fixed;
+  /* Interactive: rows are click-to-edit. The root container is pointer-events
+     none, so only this panel captures clicks; the rest of the page stays
+     hoverable for inspection. */
+  pointer-events: auto;
+  min-width: 180px;
+  max-width: 280px;
+  background: var(--ds-panel-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 6px;
+  box-shadow: var(--ds-shadow);
+  padding: 8px 10px;
+  overflow: hidden;
+}
+
+.calloutTag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ds-accent);
+  background: var(--ds-accent-soft);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.specGroup {
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: 1px solid var(--ds-panel-border);
+}
+.specGroup:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.specGroupTitle {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-panel-muted);
+  margin-bottom: 3px;
+}
+
+.specRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.specRow > span:first-child {
+  color: var(--ds-panel-muted);
+}
+.specRow > span:last-child {
+  text-align: right;
+  word-break: break-word;
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--ds-panel-border);
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* ----- Callout edit affordances ----- */
+.calloutModeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.calloutModeLabel {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-panel-muted);
+}
+.calloutModeSeg {
+  display: inline-flex;
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.calloutModeBtn {
+  font: inherit;
+  font-size: 10px;
+  padding: 1px 7px;
+  border: none;
+  background: transparent;
+  color: var(--ds-panel-muted);
+  cursor: pointer;
+}
+.calloutModeBtn + .calloutModeBtn {
+  border-left: 1px solid var(--ds-panel-border);
+}
+.calloutModeBtnOn {
+  background: var(--ds-accent);
+  color: #fff;
+}
+.calloutResetBtn {
+  margin-left: auto;
+  font: inherit;
+  font-size: 10px;
+  padding: 1px 6px;
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ds-panel-muted);
+  cursor: pointer;
+}
+
+.specValueStatic {
+  font: inherit;
+  border: none;
+  background: none;
+  color: inherit;
+  padding: 0;
+  text-align: right;
+  word-break: break-word;
+  cursor: default;
+}
+.specValueBtn {
+  font: inherit;
+  border: none;
+  background: none;
+  color: inherit;
+  padding: 0 2px;
+  margin: -1px -2px;
+  border-radius: 3px;
+  text-align: right;
+  word-break: break-word;
+  cursor: text;
+}
+.specRowEditable .specValueBtn:hover {
+  background: var(--ds-accent-soft);
+  box-shadow: inset 0 -1px 0 var(--ds-accent);
+}
+.specEditWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.specEditInput {
+  font: inherit;
+  width: 72px;
+  padding: 1px 4px;
+  border: 1px solid var(--ds-accent);
+  border-radius: 3px;
+  background: var(--ds-panel-bg);
+  color: inherit;
+  text-align: right;
+}
+.specRowError {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  text-align: right;
+  font-size: 9px;
+  color: #e5484d;
+}
+/* No-token fork: ask whether to create a token or change just this element. */
+.noTokenAsk {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 5px;
+  background: var(--ds-panel-row);
+}
+.noTokenQ {
+  font-size: 10px;
+  color: var(--ds-panel-fg);
+}
+.noTokenBtns {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.noTokenPrimary,
+.noTokenSecondary,
+.noTokenCancel {
+  pointer-events: auto;
+  cursor: pointer;
+  font-family: var(--ds-mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.noTokenPrimary {
+  border: 1px solid var(--ds-accent);
+  background: var(--ds-accent);
+  color: #fff;
+}
+.noTokenSecondary {
+  border: 1px solid var(--ds-panel-border);
+  background: transparent;
+  color: var(--ds-panel-fg);
+}
+.noTokenSecondary:hover {
+  border-color: var(--ds-accent);
+  color: var(--ds-accent);
+}
+.noTokenCancel {
+  border: none;
+  background: transparent;
+  color: var(--ds-panel-muted);
+}
+.noTokenCancel:hover {
+  color: var(--ds-panel-fg);
+}
+
+/* ----- Floating control ----- */
+.control {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  pointer-events: auto;
+  background: var(--ds-panel-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 8px;
+  box-shadow: var(--ds-shadow);
+  padding: 8px;
+  width: 180px;
+  user-select: none;
+}
+
+/* Minimized chip (replaces the control box). Default sits clear of the
+   Next.js dev button at bottom-left; draggable anywhere. */
+.controlChip {
+  position: fixed;
+  bottom: 16px;
+  left: 72px;
+  z-index: 2147483600;
+  pointer-events: auto;
+  cursor: grab;
+  background: var(--ds-panel-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 999px;
+  box-shadow: var(--ds-shadow);
+  padding: 6px 12px;
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-accent);
+  font-weight: 600;
+}
+.controlChip:active {
+  cursor: grabbing;
+}
+.controlChip:hover {
+  border-color: var(--ds-accent);
+}
+.controlHeaderBtns {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.controlHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.controlTitle {
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ds-panel-muted);
+}
+.controlClose {
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--ds-panel-muted);
+  font-family: var(--ds-mono);
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.controlClose:hover {
+  background: var(--ds-panel-row);
+  color: var(--ds-panel-fg);
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+  cursor: pointer;
+}
+.toggleRow span {
+  font-size: 11px;
+}
+.toggleRow input {
+  accent-color: var(--ds-accent);
+  cursor: pointer;
+}
+
+.accentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0 3px;
+  margin-top: 4px;
+  border-top: 1px solid var(--ds-panel-border);
+  font-size: 11px;
+}
+.accentControls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.accentReset {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid var(--ds-panel-border);
+  background: transparent;
+  color: var(--ds-panel-muted);
+  font-family: var(--ds-mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.accentReset:hover {
+  color: var(--ds-panel-fg);
+}
+
+.hint {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--ds-panel-border);
+  font-size: 9px;
+  color: var(--ds-panel-muted);
+}
+.kbd {
+  font-family: var(--ds-mono);
+  background: var(--ds-panel-row);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
+/* ----- Inventory side panel ----- */
+.inventory {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  pointer-events: auto;
+  background: var(--ds-panel-bg);
+  backdrop-filter: blur(10px);
+  border-left: 1px solid var(--ds-panel-border);
+  box-shadow: var(--ds-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* Docked on the left edge instead (so the page's top-right stays examinable). */
+.inventoryLeft {
+  right: auto;
+  left: 0;
+  border-left: none;
+  border-right: 1px solid var(--ds-panel-border);
+}
+.inventoryHeaderBtns {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inventoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ds-panel-border);
+}
+.inventoryHeader h2 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ds-panel-fg);
+}
+.refreshBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid var(--ds-panel-border);
+  background: transparent;
+  color: var(--ds-panel-muted);
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.refreshBtn:hover {
+  background: var(--ds-panel-row);
+  color: var(--ds-panel-fg);
+}
+
+.inventoryScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 12px 16px;
+}
+
+.section {
+  margin-top: 14px;
+}
+.sectionTitle {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-panel-muted);
+  margin-bottom: 6px;
+  position: sticky;
+  top: 0;
+  background: var(--ds-panel-bg);
+  padding: 4px 0;
+  z-index: 1;
+}
+
+.invRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px;
+  border-radius: 4px;
+}
+.invRow:hover {
+  background: var(--ds-panel-row);
+}
+.invRowMain {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.invCount {
+  color: var(--ds-panel-muted);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.invSub {
+  color: var(--ds-panel-muted);
+  font-size: 10px;
+}
+.invToken {
+  color: var(--ds-panel-fg);
+  font-weight: 600;
+}
+.tokenName {
+  color: var(--ds-panel-muted);
+}
+.tokenNameBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ds-panel-fg);
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+.tokenNameBtn:hover {
+  border-color: var(--ds-panel-border);
+  background: var(--ds-panel-bg);
+}
+.inlineValueBtn {
+  pointer-events: auto;
+  cursor: text;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ds-panel-fg);
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+.inlineValueBtn:hover {
+  border-color: var(--ds-panel-border);
+  background: var(--ds-panel-bg);
+}
+.inlineValueInput {
+  width: 64px;
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  color: var(--ds-panel-fg);
+  background: var(--ds-panel-bg);
+  border: 1px solid var(--ds-accent);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.liveDot {
+  color: var(--ds-panel-muted);
+  margin-left: 2px;
+}
+.dragHandle {
+  flex: 0 0 auto;
+  cursor: grab;
+  color: var(--ds-panel-muted);
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  user-select: none;
+}
+.invRow:hover .dragHandle {
+  opacity: 0.7;
+}
+.invRow:hover .dragHandle:hover {
+  opacity: 1;
+}
+.namingWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.namingInputRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.namingInputError {
+  border-color: #e5484d;
+}
+.namingInputError:focus {
+  outline-color: #e5484d;
+  border-color: #e5484d;
+}
+.nameError {
+  font-size: 9px;
+  color: #e5484d;
+  line-height: 1.2;
+}
+.namingInput {
+  width: 110px;
+  flex: 0 0 auto;
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  color: var(--ds-panel-fg);
+  background: var(--ds-panel-bg);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 3px;
+  padding: 2px 4px;
+  text-align: left;
+}
+.namingInput:focus {
+  outline: 1px solid var(--ds-accent);
+  border-color: var(--ds-accent);
+}
+.invRowMainBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  color: var(--ds-panel-fg);
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  text-align: left;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.invRowMainBtn:hover {
+  background: var(--ds-panel-row);
+  outline: 1px dotted var(--ds-accent);
+}
+
+/* ----- Located spacing highlight ----- */
+.locatedBox {
+  position: fixed;
+  pointer-events: none;
+  border: 2px solid var(--ds-accent);
+  background: var(--ds-accent-soft);
+  box-sizing: border-box;
+  z-index: 1;
+}
+.locatedTag {
+  position: absolute;
+  top: -14px;
+  left: 0;
+  font-family: var(--ds-mono);
+  font-size: 9px;
+  line-height: 1;
+  color: #fff;
+  background: var(--ds-accent);
+  padding: 2px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.locateBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ds-panel-muted);
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  min-width: 20px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.locateBtn:hover {
+  border-color: var(--ds-accent);
+  color: var(--ds-accent);
+}
+.locateBtnActive {
+  background: var(--ds-accent);
+  color: #fff;
+  border-color: var(--ds-accent);
+}
+
+/* ----- Color "find matches" panel ----- */
+.matchesBox {
+  margin: 6px 0;
+  padding: 8px;
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 5px;
+  background: var(--ds-panel-row);
+}
+/* Success variant: accent-tinted, with a confirmation header + summary. */
+.successBox {
+  border-color: var(--ds-accent);
+  background: var(--ds-accent-soft);
+}
+.successTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--ds-accent);
+}
+.successCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--ds-accent);
+  color: #fff;
+}
+.successCheck svg {
+  width: 9px;
+  height: 9px;
+}
+.successBody {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 10px;
+  color: var(--ds-panel-fg);
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+.successToken {
+  font-family: var(--ds-mono);
+  font-weight: 600;
+  color: var(--ds-accent);
+}
+.matchesHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ds-panel-fg);
+  margin-bottom: 4px;
+}
+.matchesHint {
+  font-size: 10px;
+  color: var(--ds-panel-muted);
+  margin-bottom: 6px;
+}
+.matchesHint code {
+  font-family: var(--ds-mono);
+  color: var(--ds-accent);
+}
+.matchRow {
+  display: flex;
+  flex-direction: column;
+  padding: 3px 0;
+  border-top: 1px solid var(--ds-panel-border);
+}
+.matchLoc {
+  font-size: 9px;
+  color: var(--ds-accent);
+}
+.whyMark {
+  margin-left: 4px;
+  font-size: 9px;
+  color: var(--ds-panel-muted);
+  cursor: help;
+}
+.tip {
+  position: fixed;
+  z-index: 2147483647;
+  pointer-events: none;
+  max-width: 280px;
+  background: var(--ds-panel-fg);
+  color: var(--ds-panel-bg);
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  border-radius: 5px;
+  box-shadow: var(--ds-shadow);
+  white-space: pre-wrap;
+}
+
+/* ----- Toast: confirms a CSS-file write (persist + propagate) ----- */
+.toast {
+  position: fixed;
+  z-index: 2147483647;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 460px;
+  pointer-events: auto;
+  background: var(--ds-panel-bg);
+  border: 1px solid var(--ds-panel-border);
+  border-left-width: 3px;
+  border-radius: 7px;
+  box-shadow: var(--ds-shadow);
+  padding: 10px 12px;
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ds-panel-fg);
+  animation: dsToastIn 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes dsToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.toastSuccess {
+  border-left-color: var(--ds-accent);
+}
+.toastError {
+  border-left-color: #e5484d;
+}
+.toastInfo {
+  border-left-color: #6a6a6a;
+}
+.toastIcon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+}
+.toastSuccess .toastIcon {
+  background: var(--ds-accent);
+}
+.toastError .toastIcon {
+  background: #e5484d;
+}
+.toastInfo .toastIcon {
+  background: #6a6a6a;
+  font-style: italic;
+  font-family: Georgia, serif;
+}
+.toastIcon svg {
+  width: 10px;
+  height: 10px;
+}
+.toastMsg {
+  flex: 1;
+  min-width: 0;
+}
+.toastClose {
+  flex: 0 0 auto;
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--ds-panel-muted);
+  font-size: 11px;
+  line-height: 1;
+  padding: 0 0 0 4px;
+}
+.toastClose:hover {
+  color: var(--ds-panel-fg);
+}
+/* Copyable command block: full width on its own line below the message, with a
+   Copy button. Shown only when auto-copy failed (toast.command present). */
+.toastCommand {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  margin-top: 2px;
+}
+.toastCommandText {
+  flex: 1;
+  min-width: 0;
+  max-height: 96px;
+  overflow: auto;
+  background: var(--ds-row-bg, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: all;
+}
+.toastCommandCopy {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid var(--ds-accent);
+  background: var(--ds-accent);
+  color: #fff;
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 7px 10px;
+  border-radius: 5px;
+}
+.toastCommandCopy:hover {
+  filter: brightness(1.08);
+}
+.matchSrc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--ds-panel-muted);
+  margin-top: 1px;
+}
+.snapBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid var(--ds-accent);
+  background: transparent;
+  color: var(--ds-accent);
+  font-family: var(--ds-mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Type-scale weight / line-height: click-to-preview (not tokens). */
+.typeEditBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0 2px;
+  margin: 0 -2px;
+  border-radius: 3px;
+}
+.typeEditBtn:hover {
+  background: var(--ds-accent-soft);
+  box-shadow: inset 0 -1px 0 var(--ds-accent);
+  color: var(--ds-panel-fg);
+}
+.typeEditInput {
+  font: inherit;
+  width: 56px;
+  padding: 0 3px;
+  border: 1px solid var(--ds-accent);
+  border-radius: 3px;
+  background: var(--ds-panel-bg);
+  color: var(--ds-panel-fg);
+}
+.previewBanner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 6px;
+  padding: 4px 6px;
+  font-size: 9px;
+  line-height: 1.35;
+  color: var(--ds-panel-muted);
+  background: var(--ds-accent-soft);
+  border-radius: 4px;
+}
+.previewBanner .miniBtn {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  padding: 1px 6px;
+  font-size: 9px;
+}
+.snapBtn:hover {
+  background: var(--ds-accent);
+  color: #fff;
+}
+.matchText {
+  font-size: 10px;
+  color: var(--ds-panel-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.swatchLg {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid var(--ds-panel-border);
+  flex-shrink: 0;
+}
+
+.empty {
+  color: var(--ds-panel-muted);
+  font-style: italic;
+  padding: 4px;
+}
+
+/* One-line role caption under each section header: states what the section
+   is AND what acting on it does (staged save vs. immediate write). */
+.roleCaption {
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--ds-panel-muted);
+  margin: 2px 0 8px;
+}
+.roleCaptionInventory {
+  padding: 0 12px;
+  margin-top: 6px;
+}
+
+/* ----- Token editor ----- */
+.tokenEditor {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ds-panel-border);
+  background: var(--ds-panel-row);
+}
+.tokenGroup {
+  margin-top: 8px;
+}
+.tokenGroupTitle {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-panel-muted);
+  margin-bottom: 4px;
+}
+.tokenRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+.tokenLabel {
+  flex-shrink: 0;
+  color: var(--ds-panel-fg);
+  font-size: 11px;
+}
+.tokenColorWrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tokenColor {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tokenColor::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.tokenColor::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+.tokenText {
+  width: 78px;
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  color: var(--ds-panel-fg);
+  background: var(--ds-panel-bg);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 3px;
+  padding: 2px 4px;
+  text-align: right;
+}
+.tokenText:focus {
+  outline: 1px solid var(--ds-accent);
+  border-color: var(--ds-accent);
+}
+.tokenActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.saveBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  flex: 1;
+  border: none;
+  background: var(--ds-accent);
+  color: #fff;
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.saveBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.tokenLabel {
+  cursor: default;
+}
+.miniBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ds-panel-border);
+  background: var(--ds-panel-bg);
+  color: var(--ds-panel-fg);
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+}
+.miniBtn:hover {
+  border-color: var(--ds-accent);
+  background: var(--ds-accent);
+  color: #fff;
+}
+.addTokenBtn {
+  pointer-events: auto;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  border: 1px dashed var(--ds-panel-border);
+  background: transparent;
+  color: var(--ds-panel-muted);
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  padding: 5px;
+  border-radius: 4px;
+}
+.addTokenBtn:hover {
+  border-color: var(--ds-accent);
+  color: var(--ds-accent);
+}
+.addForm {
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.addInput {
+  font-family: var(--ds-mono);
+  font-size: 11px;
+  color: var(--ds-panel-fg);
+  background: var(--ds-panel-bg);
+  border: 1px solid var(--ds-panel-border);
+  border-radius: 3px;
+  padding: 4px 6px;
+}
+.addInput:focus {
+  outline: 1px solid var(--ds-accent);
+  border-color: var(--ds-accent);
+}
+.addKindRow {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--ds-panel-fg);
+}
+.addKindRow label {
+  cursor: pointer;
+}
+.addKindRow input {
+  accent-color: var(--ds-accent);
+  cursor: pointer;
+}
+.actionMsg {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--ds-panel-muted);
+  word-break: break-word;
+}
+
+/* ----- Collapsible section header ----- */
+.collapseHeader {
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  text-align: left;
+  font-family: var(--ds-mono);
+}
+.collapseHeader:hover .collapseTitle {
+  color: var(--ds-panel-fg);
+}
+.caret,
+.caretCollapsed {
+  display: inline-block;
+  font-size: 9px;
+  color: var(--ds-panel-muted);
+  transition: transform 120ms ease;
+}
+.caret {
+  transform: rotate(90deg);
+}
+.caretCollapsed {
+  transform: rotate(0deg);
+}
+.collapseTitle {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-panel-muted);
+}

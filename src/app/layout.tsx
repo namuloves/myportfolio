@@ -3,6 +3,19 @@ import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "../styles/globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import dynamic from "next/dynamic";
+// Styles for the dev-only css-spec overlay. Scoped to the overlay's own hashed
+// class names, so it's inert when the overlay isn't shown (and the overlay is
+// tree-shaken in production).
+import "css-spec/style.css";
+
+// Dev-only design-spec overlay (the `css-spec` package). The import expression
+// is dead code in production (NODE_ENV === "production"), so the module is
+// tree-shaken out of the production bundle and never rendered.
+const DesignSpecOverlay =
+  process.env.NODE_ENV !== "production"
+    ? dynamic(() => import("css-spec/client").then((m) => m.DesignSpecOverlay))
+    : () => null;
 
 const abcDiatype = localFont({
   src: "../fonts/ABCDiatype-Regular.otf",
@@ -80,6 +93,7 @@ export default function RootLayout({
       </head>
       <body className={`${abcDiatype.variable} ${suisseIntl.variable} ${geistMono.variable}`}>
         {children}
+        <DesignSpecOverlay />
         <Analytics />
       </body>
     </html>
