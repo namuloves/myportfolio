@@ -49,6 +49,7 @@ import {
   buildSpacingTokenNames,
   buildTypeTokenNames,
   toHexColor,
+  colorKey,
   mergeSavedTokenBase,
   migrateTokenKey,
   reconcileUpdateResponse,
@@ -59,6 +60,7 @@ import {
   type OutlineItem,
   type Spec,
   type Inventory,
+  type ColorUsage,
 } from "./designSpecHelpers";
 import {
   SectionHeader,
@@ -157,6 +159,9 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
   // Inline "name this color" from an inventory row: which hex + draft name.
   const [namingColor, setNamingColor] = useState<string | null>(null);
   const [colorNameDraft, setColorNameDraft] = useState("");
+  // When the user picks a NEW color via the swatch picker, the value to actually
+  // write differs from the inventory row's original hex. Keyed by row value.
+  const [pickedColorValue, setPickedColorValue] = useState<Record<string, string>>({});
   // Inline validation error shown right next to the naming input (color or
   // spacing), so the user isn't sent to the collapsed EDIT TOKENS message.
   const [nameError, setNameError] = useState<string | null>(null);
@@ -880,6 +885,8 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
       props.forEach((p) => el.style.removeProperty(p));
     });
     elementEdits.current.clear();
+    // Revert the picked-color previews so inventory rows show their real values.
+    setPickedColorValue({});
     if (spec?.el) setSpec(buildSpec(spec.el));
   }, [spec]);
 
@@ -1041,16 +1048,50 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
     [renameDraft, showToast]
   );
 
+  /* Live-preview a color change across the page: for every element using
+     `fromValue` (per the inventory's colorEls map), inline-override whichever of
+     color / background / border currently matches it to `toHex`. Reversible —
+     tracked as element edits, cleared on reset/reload. Never writes CSS. */
+  const previewColorOnPage = useCallback(
+    (fromValue: string, toHex: string) => {
+      const els = inventory?.colorEls.get(fromValue.toLowerCase()) ?? [];
+      const target = colorKey(fromValue);
+      for (const el of els) {
+        if (!el.isConnected) continue;
+        const cs = getComputedStyle(el);
+        const props: [string, string][] = [
+          ["color", cs.color],
+          ["background-color", cs.backgroundColor],
+          ["border-top-color", cs.borderTopColor],
+          ["border-right-color", cs.borderRightColor],
+          ["border-bottom-color", cs.borderBottomColor],
+          ["border-left-color", cs.borderLeftColor],
+          ["outline-color", cs.outlineColor],
+        ];
+        for (const [prop, current] of props) {
+          if (colorKey(current) === target) {
+            el.style.setProperty(prop, toHex);
+            trackElementEdit(el, prop);
+          }
+        }
+      }
+    },
+    [inventory, trackElementEdit]
+  );
+
   /* Name an untokenized color from the inventory: create the token, then fetch
      (but do not rewrite) every place the hex is used so the user can decide. */
   const nameColor = useCallback(
-    async (hex: string) => {
+    async (rowValue: string) => {
       const norm = normalizeTokenName(colorNameDraft);
       if ("error" in norm) {
         setNameError(norm.error);
         return;
       }
       const name = norm.name;
+      // If the user picked a new color via the swatch, write THAT value; else
+      // the row's original color.
+      const hex = pickedColorValue[rowValue] ?? rowValue;
       setNameError(null);
       setActionMsg("creating…");
       try {
@@ -1101,7 +1142,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
         setActionMsg(null);
       }
     },
-    [colorNameDraft]
+    [colorNameDraft, pickedColorValue, apiPath]
   );
 
   /* Name a spacing value -> create a --space-* token in globals.css. */
@@ -1276,6 +1317,23 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
     }
     return names;
   }, [editableGroups, enabled, layers.inventory, inventory]);
+
+  /* Handle picking a new color for an inventory row via the swatch picker:
+     remember the picked value, live-preview it across the page, and (first pick)
+     open the naming flow seeded with a suggested token name. (Defined after
+     takenTokenNames since it reads it.) */
+  const onPickInventoryColor = useCallback(
+    (rowValue: string, hex: string, usage: ColorUsage) => {
+      setPickedColorValue((prev) => ({ ...prev, [rowValue]: hex }));
+      previewColorOnPage(rowValue, hex);
+      if (namingColor !== rowValue) {
+        setNamingColor(rowValue);
+        setColorNameDraft(suggestTokenName({ value: hex, usage }, takenTokenNames));
+        setNameError(null);
+      }
+    },
+    [previewColorOnPage, namingColor, takenTokenNames]
+  );
 
   /* Position of the callout: avoid covering the inspected element / edges AND
      the docked inventory panel (which can be on either side). */
@@ -1732,11 +1790,35 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                         }}
                         title={field ? "Click to edit" : undefined}
                       >
-                        {swatch && (
+                        {swatch && field?.kind === "color" ? (
+                          // Clickable swatch = native color picker. Changing it
+                          // seeds the row draft and applies the edit in one step,
+                          // so you never have to open the text editor by hand.
                           <span
-                            className={styles.swatch}
+                            className={styles.swatchPicker}
                             style={{ background: swatch }}
-                          />
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="color"
+                              className={styles.swatchPickerInput}
+                              value={toHexColor(value)}
+                              title="Pick a color"
+                              onChange={(e) => {
+                                const hex = e.target.value;
+                                setEditingRow(rowKey);
+                                setRowDraft(hex);
+                                setRowError(null);
+                              }}
+                            />
+                          </span>
+                        ) : (
+                          swatch && (
+                            <span
+                              className={styles.swatch}
+                              style={{ background: swatch }}
+                            />
+                          )
                         )}
                         {value}
                         {note && (
@@ -2104,9 +2186,26 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                     inventory.colors.map((c) => {
                       const label = colorTokenLabels[c.value.toLowerCase()];
                       const isNaming = namingColor === c.value;
+                      const shownColor = pickedColorValue[c.value] ?? c.raw;
                       return (
                         <div className={styles.invRow} key={c.value}>
-                          <span className={styles.swatchLg} style={{ background: c.raw }} />
+                          {/* Clickable swatch = picker. Picking a new color opens
+                              the naming flow seeded with that value, so you can
+                              tweak a color and save it as a token in one go. */}
+                          <span
+                            className={styles.swatchPickerLg}
+                            style={{ background: shownColor }}
+                          >
+                            <input
+                              type="color"
+                              className={styles.swatchPickerInput}
+                              value={toHexColor(shownColor)}
+                              title="Pick a color to name as a token"
+                              onChange={(e) =>
+                                onPickInventoryColor(c.value, e.target.value, c.usage)
+                              }
+                            />
+                          </span>
                           {isNaming ? (
                             <span className={styles.namingWrap}>
                               <span className={styles.namingInputRow}>
@@ -2133,7 +2232,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                                   }}
                                   spellCheck={false}
                                 />
-                                <span className={styles.invSub}>{c.value}</span>
+                                <span className={styles.invSub}>{shownColor}</span>
                               </span>
                               {nameError && (
                                 <span className={styles.nameError}>{nameError}</span>
@@ -2180,10 +2279,10 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                               {label ? (
                                 <>
                                   <span className={styles.invToken}>{label}</span>
-                                  <span className={styles.invSub}> · {c.value}</span>
+                                  <span className={styles.invSub}> · {shownColor}</span>
                                 </>
                               ) : (
-                                c.value
+                                shownColor
                               )}
                             </button>
                           )}
