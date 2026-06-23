@@ -65,6 +65,7 @@ import {
 import {
   SectionHeader,
   EditableTokenLabel,
+  PendingChanges,
 } from "./designSpecComponents";
 import { useFloatingPanels, useTypePreview, useToast } from "./designSpecHooks";
 import { DEFAULT_API_PATH } from "../shared/constants";
@@ -227,6 +228,11 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
   // Inline overrides this session: element -> the set of CSS props WE set, so
   // reset removes only ours (not styles the page itself put inline).
   const elementEdits = useRef<Map<HTMLElement, Set<string>>>(new Map());
+  // The (element, property) pairs that originally used a given inventory color,
+  // captured on the FIRST preview for that row. Re-applied on every later pick so
+  // dragging the picker recolors the SAME targets (matching against live colors
+  // would fail after the first override, freezing elements at a stale mid-color).
+  const colorPreviewTargets = useRef<Map<string, [HTMLElement, string][]>>(new Map());
 
   /* Record that we set `prop` inline on `el`, AND prune any elements that have
      since detached from the DOM (e.g. via HMR) so the Map never holds dead
@@ -502,6 +508,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
     typeDraft,
     setTypeDraft,
     typePreviewCount,
+    typeChanges,
     previewType,
     resetTypePreviews,
   } = useTypePreview(inventory);
@@ -680,12 +687,37 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
   const setToken = useCallback((name: string, value: string) => {
     setSaveState("idle");
     setTokenEdits((prev) => ({ ...prev, [name]: value }));
+    // Editing a token can happen from any list (Type scale, Spacing, Colors),
+    // but the pending-changes summary + Update CSS button live in the Edit
+    // tokens panel. Auto-expand it so the user always sees how to save — and
+    // isn't left wondering what happened after an edit.
+    setCollapsed((prev) =>
+      prev.editTokens ? { ...prev, editTokens: false } : prev
+    );
   }, []);
 
   const resetTokens = useCallback(() => {
     setTokenEdits({});
     setSaveState("idle");
   }, []);
+
+  /* How many elements on the page currently use a token's value — for the
+     "affects N places" impact hint. Resolves the token's base value and looks it
+     up in the inventory's element maps (color / type-size / spacing). */
+  const tokenUseCount = useCallback(
+    (name: string): number => {
+      const value = (tokenBase[name] ?? "").trim();
+      if (!value || !inventory) return 0;
+      const norm = value.toLowerCase();
+      return (
+        inventory.colorEls.get(norm)?.length ??
+        inventory.typeEls.get(value)?.length ??
+        inventory.spacingEls.get(value)?.length ??
+        0
+      );
+    },
+    [tokenBase, inventory]
+  );
 
   const chooseCalloutMode = useCallback((mode: "token" | "element") => {
     setCalloutMode(mode);
@@ -887,6 +919,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
     elementEdits.current.clear();
     // Revert the picked-color previews so inventory rows show their real values.
     setPickedColorValue({});
+    colorPreviewTargets.current.clear();
     if (spec?.el) setSpec(buildSpec(spec.el));
   }, [spec]);
 
@@ -1054,26 +1087,38 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
      tracked as element edits, cleared on reset/reload. Never writes CSS. */
   const previewColorOnPage = useCallback(
     (fromValue: string, toHex: string) => {
-      const els = inventory?.colorEls.get(fromValue.toLowerCase()) ?? [];
-      const target = colorKey(fromValue);
-      for (const el of els) {
-        if (!el.isConnected) continue;
-        const cs = getComputedStyle(el);
-        const props: [string, string][] = [
-          ["color", cs.color],
-          ["background-color", cs.backgroundColor],
-          ["border-top-color", cs.borderTopColor],
-          ["border-right-color", cs.borderRightColor],
-          ["border-bottom-color", cs.borderBottomColor],
-          ["border-left-color", cs.borderLeftColor],
-          ["outline-color", cs.outlineColor],
-        ];
-        for (const [prop, current] of props) {
-          if (colorKey(current) === target) {
-            el.style.setProperty(prop, toHex);
-            trackElementEdit(el, prop);
+      // On the first pick for this row, find which (element, property) pairs use
+      // the original color and remember them. Matching against LIVE computed
+      // colors only works the first time — after we override them, they no longer
+      // equal the original — so we capture once and re-apply to the same set.
+      let targets = colorPreviewTargets.current.get(fromValue);
+      if (!targets) {
+        targets = [];
+        const els = inventory?.colorEls.get(fromValue.toLowerCase()) ?? [];
+        const original = colorKey(fromValue);
+        for (const el of els) {
+          if (!el.isConnected) continue;
+          const cs = getComputedStyle(el);
+          const props: [string, string][] = [
+            ["color", cs.color],
+            ["background-color", cs.backgroundColor],
+            ["border-top-color", cs.borderTopColor],
+            ["border-right-color", cs.borderRightColor],
+            ["border-bottom-color", cs.borderBottomColor],
+            ["border-left-color", cs.borderLeftColor],
+            ["outline-color", cs.outlineColor],
+          ];
+          for (const [prop, current] of props) {
+            if (colorKey(current) === original) targets.push([el, prop]);
           }
         }
+        colorPreviewTargets.current.set(fromValue, targets);
+      }
+      // Apply the latest picked color to the remembered targets.
+      for (const [el, prop] of targets) {
+        if (!el.isConnected) continue;
+        el.style.setProperty(prop, toHex);
+        trackElementEdit(el, prop);
       }
     },
     [inventory, trackElementEdit]
@@ -1268,6 +1313,33 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
     },
     [showToast]
   );
+
+  /* Build & copy a prompt for the weight/line-height previews (these aren't
+     tokens, so the user applies them via their AI coding tool). One prompt
+     covering every previewed change. */
+  const copyTypeChangePrompt = useCallback(async () => {
+    const changes = Object.values(typeChanges);
+    if (changes.length === 0) return;
+    const prompt = changes
+      .map((c) =>
+        buildClaudePromptFor(c.selector, c.snippet, c.prop, c.from, c.to)
+      )
+      .join("\n\n");
+    try {
+      await navigator.clipboard.writeText(prompt);
+      showToast(
+        `Copied a prompt — paste it into your AI coding tool to apply ${
+          changes.length === 1 ? "this change" : "these changes"
+        } in your CSS.`
+      );
+    } catch {
+      showToast(
+        `Couldn't auto-copy. Here's the prompt — Copy it and paste into your AI coding tool.`,
+        "info",
+        prompt
+      );
+    }
+  }, [typeChanges, showToast]);
 
   /* Drop a dragged spacing row before `targetValue`, persist the new order. */
   const dropSpacingBefore = useCallback(
@@ -2059,7 +2131,9 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                           />
                           <input
                             type="text"
-                            className={styles.tokenText}
+                            className={`${styles.tokenText}${
+                              dirty ? ` ${styles.dirty}` : ""
+                            }`}
                             value={current}
                             onChange={(e) => setToken(t.name, e.target.value)}
                             spellCheck={false}
@@ -2068,7 +2142,9 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                       ) : (
                         <input
                           type="text"
-                          className={styles.tokenText}
+                          className={`${styles.tokenText}${
+                            dirty ? ` ${styles.dirty}` : ""
+                          }`}
                           value={current}
                           onChange={(e) => setToken(t.name, e.target.value)}
                           spellCheck={false}
@@ -2141,7 +2217,21 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
 
             {actionMsg && <div className={styles.actionMsg}>{actionMsg}</div>}
 
-            <div className={styles.tokenActions}>
+            {/* Pending-changes summary — makes the outcome explicit before the
+                user clicks Update CSS. Hidden right after a successful save. */}
+            {saveState !== "saved" && (
+              <PendingChanges
+                edits={tokenEdits}
+                baseValues={tokenBase}
+                useCount={tokenUseCount}
+              />
+            )}
+
+            <div
+              className={`${styles.tokenActions}${
+                Object.keys(tokenEdits).length > 0 ? ` ${styles.sticky}` : ""
+              }`}
+            >
               <button
                 className={styles.refreshBtn}
                 onClick={resetTokens}
@@ -2186,7 +2276,10 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                     inventory.colors.map((c) => {
                       const label = colorTokenLabels[c.value.toLowerCase()];
                       const isNaming = namingColor === c.value;
-                      const shownColor = pickedColorValue[c.value] ?? c.raw;
+                      // Show the hex form (c.value is colorKey(raw) = #rrggbb;
+                      // lab()/oklab() pass through unchanged) instead of the raw
+                      // rgb(...) — shorter and easier to read.
+                      const shownColor = pickedColorValue[c.value] ?? c.value;
                       return (
                         <div className={styles.invRow} key={c.value}>
                           {/* Clickable swatch = picker. Picking a new color opens
@@ -2367,20 +2460,38 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                     isCollapsed={!!collapsed.type}
                     onToggle={() => toggleSection("type")}
                   />
-                  {!collapsed.type && typePreviewCount > 0 && (
-                    <div className={styles.previewBanner}>
-                      <span>
-                        {typePreviewCount} live preview
-                        {typePreviewCount === 1 ? "" : "s"} — weight/line-height
-                        aren&apos;t tokens; apply in CSS yourself.
-                      </span>
-                      <button
-                        className={styles.miniBtn}
-                        onClick={resetTypePreviews}
-                        title="Revert previews"
-                      >
-                        reset
-                      </button>
+                  {!collapsed.type && Object.keys(typeChanges).length > 0 && (
+                    <div className={styles.pendingBox}>
+                      <div className={styles.pendingHead}>
+                        Previewing live — weight &amp; line-height aren&apos;t
+                        tokens, so apply via your AI coding tool.
+                      </div>
+                      {Object.values(typeChanges).map((c) => (
+                        <div key={c.prop} className={styles.pendingRow}>
+                          <code>{c.prop}</code>: {c.from}{" "}
+                          <span aria-hidden>→</span> <strong>{c.to}</strong>
+                          <span className={styles.pendingUses}>
+                            {" "}
+                            · {c.count} element{c.count === 1 ? "" : "s"}
+                          </span>
+                        </div>
+                      ))}
+                      <div className={styles.pendingActions}>
+                        <button
+                          className={styles.saveBtn}
+                          onClick={copyTypeChangePrompt}
+                          title="Copy a prompt to paste into your AI coding tool"
+                        >
+                          Copy prompt
+                        </button>
+                        <button
+                          className={styles.refreshBtn}
+                          onClick={resetTypePreviews}
+                          title="Revert previews"
+                        >
+                          reset
+                        </button>
+                      </div>
                     </div>
                   )}
                   {!collapsed.type &&
@@ -2398,6 +2509,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                                 label={tokenName.replace(/^--/, "")}
                                 fullName={tokenName}
                                 value={tokenEdits[tokenName] ?? sizeStr}
+                                dirty={tokenEdits[tokenName] !== undefined}
                                 onRename={(to) => renameToken(tokenName, to)}
                                 onEditValue={(v) => setToken(tokenName, v)}
                               />
@@ -2439,7 +2551,7 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                                   ) : (
                                     <button
                                       className={styles.typeEditBtn}
-                                      title="Live preview (not a token — apply in CSS yourself)"
+                                      title="Live preview — not a token; use Copy prompt to apply it via your AI coding tool"
                                       onClick={() => {
                                         setTypeEditing(editKey);
                                         setTypeDraft(val);

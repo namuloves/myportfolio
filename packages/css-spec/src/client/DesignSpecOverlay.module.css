@@ -1255,10 +1255,32 @@
   outline: 1px solid var(--ds-accent);
   border-color: var(--ds-accent);
 }
+/* An input whose value differs from the saved token — glows until saved so the
+   user can see at a glance what's pending. */
+.tokenText.dirty,
+.inlineValueBtn.dirty {
+  border-color: var(--ds-accent);
+  background: color-mix(in srgb, var(--ds-accent) 14%, var(--ds-panel-bg));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ds-accent) 22%, transparent);
+}
 .tokenActions {
   display: flex;
   gap: 6px;
   margin-top: 10px;
+}
+/* When edits are pending, the action row sticks to the bottom of the scrolling
+   panel so "Update CSS" is always reachable without scrolling past every row. */
+.tokenActions.sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: 10px;
+  padding: 8px 0 2px;
+  background: linear-gradient(
+    to top,
+    var(--ds-panel-row) 70%,
+    transparent
+  );
 }
 .saveBtn {
   pointer-events: auto;
@@ -1358,6 +1380,42 @@
   font-size: 10px;
   color: var(--ds-panel-muted);
   word-break: break-word;
+}
+
+/* ----- Pending token-edit summary (makes the outcome explicit) ----- */
+.pendingBox {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--ds-accent);
+  border-radius: 6px;
+  background: var(--ds-row-bg, rgba(0, 0, 0, 0.03));
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+.pendingHead {
+  font-weight: 600;
+  color: var(--ds-accent);
+  margin-bottom: 4px;
+}
+.pendingRow {
+  color: var(--ds-panel-fg);
+  word-break: break-word;
+}
+.pendingRow code {
+  font-family: var(--ds-mono);
+}
+.pendingUses {
+  color: var(--ds-panel-muted);
+}
+.pendingFoot {
+  margin-top: 5px;
+  color: var(--ds-panel-muted);
+}
+.pendingActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 7px;
 }
 
 /* ----- Collapsible section header ----- */

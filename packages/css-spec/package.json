@@ -1,6 +1,6 @@
 {
   "name": "css-spec",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Dev-only Figma-style CSS design-spec overlay for Next.js App Router. Hover to inspect, edit design tokens live, and copy precise prompts for your AI coding tool.",
   "type": "module",
   "types": "./dist/client/index.d.ts",

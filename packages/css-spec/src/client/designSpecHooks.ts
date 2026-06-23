@@ -10,7 +10,18 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { IS_DEV, type Inventory } from "./designSpecHelpers";
+import { IS_DEV, elementTag, type Inventory } from "./designSpecHelpers";
+
+/** A weight/line-height change made via the type-scale preview. These aren't
+    design tokens, so the user applies them in CSS (we generate a prompt). */
+export type TypeChange = {
+  prop: "font-weight" | "line-height";
+  from: string;
+  to: string;
+  selector: string; // a representative element selector
+  snippet: string; // its text, to disambiguate
+  count: number; // how many elements matched
+};
 
 type Pos = { x: number; y: number } | null;
 type DragRef = React.MutableRefObject<{
@@ -136,6 +147,9 @@ export function useTypePreview(inventory: Inventory | null) {
   // element -> the set of props WE set (so reset removes only ours).
   const typeEdits = useRef<Map<HTMLElement, Set<string>>>(new Map());
   const [typePreviewCount, setTypePreviewCount] = useState(0);
+  // The change details (prop, from→to, selector) so we can show what changed and
+  // build a prompt. Keyed by prop so weight + line-height each get one entry.
+  const [typeChanges, setTypeChanges] = useState<Record<string, TypeChange>>({});
 
   const previewType = useCallback(
     (
@@ -159,6 +173,16 @@ export function useTypePreview(inventory: Inventory | null) {
         return cs.fontWeight === row.weight && lh === row.lineHeight;
       });
       if (targets.length === 0) return "no live elements";
+      // Capture the original value (from a representative element) BEFORE we
+      // override it, plus a selector/snippet, so we can show the change and
+      // build a prompt later.
+      const sample = targets[0];
+      const from = getComputedStyle(sample).getPropertyValue(prop).trim();
+      const selector = elementTag(sample);
+      const snippet = (sample.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 50);
       // Prune elements that detached since (e.g. HMR) so the Map can't grow
       // unbounded with dead nodes across a long dev session.
       for (const node of typeEdits.current.keys()) {
@@ -171,6 +195,18 @@ export function useTypePreview(inventory: Inventory | null) {
         typeEdits.current.set(el, props);
       });
       setTypePreviewCount(typeEdits.current.size);
+      setTypeChanges((prev) => ({
+        ...prev,
+        [prop]: {
+          prop,
+          // Keep the earliest 'from' if this prop was already changed once.
+          from: prev[prop]?.from ?? from,
+          to: value,
+          selector,
+          snippet,
+          count: targets.length,
+        },
+      }));
       return null;
     },
     [inventory]
@@ -183,6 +219,7 @@ export function useTypePreview(inventory: Inventory | null) {
     });
     typeEdits.current.clear();
     setTypePreviewCount(0);
+    setTypeChanges({});
   }, []);
 
   return {
@@ -191,6 +228,7 @@ export function useTypePreview(inventory: Inventory | null) {
     typeDraft,
     setTypeDraft,
     typePreviewCount,
+    typeChanges,
     previewType,
     resetTypePreviews,
   };

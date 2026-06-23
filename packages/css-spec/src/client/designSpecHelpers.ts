@@ -619,8 +619,18 @@ export function collectElementColors(
   if (isSvg && cs.fill && cs.fill !== "none" && cs.fill !== "rgb(0, 0, 0)")
     emit(cs.fill, "bg");
   if (isSvg && cs.stroke && cs.stroke !== "none") emit(cs.stroke, "border");
-  // The outline ring (border-like).
-  if (parseFloat(cs.outlineWidth) > 0) emit(cs.outlineColor, "border");
+  // The outline ring (border-like) — only when it's a REAL, visible outline.
+  // `outline-color` defaults to the element's text `color` (e.g. #161616), so
+  // counting every element with an outline width would flood the border bucket
+  // with the text color. Require a visible outline-style AND a color that isn't
+  // just the inherited text color.
+  if (
+    parseFloat(cs.outlineWidth) > 0 &&
+    cs.outlineStyle !== "none" &&
+    colorKey(cs.outlineColor) !== colorKey(cs.color)
+  ) {
+    emit(cs.outlineColor, "border");
+  }
   // box-shadow colors (a shadow may carry several); drop near-invisible tints.
   if (cs.boxShadow && cs.boxShadow !== "none") {
     for (const c of extractColors(cs.boxShadow)) {

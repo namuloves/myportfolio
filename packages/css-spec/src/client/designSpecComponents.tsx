@@ -38,11 +38,14 @@ export function InlineValueEdit({
   value,
   placeholder,
   live,
+  dirty,
   onCommit,
 }: {
   value: string;
   placeholder?: string;
   live?: boolean;
+  /** Value differs from the saved token — highlight until saved. */
+  dirty?: boolean;
   onCommit: (next: string) => void;
 }) {
   const [editing, setEditing] = useState(false);
@@ -50,7 +53,7 @@ export function InlineValueEdit({
   if (!editing) {
     return (
       <button
-        className={styles.inlineValueBtn}
+        className={`${styles.inlineValueBtn}${dirty ? ` ${styles.dirty}` : ""}`}
         title={live ? "Edit (live preview only — no token to save)" : "Edit value"}
         onClick={() => {
           setDraft(value);
@@ -91,12 +94,15 @@ export function EditableTokenLabel({
   label,
   fullName,
   value,
+  dirty,
   onRename,
   onEditValue,
 }: {
   label: string;
   fullName: string;
   value: string;
+  /** Value differs from the saved token — highlight the value field. */
+  dirty?: boolean;
   onRename: (next: string) => void;
   onEditValue: (next: string) => void;
 }) {
@@ -139,8 +145,56 @@ export function EditableTokenLabel({
         {label}
       </button>
       <span className={styles.invSub}> · </span>
-      <InlineValueEdit value={value} placeholder="16px" onCommit={onEditValue} />
+      <InlineValueEdit
+        value={value}
+        placeholder="16px"
+        dirty={dirty}
+        onCommit={onEditValue}
+      />
     </>
+  );
+}
+
+/** Pending token-edit summary. Makes the outcome of an edit explicit: what
+    changed, how many places it affects, and that it's a live preview until
+    "Update CSS" writes it to globals.css. Pure UI — counts come from `useCount`. */
+export function PendingChanges({
+  edits,
+  baseValues,
+  useCount,
+}: {
+  edits: Record<string, string>;
+  baseValues: Record<string, string>;
+  useCount: (name: string) => number;
+}) {
+  const names = Object.keys(edits);
+  if (names.length === 0) return null;
+  return (
+    <div className={styles.pendingBox}>
+      <div className={styles.pendingHead}>
+        Previewing {names.length} change{names.length === 1 ? "" : "s"} live — not
+        saved yet
+      </div>
+      {names.map((name) => {
+        const uses = useCount(name);
+        return (
+          <div key={name} className={styles.pendingRow}>
+            <code>{name}</code>: {baseValues[name] ?? "?"}{" "}
+            <span aria-hidden>→</span> <strong>{edits[name]}</strong>
+            {uses > 0 && (
+              <span className={styles.pendingUses}>
+                {" "}
+                · {uses} place{uses === 1 ? "" : "s"}
+              </span>
+            )}
+          </div>
+        );
+      })}
+      <div className={styles.pendingFoot}>
+        <strong>Update CSS</strong> saves to globals.css (every use of the token
+        updates). <strong>reset</strong> discards the preview.
+      </div>
+    </div>
   );
 }
 

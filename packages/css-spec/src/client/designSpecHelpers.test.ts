@@ -352,7 +352,8 @@ describe("collectElementColors (all sources in one place)", () => {
       color: "rgb(0,0,0)", backgroundColor: "rgba(0, 0, 0, 0)",
       borderTopWidth: "0px", borderTopColor: "rgb(0,0,0)",
       backgroundImage: "none", fill: "", stroke: "",
-      outlineWidth: "0px", outlineColor: "rgb(0,0,0)", boxShadow: "none",
+      outlineWidth: "0px", outlineStyle: "none", outlineColor: "rgb(0,0,0)",
+      boxShadow: "none",
       ...o,
     }) as unknown as CSSStyleDeclaration;
   const svgEl = { namespaceURI: "http://www.w3.org/2000/svg" } as unknown as HTMLElement;
@@ -389,8 +390,24 @@ describe("collectElementColors (all sources in one place)", () => {
     expect(out.some(([c]) => c === "rgba(0, 0, 0, 0.04)")).toBe(false);
   });
 
-  it("emits outline color when there's an outline", () => {
-    expect(emitted(htmlEl, cs({ outlineWidth: "2px", outlineColor: "rgb(12,69,167)" }), false))
+  it("emits a real, visible outline color", () => {
+    expect(emitted(htmlEl, cs({ outlineWidth: "2px", outlineStyle: "solid", outlineColor: "rgb(12,69,167)" }), false))
       .toContainEqual(["rgb(12,69,167)", "border"]);
+  });
+
+  it("does NOT count outline-color that just inherits the text color (the 65%-border bug)", () => {
+    // outline-color defaults to `color`; an outline width with that default must
+    // not flood the border bucket with the text color (#161616 looked '65% border').
+    const out = emitted(
+      htmlEl,
+      cs({ color: "rgb(22,22,22)", outlineWidth: "2px", outlineStyle: "solid", outlineColor: "rgb(22,22,22)" }),
+      false
+    );
+    expect(out.some(([, role]) => role === "border")).toBe(false);
+  });
+
+  it("does NOT count an outline with outline-style:none", () => {
+    const out = emitted(htmlEl, cs({ outlineWidth: "2px", outlineStyle: "none", outlineColor: "rgb(12,69,167)" }), false);
+    expect(out.some(([, role]) => role === "border")).toBe(false);
   });
 });
