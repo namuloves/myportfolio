@@ -5,6 +5,7 @@
 
 import { useState } from "react";
 import styles from "./DesignSpecOverlay.module.css";
+import { cx } from "./designSpecHelpers";
 
 export function SectionHeader({
   title,
@@ -53,7 +54,7 @@ export function InlineValueEdit({
   if (!editing) {
     return (
       <button
-        className={`${styles.inlineValueBtn}${dirty ? ` ${styles.dirty}` : ""}`}
+        className={cx(styles.inlineValueBtn, dirty && styles.dirty)}
         title={live ? "Edit (live preview only — no token to save)" : "Edit value"}
         onClick={() => {
           setDraft(value);

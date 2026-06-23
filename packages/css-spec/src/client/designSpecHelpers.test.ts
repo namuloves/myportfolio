@@ -19,7 +19,25 @@ import {
   reconcileUpdateResponse,
   humanizeChange,
   buildClaudePromptFor,
+  cx,
 } from "./designSpecHelpers";
+
+describe("cx (conditional className join)", () => {
+  it("joins truthy parts with spaces", () => {
+    expect(cx("a", "b", "c")).toBe("a b c");
+  });
+  it("drops falsy parts (false / null / undefined / empty)", () => {
+    expect(cx("a", false, null, undefined, "", "b")).toBe("a b");
+  });
+  it("supports the `cond && cls` pattern", () => {
+    const dirty = true;
+    const clean = false;
+    expect(cx("base", dirty && "dirty", clean && "clean")).toBe("base dirty");
+  });
+  it("returns empty string when nothing is truthy", () => {
+    expect(cx(false, null, undefined)).toBe("");
+  });
+});
 
 describe("rgbToHex", () => {
   it("converts rgb() to #hex", () => {

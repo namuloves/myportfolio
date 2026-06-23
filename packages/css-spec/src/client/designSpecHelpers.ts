@@ -16,6 +16,13 @@ import {
 
 export const IS_DEV = process.env.NODE_ENV !== "production";
 
+/** Join class names, dropping falsy entries. Keeps conditional classes
+    (`cx(styles.input, dirty && styles.dirty)`) readable instead of nested
+    template-literal ternaries. */
+export function cx(...parts: Array<string | false | null | undefined>): string {
+  return parts.filter(Boolean).join(" ");
+}
+
 export const isTransparent = (color: string) =>
   !color ||
   color === "transparent" ||

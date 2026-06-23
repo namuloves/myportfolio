@@ -56,6 +56,7 @@ import {
   EDITABLE_FIELDS,
   tokenForValue,
   DEFAULT_LAYERS,
+  cx,
   type SubLayers,
   type OutlineItem,
   type Spec,
@@ -525,6 +526,9 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
   const editKey = Object.entries(tokenEdits)
     .map(([k, v]) => `${k}:${v}`)
     .join("|");
+  // Any pending (unsaved) token edits? Gates the sticky save bar + reset/save
+  // buttons.
+  const hasEdits = Object.keys(tokenEdits).length > 0;
   const didInitialScan = useRef(false);
   useEffect(() => {
     if (!IS_DEV || !enabled || !layers.inventory) return;
@@ -1471,13 +1475,14 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
           preview not yet saved; error = a write failed. */}
       {toast && (
         <div
-          className={`${styles.toast} ${
+          className={cx(
+            styles.toast,
             toast.kind === "error"
               ? styles.toastError
               : toast.kind === "info"
                 ? styles.toastInfo
                 : styles.toastSuccess
-          }`}
+          )}
           role="status"
           // Pause the auto-dismiss while hovered so you can read/act on it;
           // resume (briefly) on leave. All timer logic lives in useToast.
@@ -2068,93 +2073,104 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
             <div className={styles.roleCaption}>
               Your tokens — edits preview live, save with Update CSS.
             </div>
-            {editableGroups.map((group) => (
-              <div key={group.group} className={styles.tokenGroup}>
-                <div className={styles.tokenGroupTitle}>{group.group}</div>
-                {group.tokens.map((t) => {
-                  const current = tokenEdits[t.name] ?? tokenBase[t.name] ?? "";
-                  const dirty = tokenEdits[t.name] !== undefined;
-                  const isRenaming = renaming === t.name;
-                  return (
-                    <div className={styles.tokenRow} key={t.name}>
-                      {isRenaming ? (
-                        <input
-                          type="text"
-                          className={styles.tokenText}
-                          style={{ flex: 1, textAlign: "left" }}
-                          value={renameDraft}
-                          autoFocus
-                          placeholder={t.name}
-                          onChange={(e) => setRenameDraft(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") renameToken(t.name);
-                            if (e.key === "Escape") setRenaming(null);
-                          }}
-                          spellCheck={false}
-                        />
-                      ) : (
-                        <span
-                          className={styles.tokenLabel}
-                          title={`${t.name} — double-click to rename`}
-                          onDoubleClick={() => {
-                            setRenaming(t.name);
-                            setRenameDraft(t.name);
-                          }}
-                        >
-                          {dirty ? "• " : ""}
-                          {t.label}
-                        </span>
-                      )}
-                      {isRenaming ? (
-                        <span className={styles.tokenColorWrap}>
-                          <button
-                            className={styles.miniBtn}
-                            onClick={() => renameToken(t.name)}
-                            title="Rename"
-                          >
-                            <Check />
-                          </button>
-                          <button
-                            className={styles.miniBtn}
-                            onClick={() => setRenaming(null)}
-                          >
-                            ✕
-                          </button>
-                        </span>
-                      ) : t.kind === "color" ? (
-                        <span className={styles.tokenColorWrap}>
-                          <input
-                            type="color"
-                            className={styles.tokenColor}
-                            value={toHexColor(current || "#000000")}
-                            onChange={(e) => setToken(t.name, e.target.value)}
-                          />
-                          <input
-                            type="text"
-                            className={`${styles.tokenText}${
-                              dirty ? ` ${styles.dirty}` : ""
-                            }`}
-                            value={current}
-                            onChange={(e) => setToken(t.name, e.target.value)}
-                            spellCheck={false}
-                          />
-                        </span>
-                      ) : (
-                        <input
-                          type="text"
-                          className={`${styles.tokenText}${
-                            dirty ? ` ${styles.dirty}` : ""
-                          }`}
-                          value={current}
-                          onChange={(e) => setToken(t.name, e.target.value)}
-                          spellCheck={false}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+            {editableGroups.map((group) => {
+              const groupKey = `editGroup:${group.group}`;
+              const isCollapsed = !!collapsed[groupKey];
+              // Surface pending edits even when the group is collapsed, so a
+              // dirty token isn't hidden away.
+              const dirtyInGroup = group.tokens.some(
+                (t) => tokenEdits[t.name] !== undefined
+              );
+              return (
+                <div key={group.group} className={styles.tokenGroup}>
+                  <SectionHeader
+                    title={`${group.group}${dirtyInGroup ? " •" : ""}`}
+                    count={group.tokens.length}
+                    isCollapsed={isCollapsed}
+                    onToggle={() => toggleSection(groupKey)}
+                  />
+                  {!isCollapsed &&
+                    group.tokens.map((t) => {
+                      const current = tokenEdits[t.name] ?? tokenBase[t.name] ?? "";
+                      const dirty = tokenEdits[t.name] !== undefined;
+                      const isRenaming = renaming === t.name;
+                      return (
+                        <div className={styles.tokenRow} key={t.name}>
+                          {isRenaming ? (
+                            <input
+                              type="text"
+                              className={styles.tokenText}
+                              style={{ flex: 1, textAlign: "left" }}
+                              value={renameDraft}
+                              autoFocus
+                              placeholder={t.name}
+                              onChange={(e) => setRenameDraft(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") renameToken(t.name);
+                                if (e.key === "Escape") setRenaming(null);
+                              }}
+                              spellCheck={false}
+                            />
+                          ) : (
+                            <span
+                              className={styles.tokenLabel}
+                              title={`${t.name} — double-click to rename`}
+                              onDoubleClick={() => {
+                                setRenaming(t.name);
+                                setRenameDraft(t.name);
+                              }}
+                            >
+                              {dirty ? "• " : ""}
+                              {t.label}
+                            </span>
+                          )}
+                          {isRenaming ? (
+                            <span className={styles.tokenColorWrap}>
+                              <button
+                                className={styles.miniBtn}
+                                onClick={() => renameToken(t.name)}
+                                title="Rename"
+                              >
+                                <Check />
+                              </button>
+                              <button
+                                className={styles.miniBtn}
+                                onClick={() => setRenaming(null)}
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          ) : t.kind === "color" ? (
+                            <span className={styles.tokenColorWrap}>
+                              <input
+                                type="color"
+                                className={styles.tokenColor}
+                                value={toHexColor(current || "#000000")}
+                                onChange={(e) => setToken(t.name, e.target.value)}
+                              />
+                              <input
+                                type="text"
+                                className={cx(styles.tokenText, dirty && styles.dirty)}
+                                value={current}
+                                onChange={(e) => setToken(t.name, e.target.value)}
+                                spellCheck={false}
+                              />
+                            </span>
+                          ) : (
+                            <input
+                              type="text"
+                              className={cx(styles.tokenText, dirty && styles.dirty)}
+                              value={current}
+                              onChange={(e) => setToken(t.name, e.target.value)}
+                              spellCheck={false}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              );
+            })}
 
             {/* Add token form */}
             {adding ? (
@@ -2227,24 +2243,18 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
               />
             )}
 
-            <div
-              className={`${styles.tokenActions}${
-                Object.keys(tokenEdits).length > 0 ? ` ${styles.sticky}` : ""
-              }`}
-            >
+            <div className={cx(styles.tokenActions, hasEdits && styles.sticky)}>
               <button
                 className={styles.refreshBtn}
                 onClick={resetTokens}
-                disabled={Object.keys(tokenEdits).length === 0}
+                disabled={!hasEdits}
               >
                 reset
               </button>
               <button
                 className={styles.saveBtn}
                 onClick={saveTokens}
-                disabled={
-                  Object.keys(tokenEdits).length === 0 || saveState === "saving"
-                }
+                disabled={!hasEdits || saveState === "saving"}
               >
                 {saveState === "saving"
                   ? "saving…"
@@ -2330,6 +2340,11 @@ function DesignSpecOverlayInner({ apiPath }: { apiPath: string }) {
                               {nameError && (
                                 <span className={styles.nameError}>{nameError}</span>
                               )}
+                              <span className={styles.namingHint}>
+                                {label
+                                  ? "Edit this value in EDIT TOKENS above."
+                                  : "Names it as a token. To change the value, edit it in EDIT TOKENS above."}
+                              </span>
                             </span>
                           ) : (
                             <button
