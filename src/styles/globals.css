@@ -2,29 +2,59 @@
   --theme-transition-duration: 440ms;
   --theme-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #161616;
   --surface: #ffffff;
   --surface-hover: #f5f5f5;
   --nav-surface: rgba(255, 255, 255, 0.9);
   --overlay: #ffffff;
   --muted: #666666;
-  --muted-strong: #333333;
+  --muted-strong: #161616;
   --muted-hover: #000000;
   --border-subtle: #f3f3f3;
+  --text-display: 36px;
+  --text-title: 20px;
+  --text-body: 14px;
+  --text-meta: 14px;
+  --text-micro: 13px;
+  /* Spacing scale (base-8). Theme-independent, defined once. */
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-15: 60px;
+  --space-16: 64px;
+  --space-20: 80px;
+  /* Fluid spacing for responsive section gaps/padding. */
+  --space-fluid-sm: clamp(1rem, 3vw, 2rem);
+  --space-fluid-card: clamp(2rem, 4vw, 3rem);
+  --space-fluid-md: clamp(2rem, 5vw, 4rem);
+  --space-fluid-lg: clamp(2.5rem, 7vw, 5rem);
+  --text-secondary: #853232;
+  --case-study-details: 14px;
+  --text-custom: 14px;
   color-scheme: light;
 }
 
 :root[data-theme="light"] {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #161616;
   --surface: #ffffff;
   --surface-hover: #f5f5f5;
   --nav-surface: rgba(255, 255, 255, 0.9);
   --overlay: #ffffff;
   --muted: #666666;
-  --muted-strong: #333333;
+  --muted-strong: #161616;
   --muted-hover: #000000;
   --border-subtle: #f3f3f3;
+  --text-secondary: #853232;
+  --case-study-details: 14px;
+  --text-custom: 14px;
   color-scheme: light;
 }
 
@@ -82,7 +112,7 @@ body {
 }
 
 h3 {
-  font-size: 28px;
+  font-size: var(--text-title);
 }
 
 :root.home-bg-morph body {
@@ -134,7 +164,36 @@ a {
   padding: 0 clamp(2rem, 6vw, 5rem);
 }
 
+/* Shared-element morph between the home grid card and the case-study hero.
+   Both endpoints render the same cover image with object-fit: cover, so we hold
+   both snapshots opaque and let the group's size/position morph carry the motion.
+   This reads as one photo resizing rather than a crossfade between two images. */
+::view-transition-group(claimclam-hero) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-image-pair(claimclam-hero) {
+  isolation: auto;
+}
+
+::view-transition-old(claimclam-hero),
+::view-transition-new(claimclam-hero) {
+  /* Keep the image fully painted the whole time; object-fit: cover keeps it
+     filling the morphing box, so no fade/double-exposure. */
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(claimclam-hero),
+  ::view-transition-old(claimclam-hero),
+  ::view-transition-new(claimclam-hero) {
+    animation: none !important;
+  }
+
   :root.home-bg-morph body {
     transition: none;
   }

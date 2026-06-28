@@ -156,6 +156,18 @@ export default function ClaimClam() {
         </aside>
 
         <div className={local.layoutContent}>
+        {/* Cover band — shared-element morph target from the home grid card. */}
+        <div className={local.coverBand} style={{ viewTransitionName: "claimclam-hero" }}>
+          <Image
+            src="/images/ClaimClam_NamuPark_cover.png"
+            alt="ClaimClam cover"
+            width={1600}
+            height={1000}
+            className={local.coverImage}
+            priority
+            unoptimized
+          />
+        </div>
         {/* Hero Section */}
         <section id="overview" className={`${cs.hero} ${local.hero}`}>
           <div className={cs.logoWrapper}>

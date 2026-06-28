@@ -21,9 +21,13 @@ import {
   setStoredThemePreference,
 } from "../lib/themePreference";
 
-const headlineText = "Namu Park is a product designer based in Brooklyn, New York.";
-const headlineWords = headlineText.split(" ");
-const englishHeadlineLines = ["Namu Park is a product designer", "based in Brooklyn, New York."];
+const headlineText = "I help early-stage founders turn complex product ideas into clear, trustworthy digital products.";
+const introText = "Namu Park is a product designer based in Brooklyn, New York.";
+const introWords = introText.split(" ");
+const englishHeadlineLines = [
+  "I help early-stage founders turn complex product",
+  "ideas into clear, trustworthy digital products.",
+];
 const englishHeadlineWordsByLine = englishHeadlineLines.map((line) => line.split(" "));
 const englishLineStartIndices = englishHeadlineWordsByLine.reduce<number[]>((acc, lineWords, index) => {
   if (index === 0) {
@@ -866,7 +870,7 @@ export default function Home() {
       {isOverlayVisible && (
         <div className={introOverlayClassName} aria-hidden="true">
           <h1 className={styles.introHeadline}>
-            {headlineWords.map((word, index) => (
+            {introWords.map((word, index) => (
               <span
                 key={`${word}-${index}`}
                 className={styles.introWord}
@@ -1070,6 +1074,7 @@ export default function Home() {
               href="/claimclam"
               image="/images/ClaimClam_NamuPark_cover.png"
               hoverLabel="Read case study"
+              viewTransitionName="claimclam-hero"
             />
           </div>
           <div className={styles.entranceItem} style={entranceStyle(entranceDelays.cards[1])}>
