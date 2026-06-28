@@ -1,10 +1,10 @@
 .container {
     --nav-height: 72px;
     width: 100%;
-    padding: 0 clamp(2.5rem, 7vw, 5rem) 0;
+    padding: 0 var(--space-fluid-lg) 0;
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 5vw, 4rem);
+    gap: var(--space-fluid-md);
     position: relative;
     min-height: 100vh;
   }
@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 60px;
+    padding: 0 var(--space-15);
     background: var(--nav-surface);
     backdrop-filter: blur(6px);
     z-index: 2500;
@@ -39,7 +39,7 @@
   }
 
 .navLeft {
-    font-size: 16px;
+    font-size: var(--text-body);
     letter-spacing: -0.02em;
     line-height: 1;
     font-weight: 400;
@@ -48,7 +48,7 @@
   }
 
 .navRight {
-    font-size: 13px;
+    font-size: var(--text-micro);
     letter-spacing: -0.01em;
     line-height: 1;
     font-weight: 400;
@@ -62,13 +62,13 @@
 .navLeftGroup {
     display: flex;
     align-items: center;
-    gap: 2.25rem;
+    gap: var(--space-8);
   }
 
 .navRightGroup {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-3);
   }
 
 .navRight {
@@ -81,19 +81,19 @@
     color: var(--foreground);
     display: inline-flex;
     align-items: center;
-    gap: 0.34rem;
-    font-size: 0.75rem;
+    gap: var(--space-1-5);
+    font-size: var(--text-micro);
     letter-spacing: 0;
     line-height: 1;
     border-radius: 999px;
-    padding: 0.48rem 0.68rem;
+    padding: var(--space-2) var(--space-3);
     cursor: pointer;
     font-family: inherit;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
 
 .themeToggleIcon {
-    font-size: 0.82rem;
+    font-size: var(--text-micro);
     line-height: 1;
     width: 1em;
     display: inline-flex;
@@ -123,7 +123,7 @@
 .pageLayer {
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 5vw, 72px);
+    gap: var(--space-fluid-md);
     transition: opacity 120ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -195,7 +195,7 @@
     max-width: 800px;
     margin: 0;
     text-align: center;
-    font-size: 60px;
+    font-size: var(--text-display);
     font-weight: 400;
     line-height: 1.1;
     letter-spacing: -0.03em;
@@ -226,19 +226,22 @@
 }
 
 .hero {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-size: var(--text-display);
     text-align: center;
     font-weight: 400;
     line-height: 1.2;
     letter-spacing: -0.02em;
     overflow-wrap: anywhere;
+    /* Let the headline flow as one block and wrap naturally within a readable
+       measure; text-wrap: balance evens the rows so no single word is stranded. */
+    text-wrap: balance;
     max-width: 100%;
   }
 
 .heroInteractive {
     position: relative;
-    width: fit-content;
-    max-width: 100%;
+    width: 100%;
+    max-width: 840px;
     margin: 0 auto;
     cursor: default;
     touch-action: pan-y;
@@ -249,22 +252,22 @@
     color: var(--foreground);
   }
 
+/* The two logical "lines" stay in the DOM (the Korean hover morph maps onto
+   them), but render inline at every width so all words flow as one continuous,
+   naturally wrapping block instead of two forced rows. */
 .heroEnglishLine {
-    display: block;
-    white-space: nowrap;
+    display: inline;
+    white-space: normal;
     transition: opacity 420ms ease-in-out, filter 420ms ease-in-out;
+  }
+
+.heroEnglishLine:not(:last-child)::after {
+    content: " ";
   }
 
 @media (max-width: 640px) {
   .hero {
     line-height: 1.33;
-  }
-  .heroEnglishLine {
-    display: inline;
-    white-space: normal;
-  }
-  .heroEnglishLine:not(:last-child)::after {
-    content: " ";
   }
 }
 
@@ -318,7 +321,16 @@
 .heroKoreanLine {
     display: block;
     white-space: nowrap;
+    max-width: 100%;
   }
+
+/* On narrow screens the long Korean greeting can't fit on one line; let it wrap
+   instead of overflowing the viewport edges. */
+@media (max-width: 640px) {
+  .heroKoreanLine {
+    white-space: normal;
+  }
+}
 
 .heroKoreanWord {
     opacity: 0;
@@ -340,23 +352,15 @@
     opacity: 1;
   }
 
-.heroKoreanFirstLineVisible .heroKoreanLine:first-child .heroKoreanWord {
-    opacity: 1;
-  }
-
-.heroKoreanSecondLineVisible .heroKoreanLine:last-child .heroKoreanWord {
-    opacity: 1;
-  }
-
 .heroWrapper {
-    max-width: 620px;
-    margin: 72px auto 0;
+    max-width: 840px;
+    margin: var(--space-15) auto 0;
   }
-  
+
   .featured {
     display: grid;
-    gap: 1rem;
-    padding: 2rem;
+    gap: var(--space-4);
+    padding: var(--space-8);
   }
   
   /* src/styles/home.module.css */
@@ -365,13 +369,13 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: var(--space-6);
     width: 100%;
-    padding: clamp(2rem, 4vw, 3rem);
+    padding: var(--space-fluid-card);
     border: none;
     text-decoration: none;
     font-weight: 500;
-    font-size: 1.5rem;
+    font-size: var(--text-title);
     color: var(--foreground);
     transition: background 0.2s ease, transform 0.2s ease;
     background: var(--surface);
@@ -399,7 +403,7 @@
 
 .cardWithVideo {
   padding: 0;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: var(--space-fluid-sm);
   background: transparent;
   flex-direction: column;
 }
@@ -446,7 +450,7 @@
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 1rem;
+    font-size: var(--text-body);
     font-weight: 400;
     letter-spacing: 0;
     opacity: 0;
@@ -458,14 +462,14 @@
   .cardTitleWrapper {
       display: flex;
       align-items: baseline;
-      gap: 0.75rem;
+      gap: var(--space-3);
       width: 100%;
       padding-left: 0;
     }
 
   .cardTitle {
       display: block;
-    font-size: 1.25rem;
+    font-size: var(--text-title);
     font-weight: 500;
     letter-spacing: -0.02em;
     text-align: left;
@@ -473,13 +477,13 @@
   }
 
 .cardSubtitle {
-    font-size: 0.875rem;
+    font-size: var(--text-meta);
     font-weight: 500;
     color: var(--muted);
   }
 
 .comingSoon {
-    font-size: clamp(0.625rem, 1.2vw, 0.75rem);
+    font-size: var(--text-micro);
     color: var(--muted);
     font-weight: 600;
     letter-spacing: 0;
@@ -487,13 +491,13 @@
   }
 
 .constructionNote {
-    font-size: 0.875rem;
+    font-size: var(--text-meta);
     color: var(--muted);
     font-weight: 400;
     letter-spacing: 0;
     text-align: center;
     max-width: 480px;
-    margin: 1rem auto 0;
+    margin: var(--space-4) auto 0;
   }
 
 .contraLinkWrapper {
@@ -522,8 +526,8 @@
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    margin-top: 0.5rem;
-    padding: 8px;
+    margin-top: var(--space-2);
+    padding: var(--space-2);
     background: var(--surface);
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
@@ -535,14 +539,14 @@
 .contraPreviewContent,
 .emailPreviewContent {
     color: var(--muted-strong);
-    font-size: 12px;
+    font-size: var(--text-micro);
     font-weight: 500;
   }
 
 .emailPreviewContent {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
 .previewIcon {
@@ -670,17 +674,17 @@
 @media (max-width: 767px) {
   .container {
     --nav-height: 56px;
-    padding: 0 2rem 1.5rem;
-    gap: 1.5rem;
+    padding: 0 var(--space-8) var(--space-6);
+    gap: var(--space-6);
   }
 
   .nav {
     height: var(--nav-height);
-    padding: 0 1rem;
+    padding: 0 var(--space-4);
   }
 
   .navRight {
-    font-size: 12px;
+    font-size: var(--text-micro);
   }
 
   .navRightFull {
@@ -692,16 +696,16 @@
   }
 
   .navLeftGroup {
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .navRightGroup {
-    gap: 0.45rem;
+    gap: var(--space-2);
   }
 
   .themeToggle {
-    font-size: 11px;
-    padding: 0.4rem 0.55rem;
+    font-size: var(--text-micro);
+    padding: var(--space-1-5) var(--space-2);
   }
 
   .themeToggleLabelDark {
@@ -709,12 +713,12 @@
   }
 
   .heroWrapper {
-    margin: 28px auto 0;
+    margin: var(--space-6) auto 0;
   }
 
 
   .introHeadline {
-    font-size: 36px;
+    font-size: var(--text-display);
     line-height: 1.25;
   }
 }
@@ -729,7 +733,7 @@
 
 @media (min-width: 660px) {
   .introHeadline {
-    font-size: 48px;
+    font-size: var(--text-display);
     line-height: 1.25;
   }
 }
@@ -744,8 +748,8 @@
     }
 
   .caseGrid > *:nth-child(2) .videoWrapper {
-      width: calc(100% + 2rem);
-      margin-left: -1rem;
+      width: calc(100% + var(--space-8));
+      margin-left: calc(var(--space-4) * -1);
     }
 
   .cardWithVideo .cardTitleWrapper {
@@ -757,8 +761,8 @@
   .featured {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    margin-top: 2rem;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
   }
   
   @media (min-width: 640px) {
@@ -773,9 +777,9 @@
     }
   }
   .bio p {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-6);
     line-height: 1.4;
-    font-size: 1.5rem;
+    font-size: var(--text-title);
     letter-spacing: -0.02rem;;
   }
 
@@ -840,16 +844,16 @@
 .about {
     width: 100%;
     max-width: 776px;
-    margin: 48px auto 0;
+    margin: var(--space-12) auto 0;
     padding: 0 clamp(0.5rem, 7vw, 3rem) clamp(3rem, 6vw, 5rem);
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 4vw, 3rem);
-    scroll-margin-top: calc(var(--nav-height) + 1rem);
+    gap: var(--space-fluid-card);
+    scroll-margin-top: calc(var(--nav-height) + var(--space-4));
   }
 
 .aboutHeadline {
-    font-size: clamp(1.5rem, 3.2vw, 2rem);
+    font-size: var(--text-title);
     line-height: 1.4;
     letter-spacing: -0.02em;
     font-weight: 400;
@@ -860,9 +864,9 @@
 .aboutBody {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: var(--space-5);
     color: #4D5258;
-    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    font-size: var(--text-body);
     line-height: 1.55;
     letter-spacing: -0.005em;
   }
@@ -884,12 +888,12 @@
 .aboutClients {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: var(--space-5);
     margin-top: clamp(1rem, 2vw, 2rem);
   }
 
 .aboutClientsHeading {
-    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    font-size: var(--text-body);
     font-weight: 600;
     letter-spacing: -0.01em;
     margin: 0;
@@ -902,9 +906,9 @@
     margin: 0;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.85rem 1.5rem;
+    gap: var(--space-3) var(--space-6);
     color: var(--foreground);
-    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    font-size: var(--text-body);
     letter-spacing: -0.005em;
   }
 
@@ -937,9 +941,9 @@
     left: 50%;
     transform: translateX(-50%) translateY(4px) scale(0.98);
     transform-origin: bottom center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-2);
     width: 280px;
-    padding: 6px;
+    padding: var(--space-1-5);
     background: var(--surface);
     border: 1px solid var(--border-subtle);
     border-radius: 10px;
@@ -1010,13 +1014,13 @@
 }
 
 .navAbout {
-    font-size: 13px;
+    font-size: var(--text-micro);
     letter-spacing: -0.01em;
     line-height: 1;
     font-weight: 400;
     color: var(--foreground);
     text-decoration: none;
-    padding: 0.4rem 0;
+    padding: var(--space-1-5) 0;
   }
 
 .navAbout:hover {
@@ -1035,9 +1039,9 @@
 .footerContact {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: var(--space-2);
     color: var(--muted);
-    font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+    font-size: var(--text-body);
     letter-spacing: -0.01em;
   }
 
@@ -1121,7 +1125,7 @@
 @media (max-width: 767px) {
   .aboutClientsList {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.85rem 1rem;
+    gap: var(--space-3) var(--space-4);
   }
 
   .footerRunway {
