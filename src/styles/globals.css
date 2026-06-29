@@ -164,36 +164,7 @@ a {
   padding: 0 clamp(2rem, 6vw, 5rem);
 }
 
-/* Shared-element morph between the home grid card and the case-study hero.
-   Both endpoints render the same cover image with object-fit: cover, so we hold
-   both snapshots opaque and let the group's size/position morph carry the motion.
-   This reads as one photo resizing rather than a crossfade between two images. */
-::view-transition-group(claimclam-hero) {
-  animation-duration: 0.55s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-::view-transition-image-pair(claimclam-hero) {
-  isolation: auto;
-}
-
-::view-transition-old(claimclam-hero),
-::view-transition-new(claimclam-hero) {
-  /* Keep the image fully painted the whole time; object-fit: cover keeps it
-     filling the morphing box, so no fade/double-exposure. */
-  animation: none;
-  mix-blend-mode: normal;
-  height: 100%;
-  object-fit: cover;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(claimclam-hero),
-  ::view-transition-old(claimclam-hero),
-  ::view-transition-new(claimclam-hero) {
-    animation: none !important;
-  }
-
   :root.home-bg-morph body {
     transition: none;
   }

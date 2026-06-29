@@ -17,7 +17,6 @@ export default function CaseStudyGrid({ entranceStyle, cardDelays }: CaseStudyGr
           href="/claimclam"
           image="/images/ClaimClam_NamuPark_cover.png"
           hoverLabel="Read case study"
-          viewTransitionName="claimclam-hero"
         />
       </div>
       <div className={styles.entranceItem} style={entranceStyle(cardDelays[1])}>

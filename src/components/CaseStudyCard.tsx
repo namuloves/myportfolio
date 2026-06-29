@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "@/styles/home.module.css";
-import ViewTransitionLink from "./ViewTransitionLink";
 
 interface CardProps {
   title: string;
@@ -15,7 +14,6 @@ interface CardProps {
   hoverLabel?: string;
   subtitle?: string;
   disableHoverDim?: boolean;
-  viewTransitionName?: string;
 }
 
 export default function CaseStudyCard({
@@ -27,7 +25,6 @@ export default function CaseStudyCard({
   hoverLabel,
   subtitle,
   disableHoverDim,
-  viewTransitionName,
 }: CardProps) {
   const hasMedia = Boolean(image || video);
   const isInteractive = Boolean(href);
@@ -51,10 +48,7 @@ export default function CaseStudyCard({
   ) : null;
 
   const mediaContent = image ? (
-    <div
-      className={styles.imageWrapper}
-      style={viewTransitionName ? { viewTransitionName } : undefined}
-    >
+    <div className={styles.imageWrapper}>
       <Image
         src={image}
         alt={title}
@@ -104,11 +98,10 @@ export default function CaseStudyCard({
   );
 
   if (href) {
-    const LinkComponent = viewTransitionName ? ViewTransitionLink : Link;
     return (
-      <LinkComponent href={href} className={cardClassName}>
+      <Link href={href} className={cardClassName}>
         {cardContent}
-      </LinkComponent>
+      </Link>
     );
   }
 
