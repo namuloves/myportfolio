@@ -1,0 +1,175 @@
+/* AI Deal Home - page-specific overrides only */
+
+.logo {
+  background: var(--surface);
+  border-radius: 18px;
+  border: 1px solid var(--border-subtle);
+  color: var(--foreground);
+  font-family: "Iowan Old Style", "Georgia", serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+}
+
+.logoText {
+  display: block;
+  line-height: 1;
+}
+
+/* Status badge under hero meta */
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Pull quote (Rachel-style left-border italic) */
+.pullquote {
+  margin: 0.5rem 0;
+  padding: 0 0 0 1.25rem;
+  border-left: 2px solid var(--foreground);
+  font-style: italic;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  line-height: 1.45;
+  color: var(--foreground);
+  max-width: 640px;
+}
+
+/* Process table */
+.processTableWrap {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.processTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-custom);
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.processTable th,
+.processTable td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+  color: var(--foreground);
+}
+
+.processTable th {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--background);
+}
+
+.processTable td:first-child {
+  width: 60px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.processTable tr:last-child td {
+  border-bottom: none;
+}
+
+.processTable .stake {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Two-up image grid sized for desktop screenshots (wider than phone mockups) */
+.desktopTwoUp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.desktopTwoUp > div {
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.desktopTwoUp img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Single wide artifact (sitemap, wireframe, etc.) */
+.wideArtifact {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.wideArtifact img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Section eyebrow label (sits above each h3) */
+.sectionLabel {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.25rem;
+}
+
+/* NDA / stealth disclaimer */
+.ndaNote {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .desktopTwoUp {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .processTable th,
+  .processTable td {
+    padding: 0.6rem 0.65rem;
+    font-size: 13px;
+  }
+}
