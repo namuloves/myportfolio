@@ -1,115 +1,24 @@
 "use client";
 
-import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
 import mainNavStyles from "../../styles/home.module.css";
+import SiteNav from "../../components/SiteNav";
 import SiteFooter from "../../components/SiteFooter";
 import AboutLinkPreview from "../../components/AboutLinkPreview";
-import { applyThemeWithTransition } from "../../lib/themeTransition";
-import {
-  type Theme,
-  getSystemTheme,
-  getStoredThemePreference,
-  setStoredThemePreference,
-} from "../../lib/themePreference";
-
-const getBrooklynTime = () =>
-  new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "America/New_York",
-  }).format(new Date());
+import { useTheme } from "../../hooks/useTheme";
+import { useBrooklynClock } from "../../hooks/useBrooklynClock";
 
 export default function About() {
-  const [theme, setTheme] = useState<Theme | null>(null);
-  const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
-  const hasManualThemeOverrideRef = useRef(false);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const storedTheme = getStoredThemePreference();
-    const initialTheme = storedTheme ?? getSystemTheme();
-
-    hasManualThemeOverrideRef.current = storedTheme !== null;
-    root.setAttribute("data-theme", initialTheme);
-    setTheme(initialTheme);
-
-    const handleSystemThemeChange = (event: MediaQueryListEvent) => {
-      if (hasManualThemeOverrideRef.current) return;
-      const nextTheme: Theme = event.matches ? "dark" : "light";
-      root.setAttribute("data-theme", nextTheme);
-      setTheme(nextTheme);
-    };
-
-    if (typeof systemThemeQuery.addEventListener === "function") {
-      systemThemeQuery.addEventListener("change", handleSystemThemeChange);
-    } else {
-      systemThemeQuery.addListener(handleSystemThemeChange);
-    }
-
-    return () => {
-      if (typeof systemThemeQuery.removeEventListener === "function") {
-        systemThemeQuery.removeEventListener("change", handleSystemThemeChange);
-      } else {
-        systemThemeQuery.removeListener(handleSystemThemeChange);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    setBrooklynTime(getBrooklynTime());
-    const interval = window.setInterval(() => {
-      setBrooklynTime(getBrooklynTime());
-    }, 30000);
-    return () => window.clearInterval(interval);
-  }, []);
-
-  const handleThemeToggle = () => {
-    if (!theme) return;
-    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
-    hasManualThemeOverrideRef.current = true;
-    setStoredThemePreference(nextTheme);
-    applyThemeWithTransition(nextTheme);
-    setTheme(nextTheme);
-  };
+  const { theme, toggleTheme } = useTheme();
+  const brooklynTime = useBrooklynClock();
 
   return (
     <main className={mainNavStyles.container}>
-      <nav className={mainNavStyles.nav} aria-label="Site header">
-        <div className={mainNavStyles.navLeftGroup}>
-          <Link href="/" className={mainNavStyles.navLeft}>
-            Namu Park
-          </Link>
-          <Link href="/about" className={mainNavStyles.navAbout}>
-            About
-          </Link>
-        </div>
-        <div className={mainNavStyles.navRightGroup}>
-          <span className={mainNavStyles.navRight}>
-            <span className={mainNavStyles.navRightFull}>Brooklyn, New York</span>
-            <span className={mainNavStyles.navRightShort}>Brooklyn, NY</span>
-            {" "}{brooklynTime}
-          </span>
-          <button
-            type="button"
-            className={mainNavStyles.themeToggle}
-            onClick={handleThemeToggle}
-            disabled={!theme}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            <span className={mainNavStyles.themeToggleIcon} aria-hidden="true">
-              {theme === "dark" ? "☼" : "☾"}
-            </span>
-            <span
-              className={`${mainNavStyles.themeToggleLabel} ${theme === "dark" ? "" : mainNavStyles.themeToggleLabelDark}`}
-            >
-              {theme === "dark" ? "Light" : "Dark"}
-            </span>
-          </button>
-        </div>
-      </nav>
+      <SiteNav
+        className={mainNavStyles.nav}
+        theme={theme}
+        brooklynTime={brooklynTime}
+        onToggleTheme={toggleTheme}
+      />
 
       <section className={mainNavStyles.about} aria-label="About">
         <h1 className={mainNavStyles.aboutHeadline}>

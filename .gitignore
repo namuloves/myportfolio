@@ -23,7 +23,11 @@ dist
 
 # misc
 .DS_Store
+._*
 *.pem
+
+# local tool caches / scratch
+.lazyweb/
 
 # debug
 npm-debug.log*

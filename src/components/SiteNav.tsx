@@ -1,5 +1,8 @@
+"use client";
+
 import { type CSSProperties } from "react";
 import Link from "next/link";
+import { SlotText } from "slot-text/react";
 import styles from "../styles/home.module.css";
 import { type Theme } from "../lib/themePreference";
 
@@ -8,7 +11,7 @@ interface SiteNavProps {
   theme: Theme | null;
   brooklynTime: string;
   onToggleTheme: () => void;
-  entranceStyle: (ms: number, durationMs?: number) => CSSProperties;
+  entranceStyle?: (ms: number, durationMs?: number) => CSSProperties;
 }
 
 /** Fixed site header: name/about links, Brooklyn clock, and theme toggle. */
@@ -20,7 +23,7 @@ export default function SiteNav({
   entranceStyle,
 }: SiteNavProps) {
   return (
-    <nav className={className} style={entranceStyle(20, 1200)} aria-label="Site header">
+    <nav className={className} style={entranceStyle?.(20, 1200)} aria-label="Site header">
       <div className={styles.navLeftGroup}>
         <Link href="/" className={styles.navLeft}>
           Namu Park
@@ -34,7 +37,7 @@ export default function SiteNav({
           <span className={styles.navRightFull}>Brooklyn, New York</span>
           <span className={styles.navRightShort}>Brooklyn, NY</span>
           {" "}
-          {brooklynTime}
+          {brooklynTime ? <SlotText text={brooklynTime} /> : null}
         </span>
         <button
           type="button"
@@ -49,7 +52,7 @@ export default function SiteNav({
           <span
             className={`${styles.themeToggleLabel} ${theme === "dark" ? "" : styles.themeToggleLabelDark}`}
           >
-            {theme === "dark" ? "Light" : "Dark"}
+            {theme ? <SlotText text={theme === "dark" ? "Light" : "Dark"} /> : null}
           </span>
         </button>
       </div>

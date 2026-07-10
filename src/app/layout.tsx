@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "../styles/globals.css";
+// Text-roll animation styles (slot-text), used by the theme toggle, clock, and
+// email button.
+import "slot-text/style.css";
 import { Analytics } from "@vercel/analytics/next";
 import dynamic from "next/dynamic";
 // Styles for the dev-only css-spec overlay. Scoped to the overlay's own hashed

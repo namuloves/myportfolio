@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useState } from "react";
+import { type CSSProperties } from "react";
 import SiteFooter from "../components/SiteFooter";
 import IntroOverlay from "../components/IntroOverlay";
 import SiteNav from "../components/SiteNav";
@@ -14,17 +14,20 @@ import { useEmailPreview } from "../hooks/useEmailPreview";
 import { useIntroOverlay } from "../hooks/useIntroOverlay";
 import { useHeadlineMorph } from "../hooks/useHeadlineMorph";
 
+// Deterministic so server and client render identical inline styles (random
+// jitter here caused hydration mismatches).
+const entranceDelays = {
+  hero: 0,
+  note: 70,
+  cards: Array.from({ length: 5 }, (_, index) => 115 + index * 70),
+};
+
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const emailPreview = useEmailPreview();
   const { isOverlayVisible, isOverlayBlurring, isPageVisible, hasSeenIntroRef } = useIntroOverlay();
   const morph = useHeadlineMorph();
   const brooklynTime = useBrooklynClock();
-  const [entranceDelays] = useState(() => ({
-    hero: 0,
-    note: 40 + Math.floor(Math.random() * 60),
-    cards: Array.from({ length: 5 }, (_, index) => 90 + index * 70 + Math.floor(Math.random() * 50)),
-  }));
 
   const pageLayerClassName = [
     styles.pageLayer,

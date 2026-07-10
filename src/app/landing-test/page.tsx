@@ -35,11 +35,13 @@ export default function Home() {
   const [isPageVisible, setIsPageVisible] = useState(false);
   const [activeFavicon, setActiveFavicon] = useState(0);
   const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
+  // Deterministic so server and client render identical inline styles (random
+  // jitter here caused hydration mismatches).
   const [entranceDelays] = useState(() => ({
     hero: 0,
-    note: 40 + Math.floor(Math.random() * 60),
-    cards: Array.from({ length: 4 }, (_, index) => 90 + index * 70 + Math.floor(Math.random() * 50)),
-    footer: 300 + Math.floor(Math.random() * 80),
+    note: 70,
+    cards: Array.from({ length: 4 }, (_, index) => 115 + index * 70),
+    footer: 340,
   }));
 
   const contraHideTimeoutRef = useRef<number | null>(null);

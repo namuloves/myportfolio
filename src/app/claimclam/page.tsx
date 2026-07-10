@@ -2,153 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
 import cs from "../../styles/casestudy.module.css";
 import local from "./claimclam.module.css";
-import mainNavStyles from "../../styles/home.module.css";
 import SiteFooter from "../../components/SiteFooter";
+import CaseStudyNav from "../../components/CaseStudyNav";
+import CaseStudyFloatingNav from "../../components/CaseStudyFloatingNav";
 import ClaimClamPageNav from "./ClaimClamPageNav";
-import { applyThemeWithTransition } from "../../lib/themeTransition";
-import {
-  type Theme,
-  getSystemTheme,
-  getStoredThemePreference,
-  setStoredThemePreference,
-} from "../../lib/themePreference";
-
-const getBrooklynTime = () =>
-  new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "America/New_York",
-  }).format(new Date());
 
 export default function ClaimClam() {
-  const [showNavigation, setShowNavigation] = useState(false);
-  const [theme, setTheme] = useState<Theme | null>(null);
-  const [brooklynTime, setBrooklynTime] = useState(getBrooklynTime);
-  const hasManualThemeOverrideRef = useRef(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const root = document.documentElement;
-      const { body } = document;
-      const scrollTop = Math.max(window.scrollY, root.scrollTop, body.scrollTop);
-      setShowNavigation(scrollTop > 24);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    document.addEventListener("scroll", handleScroll, { passive: true });
-    document.body.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("scroll", handleScroll);
-      document.body.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const storedTheme = getStoredThemePreference();
-    const initialTheme = storedTheme ?? getSystemTheme();
-
-    hasManualThemeOverrideRef.current = storedTheme !== null;
-    root.setAttribute("data-theme", initialTheme);
-    setTheme(initialTheme);
-
-    const handleSystemThemeChange = (event: MediaQueryListEvent) => {
-      if (hasManualThemeOverrideRef.current) return;
-
-      const nextTheme: Theme = event.matches ? "dark" : "light";
-      root.setAttribute("data-theme", nextTheme);
-      setTheme(nextTheme);
-    };
-
-    if (typeof systemThemeQuery.addEventListener === "function") {
-      systemThemeQuery.addEventListener("change", handleSystemThemeChange);
-    } else {
-      systemThemeQuery.addListener(handleSystemThemeChange);
-    }
-
-    return () => {
-      if (typeof systemThemeQuery.removeEventListener === "function") {
-        systemThemeQuery.removeEventListener("change", handleSystemThemeChange);
-      } else {
-        systemThemeQuery.removeListener(handleSystemThemeChange);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    setBrooklynTime(getBrooklynTime());
-    const interval = window.setInterval(() => {
-      setBrooklynTime(getBrooklynTime());
-    }, 30000);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  const handleThemeToggle = () => {
-    if (!theme) return;
-
-    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
-    hasManualThemeOverrideRef.current = true;
-    setStoredThemePreference(nextTheme);
-    applyThemeWithTransition(nextTheme);
-    setTheme(nextTheme);
-  };
-
-  const scrollToTop = () => {
-    const behavior: ScrollBehavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "auto"
-      : "smooth";
-    const scrollingElement = document.scrollingElement as HTMLElement | null;
-
-    window.scrollTo({ top: 0, behavior });
-    scrollingElement?.scrollTo({ top: 0, behavior });
-    document.documentElement.scrollTo({ top: 0, behavior });
-    document.body.scrollTo({ top: 0, behavior });
-  };
-
   return (
     <main className={cs.container}>
-      <nav className={`${mainNavStyles.nav} ${cs.fixedNav}`} aria-label="Site header">
-        <div className={mainNavStyles.navLeftGroup}>
-          <Link href="/" className={mainNavStyles.navLeft}>
-            Namu Park
-          </Link>
-          <Link href="/about" className={mainNavStyles.navAbout}>
-            About
-          </Link>
-        </div>
-        <div className={mainNavStyles.navRightGroup}>
-          <span className={mainNavStyles.navRight}>
-            <span className={mainNavStyles.navRightFull}>Brooklyn, New York</span>
-            <span className={mainNavStyles.navRightShort}>Brooklyn, NY</span>
-            {" "}{brooklynTime}
-          </span>
-          <button
-            type="button"
-            className={mainNavStyles.themeToggle}
-            onClick={handleThemeToggle}
-            disabled={!theme}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            <span className={mainNavStyles.themeToggleIcon} aria-hidden="true">
-              {theme === "dark" ? "☼" : "☾"}
-            </span>
-            <span
-              className={`${mainNavStyles.themeToggleLabel} ${theme === "dark" ? "" : mainNavStyles.themeToggleLabelDark}`}
-            >
-              {theme === "dark" ? "Light" : "Dark"}
-            </span>
-          </button>
-        </div>
-      </nav>
+      <CaseStudyNav />
 
       <div className={local.layout}>
         <aside className={local.layoutAside}>
@@ -358,31 +222,7 @@ export default function ClaimClam() {
         </div>
       </div>
 
-      {/* Floating Navigation */}
-      {showNavigation && (
-        <div className={cs.floatingNavigation}>
-          <Link href="/" className={cs.backToHome}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span className={cs.backToHomeLabel}>Back</span>
-          </Link>
-
-          <button onClick={scrollToTop} className={cs.backToTop}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 19V5M5 12l7-7 7 7"/>
-            </svg>
-            <span className={cs.backToTopLabel}>Top</span>
-          </button>
-
-          <Link href="/thesloth" className={cs.nextCase}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            <span className={cs.nextCaseLabel}>Next</span>
-          </Link>
-        </div>
-      )}
+      <CaseStudyFloatingNav nextHref="/thesloth" />
 
       <SiteFooter />
     </main>

@@ -1,5 +1,8 @@
 .pageTransition {
-  animation: pageEnter 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* `backwards`, not `both`: a forwards fill would leave `transform` applied
+     permanently, turning this wrapper into the containing block for
+     position: fixed descendants (case-study Back/Top buttons). */
+  animation: pageEnter 0.34s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @keyframes pageEnter {

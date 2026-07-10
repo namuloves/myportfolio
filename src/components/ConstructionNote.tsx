@@ -1,6 +1,7 @@
 import { type CSSProperties } from "react";
 import styles from "../styles/home.module.css";
 import { type EmailPreviewTarget } from "../hooks/useEmailPreview";
+import EmailCopyButton from "./EmailCopyButton";
 
 interface ConstructionNoteProps {
   entranceStyle: (ms: number, durationMs?: number) => CSSProperties;
@@ -110,15 +111,12 @@ export default function ConstructionNote({
         onMouseEnter={() => handleEmailMouseEnter("main")}
         onMouseLeave={handleEmailMouseLeave}
       >
-        <button
+        <EmailCopyButton
+          copied={activeEmailPreviewTarget === "main" && emailCopied}
           onClick={() => handleEmailCopy("main")}
           onFocus={() => handleEmailMouseEnter("main")}
           onBlur={handleEmailMouseLeave}
-          className={styles.emailButton}
-          aria-label="Copy email address"
-        >
-          hello@namupark.com
-        </button>
+        />
         {activeEmailPreviewTarget === "main" && renderEmailPreview("main")}
       </span>
     </p>

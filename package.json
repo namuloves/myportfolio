@@ -21,7 +21,8 @@
     "next": "^15.5.12",
     "postcss": "^8.5.15",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "slot-text": "^0.3.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -199,6 +199,7 @@
     font-weight: 400;
     line-height: 1.1;
     letter-spacing: -0.03em;
+    color: var(--foreground);
   }
 
 .introWord {
@@ -853,7 +854,7 @@
   }
 
 .aboutHeadline {
-    font-size: var(--text-title);
+    font-size: 32px;
     line-height: 1.4;
     letter-spacing: -0.02em;
     font-weight: 400;
@@ -866,7 +867,7 @@
     flex-direction: column;
     gap: var(--space-5);
     color: #4D5258;
-    font-size: var(--text-body);
+    font-size: 16px;
     line-height: 1.55;
     letter-spacing: -0.005em;
   }
