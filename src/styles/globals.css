@@ -11,6 +11,7 @@
   --muted-strong: #161616;
   --muted-hover: #000000;
   --border-subtle: #f3f3f3;
+  --body-gray: #67707B;
   --text-display: 36px;
   --text-title: 20px;
   --text-body: 14px;
@@ -52,6 +53,7 @@
   --muted-strong: #161616;
   --muted-hover: #000000;
   --border-subtle: #f3f3f3;
+  --body-gray: #67707B;
   --text-secondary: #853232;
   --case-study-details: 14px;
   --text-custom: 14px;
@@ -69,6 +71,7 @@
   --muted-strong: #d1d1d1;
   --muted-hover: #ffffff;
   --border-subtle: #2b2b2b;
+  --body-gray: #858D97;
   color-scheme: dark;
 }
 
@@ -84,6 +87,7 @@
     --muted-strong: #d1d1d1;
     --muted-hover: #ffffff;
     --border-subtle: #2b2b2b;
+    --body-gray: #858D97;
     color-scheme: dark;
   }
 }
@@ -104,7 +108,8 @@ body {
   padding: 0;
   overflow-y: auto;
   background: var(--home-scroll-bg, var(--background));
-  color: #858D97;
+  /* WCAG AA on white; dark theme overrides back to the lighter #858D97. */
+  color: var(--body-gray);
   font-family: var(--font-suisse-intl), var(--font-abc-diatype), -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;

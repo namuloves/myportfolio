@@ -42,7 +42,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Namu Park Portfolio",
+  metadataBase: new URL("https://www.namupark.com"),
+  title: {
+    default: "Namu Park Portfolio",
+    template: "%s — Namu Park",
+  },
   description: "Making beautiful things that work",
   icons: {
     icon: "/namu_favicon12.png",
