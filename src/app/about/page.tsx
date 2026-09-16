@@ -46,22 +46,22 @@ export default function About() {
         <div className={mainNavStyles.aboutClients}>
           <h2 className={mainNavStyles.aboutClientsHeading}>Clients</h2>
           <ul className={mainNavStyles.aboutClientsList}>
-            <li><a href="https://www.asilica.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Asilica</a></li>
-            <li><a href="https://joindomos.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Domos</a></li>
-            <li><a href="https://excellence-ai.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Excellence</a></li>
-            <li><a href="https://www.linkedin.com/company/fastrak-ai/about/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Fastrak AI</a></li>
-            <li><a href="https://fertilitybuddyapp.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Fertility Buddy</a></li>
-            <li><a href="https://www.unsojo.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Gena AI</a></li>
-            <li><a href="https://www.hanoverpark.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Hanover Park</a></li>
-            <li><a href="https://www.heartinthe.cloud/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Heart in the Cloud</a></li>
-            <li><a href="https://hinthint.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Hint Hint</a></li>
-            <li><a href="https://www.jumpspeak.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Jumpspeak</a></li>
-            <li><a href="https://www.metabologic.ai/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Metabologic AI</a></li>
-            <li><a href="https://www.revivle.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Revivle</a></li>
-            <li><a href="https://www.santehq.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Sante</a></li>
-            <li><a href="https://www.sitewire.co/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Sitewire</a></li>
-            <li><a href="https://www.suits-sandals.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Suits &amp; Sandals</a></li>
-            <li><a href="https://in.theater/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutLink}>Theater</a></li>
+            <li><a href="https://www.asilica.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Asilica</a></li>
+            <li><a href="https://joindomos.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Domos</a></li>
+            <li><a href="https://excellence-ai.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Excellence</a></li>
+            <li><a href="https://www.linkedin.com/company/fastrak-ai/about/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Fastrak AI</a></li>
+            <li><a href="https://fertilitybuddyapp.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Fertility Buddy</a></li>
+            <li><a href="https://www.unsojo.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Gena AI</a></li>
+            <li><a href="https://www.hanoverpark.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Hanover Park</a></li>
+            <li><a href="https://www.heartinthe.cloud/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Heart in the Cloud</a></li>
+            <li><a href="https://hinthint.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Hint Hint</a></li>
+            <li><a href="https://www.jumpspeak.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Jumpspeak</a></li>
+            <li><a href="https://www.metabologic.ai/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Metabologic AI</a></li>
+            <li><a href="https://www.revivle.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Revivle</a></li>
+            <li><a href="https://www.santehq.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Sante</a></li>
+            <li><a href="https://www.sitewire.co/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Sitewire</a></li>
+            <li><a href="https://www.suits-sandals.com/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Suits &amp; Sandals</a></li>
+            <li><a href="https://in.theater/" target="_blank" rel="noopener noreferrer" className={mainNavStyles.aboutClientLink}>Theater</a></li>
           </ul>
         </div>
       </section>

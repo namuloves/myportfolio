@@ -917,6 +917,16 @@
     line-height: 1.4;
   }
 
+.aboutClientLink {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+.aboutClientLink:hover {
+    opacity: 0.6;
+  }
+
 .aboutLink {
     color: inherit;
     text-decoration: underline;
