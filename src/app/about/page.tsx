@@ -47,18 +47,21 @@ export default function About() {
           <h2 className={mainNavStyles.aboutClientsHeading}>Clients</h2>
           <ul className={mainNavStyles.aboutClientsList}>
             <li>Asilica</li>
-            <li>Fastrak AI</li>
             <li>Domos</li>
             <li>Excellence</li>
+            <li>Fastrak AI</li>
+            <li>Fertility Buddy</li>
             <li>Gena AI</li>
             <li>Hanover Park</li>
             <li>Heart in the Cloud</li>
             <li>Hint Hint</li>
+            <li>Jumpspeak</li>
             <li>Metabologic AI</li>
             <li>Revivle</li>
             <li>Sante</li>
-            <li>Theater</li>
+            <li>Sitewire</li>
             <li>Suits &amp; Sandals</li>
+            <li>Theater</li>
           </ul>
         </div>
       </section>
